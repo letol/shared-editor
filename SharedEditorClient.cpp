@@ -1,53 +1,3 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the demonstration applications of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -84,7 +34,10 @@
 #endif
 #endif
 
-#include "textedit.h"
+#include "NetworkServer.h"
+#include "SharedEditor.h"
+
+#include "SharedEditorClient.h"
 
 #ifdef Q_OS_MAC
 const QString rsrcPath = ":/images/mac";
@@ -92,7 +45,7 @@ const QString rsrcPath = ":/images/mac";
 const QString rsrcPath = ":/images/win";
 #endif
 
-TextEdit::TextEdit(QWidget *parent)
+SharedEditorClient::SharedEditorClient(QWidget *parent)
     : QMainWindow(parent)
 {
 #ifdef Q_OS_OSX
@@ -100,11 +53,16 @@ TextEdit::TextEdit(QWidget *parent)
 #endif
     setWindowTitle(QCoreApplication::applicationName());
 
+    NetworkServer server;
+
+    SharedEditor sharedEditor(server);
+    //TODO: connect
+
     textEdit = new QTextEdit(this);
     connect(textEdit, &QTextEdit::currentCharFormatChanged,
-            this, &TextEdit::currentCharFormatChanged);
+            this, &SharedEditorClient::currentCharFormatChanged);
     connect(textEdit, &QTextEdit::cursorPositionChanged,
-            this, &TextEdit::cursorPositionChanged);
+            this, &SharedEditorClient::cursorPositionChanged);
     setCentralWidget(textEdit);
 
     setToolButtonStyle(Qt::ToolButtonFollowStyle);
@@ -114,7 +72,7 @@ TextEdit::TextEdit(QWidget *parent)
 
     {
         QMenu *helpMenu = menuBar()->addMenu(tr("Help"));
-        helpMenu->addAction(tr("About"), this, &TextEdit::about);
+        helpMenu->addAction(tr("About"), this, &SharedEditorClient::about);
         helpMenu->addAction(tr("About &Qt"), qApp, &QApplication::aboutQt);
     }
 
@@ -145,7 +103,7 @@ TextEdit::TextEdit(QWidget *parent)
     actionCopy->setEnabled(false);
     connect(textEdit, &QTextEdit::copyAvailable, actionCopy, &QAction::setEnabled);
 
-    connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &TextEdit::clipboardDataChanged);
+    connect(QApplication::clipboard(), &QClipboard::dataChanged, this, &SharedEditorClient::clipboardDataChanged);
 #endif
 
     textEdit->setFocus();
@@ -160,7 +118,7 @@ TextEdit::TextEdit(QWidget *parent)
 #endif
 }
 
-void TextEdit::closeEvent(QCloseEvent *e)
+void SharedEditorClient::closeEvent(QCloseEvent *e)
 {
     if (maybeSave())
         e->accept();
@@ -168,46 +126,46 @@ void TextEdit::closeEvent(QCloseEvent *e)
         e->ignore();
 }
 
-void TextEdit::setupFileActions()
+void SharedEditorClient::setupFileActions()
 {
     QToolBar *tb = addToolBar(tr("File Actions"));
     QMenu *menu = menuBar()->addMenu(tr("&File"));
 
     const QIcon newIcon = QIcon::fromTheme("document-new", QIcon(rsrcPath + "/filenew.png"));
-    QAction *a = menu->addAction(newIcon,  tr("&New"), this, &TextEdit::fileNew);
+    QAction *a = menu->addAction(newIcon,  tr("&New"), this, &SharedEditorClient::fileNew);
     tb->addAction(a);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(QKeySequence::New);
 
     const QIcon openIcon = QIcon::fromTheme("document-open", QIcon(rsrcPath + "/fileopen.png"));
-    a = menu->addAction(openIcon, tr("&Open..."), this, &TextEdit::fileOpen);
+    a = menu->addAction(openIcon, tr("&Open..."), this, &SharedEditorClient::fileOpen);
     a->setShortcut(QKeySequence::Open);
     tb->addAction(a);
 
     menu->addSeparator();
 
     const QIcon saveIcon = QIcon::fromTheme("document-save", QIcon(rsrcPath + "/filesave.png"));
-    actionSave = menu->addAction(saveIcon, tr("&Save"), this, &TextEdit::fileSave);
+    actionSave = menu->addAction(saveIcon, tr("&Save"), this, &SharedEditorClient::fileSave);
     actionSave->setShortcut(QKeySequence::Save);
     actionSave->setEnabled(false);
     tb->addAction(actionSave);
 
-    a = menu->addAction(tr("Save &As..."), this, &TextEdit::fileSaveAs);
+    a = menu->addAction(tr("Save &As..."), this, &SharedEditorClient::fileSaveAs);
     a->setPriority(QAction::LowPriority);
     menu->addSeparator();
 
 #ifndef QT_NO_PRINTER
     const QIcon printIcon = QIcon::fromTheme("document-print", QIcon(rsrcPath + "/fileprint.png"));
-    a = menu->addAction(printIcon, tr("&Print..."), this, &TextEdit::filePrint);
+    a = menu->addAction(printIcon, tr("&Print..."), this, &SharedEditorClient::filePrint);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(QKeySequence::Print);
     tb->addAction(a);
 
     const QIcon filePrintIcon = QIcon::fromTheme("fileprint", QIcon(rsrcPath + "/fileprint.png"));
-    menu->addAction(filePrintIcon, tr("Print Preview..."), this, &TextEdit::filePrintPreview);
+    menu->addAction(filePrintIcon, tr("Print Preview..."), this, &SharedEditorClient::filePrintPreview);
 
     const QIcon exportPdfIcon = QIcon::fromTheme("exportpdf", QIcon(rsrcPath + "/exportpdf.png"));
-    a = menu->addAction(exportPdfIcon, tr("&Export PDF..."), this, &TextEdit::filePrintPdf);
+    a = menu->addAction(exportPdfIcon, tr("&Export PDF..."), this, &SharedEditorClient::filePrintPdf);
     a->setPriority(QAction::LowPriority);
     a->setShortcut(Qt::CTRL + Qt::Key_D);
     tb->addAction(a);
@@ -219,7 +177,7 @@ void TextEdit::setupFileActions()
     a->setShortcut(Qt::CTRL + Qt::Key_Q);
 }
 
-void TextEdit::setupEditActions()
+void SharedEditorClient::setupEditActions()
 {
     QToolBar *tb = addToolBar(tr("Edit Actions"));
     QMenu *menu = menuBar()->addMenu(tr("&Edit"));
@@ -259,13 +217,13 @@ void TextEdit::setupEditActions()
 #endif
 }
 
-void TextEdit::setupTextActions()
+void SharedEditorClient::setupTextActions()
 {
     QToolBar *tb = addToolBar(tr("Format Actions"));
     QMenu *menu = menuBar()->addMenu(tr("F&ormat"));
 
     const QIcon boldIcon = QIcon::fromTheme("format-text-bold", QIcon(rsrcPath + "/textbold.png"));
-    actionTextBold = menu->addAction(boldIcon, tr("&Bold"), this, &TextEdit::textBold);
+    actionTextBold = menu->addAction(boldIcon, tr("&Bold"), this, &SharedEditorClient::textBold);
     actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
     actionTextBold->setPriority(QAction::LowPriority);
     QFont bold;
@@ -275,7 +233,7 @@ void TextEdit::setupTextActions()
     actionTextBold->setCheckable(true);
 
     const QIcon italicIcon = QIcon::fromTheme("format-text-italic", QIcon(rsrcPath + "/textitalic.png"));
-    actionTextItalic = menu->addAction(italicIcon, tr("&Italic"), this, &TextEdit::textItalic);
+    actionTextItalic = menu->addAction(italicIcon, tr("&Italic"), this, &SharedEditorClient::textItalic);
     actionTextItalic->setPriority(QAction::LowPriority);
     actionTextItalic->setShortcut(Qt::CTRL + Qt::Key_I);
     QFont italic;
@@ -285,7 +243,7 @@ void TextEdit::setupTextActions()
     actionTextItalic->setCheckable(true);
 
     const QIcon underlineIcon = QIcon::fromTheme("format-text-underline", QIcon(rsrcPath + "/textunder.png"));
-    actionTextUnderline = menu->addAction(underlineIcon, tr("&Underline"), this, &TextEdit::textUnderline);
+    actionTextUnderline = menu->addAction(underlineIcon, tr("&Underline"), this, &SharedEditorClient::textUnderline);
     actionTextUnderline->setShortcut(Qt::CTRL + Qt::Key_U);
     actionTextUnderline->setPriority(QAction::LowPriority);
     QFont underline;
@@ -319,7 +277,7 @@ void TextEdit::setupTextActions()
 
     // Make sure the alignLeft  is always left of the alignRight
     QActionGroup *alignGroup = new QActionGroup(this);
-    connect(alignGroup, &QActionGroup::triggered, this, &TextEdit::textAlign);
+    connect(alignGroup, &QActionGroup::triggered, this, &SharedEditorClient::textAlign);
 
     if (QApplication::isLeftToRight()) {
         alignGroup->addAction(actionAlignLeft);
@@ -339,7 +297,7 @@ void TextEdit::setupTextActions()
 
     QPixmap pix(16, 16);
     pix.fill(Qt::black);
-    actionTextColor = menu->addAction(pix, tr("&Color..."), this, &TextEdit::textColor);
+    actionTextColor = menu->addAction(pix, tr("&Color..."), this, &SharedEditorClient::textColor);
     tb->addAction(actionTextColor);
 
     tb = addToolBar(tr("Format Actions"));
@@ -365,11 +323,11 @@ void TextEdit::setupTextActions()
     comboStyle->addItem("Heading 5");
     comboStyle->addItem("Heading 6");
 
-    connect(comboStyle, QOverload<int>::of(&QComboBox::activated), this, &TextEdit::textStyle);
+    connect(comboStyle, QOverload<int>::of(&QComboBox::activated), this, &SharedEditorClient::textStyle);
 
     comboFont = new QFontComboBox(tb);
     tb->addWidget(comboFont);
-    connect(comboFont, QOverload<const QString &>::of(&QComboBox::activated), this, &TextEdit::textFamily);
+    connect(comboFont, QOverload<const QString &>::of(&QComboBox::activated), this, &SharedEditorClient::textFamily);
 
     comboSize = new QComboBox(tb);
     comboSize->setObjectName("comboSize");
@@ -381,10 +339,10 @@ void TextEdit::setupTextActions()
         comboSize->addItem(QString::number(size));
     comboSize->setCurrentIndex(standardSizes.indexOf(QApplication::font().pointSize()));
 
-    connect(comboSize, QOverload<const QString &>::of(&QComboBox::activated), this, &TextEdit::textSize);
+    connect(comboSize, QOverload<const QString &>::of(&QComboBox::activated), this, &SharedEditorClient::textSize);
 }
 
-bool TextEdit::load(const QString &f)
+bool SharedEditorClient::load(const QString &f)
 {
     if (!QFile::exists(f))
         return false;
@@ -406,7 +364,7 @@ bool TextEdit::load(const QString &f)
     return true;
 }
 
-bool TextEdit::maybeSave()
+bool SharedEditorClient::maybeSave()
 {
     if (!textEdit->document()->isModified())
         return true;
@@ -423,7 +381,7 @@ bool TextEdit::maybeSave()
     return true;
 }
 
-void TextEdit::setCurrentFileName(const QString &fileName)
+void SharedEditorClient::setCurrentFileName(const QString &fileName)
 {
     this->fileName = fileName;
     textEdit->document()->setModified(false);
@@ -438,7 +396,7 @@ void TextEdit::setCurrentFileName(const QString &fileName)
     setWindowModified(false);
 }
 
-void TextEdit::fileNew()
+void SharedEditorClient::fileNew()
 {
     if (maybeSave()) {
         textEdit->clear();
@@ -446,7 +404,7 @@ void TextEdit::fileNew()
     }
 }
 
-void TextEdit::fileOpen()
+void SharedEditorClient::fileOpen()
 {
     QFileDialog fileDialog(this, tr("Open File..."));
     fileDialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -461,7 +419,7 @@ void TextEdit::fileOpen()
         statusBar()->showMessage(tr("Could not open \"%1\"").arg(QDir::toNativeSeparators(fn)));
 }
 
-bool TextEdit::fileSave()
+bool SharedEditorClient::fileSave()
 {
     if (fileName.isEmpty())
         return fileSaveAs();
@@ -480,7 +438,7 @@ bool TextEdit::fileSave()
     return success;
 }
 
-bool TextEdit::fileSaveAs()
+bool SharedEditorClient::fileSaveAs()
 {
     QFileDialog fileDialog(this, tr("Save as..."));
     fileDialog.setAcceptMode(QFileDialog::AcceptSave);
@@ -495,7 +453,7 @@ bool TextEdit::fileSaveAs()
     return fileSave();
 }
 
-void TextEdit::filePrint()
+void SharedEditorClient::filePrint()
 {
 #if QT_CONFIG(printdialog)
     QPrinter printer(QPrinter::HighResolution);
@@ -509,17 +467,17 @@ void TextEdit::filePrint()
 #endif
 }
 
-void TextEdit::filePrintPreview()
+void SharedEditorClient::filePrintPreview()
 {
 #if QT_CONFIG(printpreviewdialog)
     QPrinter printer(QPrinter::HighResolution);
     QPrintPreviewDialog preview(&printer, this);
-    connect(&preview, &QPrintPreviewDialog::paintRequested, this, &TextEdit::printPreview);
+    connect(&preview, &QPrintPreviewDialog::paintRequested, this, &SharedEditorClient::printPreview);
     preview.exec();
 #endif
 }
 
-void TextEdit::printPreview(QPrinter *printer)
+void SharedEditorClient::printPreview(QPrinter *printer)
 {
 #ifdef QT_NO_PRINTER
     Q_UNUSED(printer);
@@ -529,7 +487,7 @@ void TextEdit::printPreview(QPrinter *printer)
 }
 
 
-void TextEdit::filePrintPdf()
+void SharedEditorClient::filePrintPdf()
 {
 #ifndef QT_NO_PRINTER
 //! [0]
@@ -550,35 +508,35 @@ void TextEdit::filePrintPdf()
 #endif
 }
 
-void TextEdit::textBold()
+void SharedEditorClient::textBold()
 {
     QTextCharFormat fmt;
     fmt.setFontWeight(actionTextBold->isChecked() ? QFont::Bold : QFont::Normal);
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textUnderline()
+void SharedEditorClient::textUnderline()
 {
     QTextCharFormat fmt;
     fmt.setFontUnderline(actionTextUnderline->isChecked());
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textItalic()
+void SharedEditorClient::textItalic()
 {
     QTextCharFormat fmt;
     fmt.setFontItalic(actionTextItalic->isChecked());
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textFamily(const QString &f)
+void SharedEditorClient::textFamily(const QString &f)
 {
     QTextCharFormat fmt;
     fmt.setFontFamily(f);
     mergeFormatOnWordOrSelection(fmt);
 }
 
-void TextEdit::textSize(const QString &p)
+void SharedEditorClient::textSize(const QString &p)
 {
     qreal pointSize = p.toFloat();
     if (p.toFloat() > 0) {
@@ -588,7 +546,7 @@ void TextEdit::textSize(const QString &p)
     }
 }
 
-void TextEdit::textStyle(int styleIndex)
+void SharedEditorClient::textStyle(int styleIndex)
 {
     QTextCursor cursor = textEdit->textCursor();
     QTextListFormat::Style style = QTextListFormat::ListStyleUndefined;
@@ -655,7 +613,7 @@ void TextEdit::textStyle(int styleIndex)
     cursor.endEditBlock();
 }
 
-void TextEdit::textColor()
+void SharedEditorClient::textColor()
 {
     QColor col = QColorDialog::getColor(textEdit->textColor(), this);
     if (!col.isValid())
@@ -666,7 +624,7 @@ void TextEdit::textColor()
     colorChanged(col);
 }
 
-void TextEdit::textAlign(QAction *a)
+void SharedEditorClient::textAlign(QAction *a)
 {
     if (a == actionAlignLeft)
         textEdit->setAlignment(Qt::AlignLeft | Qt::AlignAbsolute);
@@ -678,13 +636,13 @@ void TextEdit::textAlign(QAction *a)
         textEdit->setAlignment(Qt::AlignJustify);
 }
 
-void TextEdit::currentCharFormatChanged(const QTextCharFormat &format)
+void SharedEditorClient::currentCharFormatChanged(const QTextCharFormat &format)
 {
     fontChanged(format.font());
     colorChanged(format.foreground().color());
 }
 
-void TextEdit::cursorPositionChanged()
+void SharedEditorClient::cursorPositionChanged()
 {
     alignmentChanged(textEdit->alignment());
     QTextList *list = textEdit->textCursor().currentList();
@@ -724,7 +682,7 @@ void TextEdit::cursorPositionChanged()
     }
 }
 
-void TextEdit::clipboardDataChanged()
+void SharedEditorClient::clipboardDataChanged()
 {
 #ifndef QT_NO_CLIPBOARD
     if (const QMimeData *md = QApplication::clipboard()->mimeData())
@@ -732,14 +690,14 @@ void TextEdit::clipboardDataChanged()
 #endif
 }
 
-void TextEdit::about()
+void SharedEditorClient::about()
 {
     QMessageBox::about(this, tr("About"), tr("This example demonstrates Qt's "
         "rich text editing facilities in action, providing an example "
         "document for you to experiment with."));
 }
 
-void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
+void SharedEditorClient::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
 {
     QTextCursor cursor = textEdit->textCursor();
     if (!cursor.hasSelection())
@@ -748,7 +706,7 @@ void TextEdit::mergeFormatOnWordOrSelection(const QTextCharFormat &format)
     textEdit->mergeCurrentCharFormat(format);
 }
 
-void TextEdit::fontChanged(const QFont &f)
+void SharedEditorClient::fontChanged(const QFont &f)
 {
     comboFont->setCurrentIndex(comboFont->findText(QFontInfo(f).family()));
     comboSize->setCurrentIndex(comboSize->findText(QString::number(f.pointSize())));
@@ -757,14 +715,14 @@ void TextEdit::fontChanged(const QFont &f)
     actionTextUnderline->setChecked(f.underline());
 }
 
-void TextEdit::colorChanged(const QColor &c)
+void SharedEditorClient::colorChanged(const QColor &c)
 {
     QPixmap pix(16, 16);
     pix.fill(c);
     actionTextColor->setIcon(pix);
 }
 
-void TextEdit::alignmentChanged(Qt::Alignment a)
+void SharedEditorClient::alignmentChanged(Qt::Alignment a)
 {
     if (a & Qt::AlignLeft)
         actionAlignLeft->setChecked(true);

@@ -48,7 +48,7 @@
 **
 ****************************************************************************/
 
-#include "textedit.h"
+#include "SharedEditorClient.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     parser.addPositionalArgument("file", "The file to open.");
     parser.process(a);
 
-    TextEdit mw;
+    SharedEditorClient mw;
 
     const QRect availableGeometry = QApplication::desktop()->availableGeometry(&mw);
     mw.resize(availableGeometry.width() / 2, (availableGeometry.height() * 2) / 3);

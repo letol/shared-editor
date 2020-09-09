@@ -3,10 +3,20 @@ requires(qtConfig(filedialog))
 qtHaveModule(printsupport): QT += printsupport
 
 TEMPLATE        = app
-TARGET          = textedit
+TARGET          = SharedEditorClient
 
-HEADERS         = textedit.h
-SOURCES         = textedit.cpp \
+HEADERS         = \
+    Message.h \
+    NetworkServer.h \
+    SharedEditor.h \
+    SharedEditorClient.h \
+    Symbol.h
+SOURCES         = \
+                  Message.cpp \
+                  NetworkServer.cpp \
+                  SharedEditor.cpp \
+                  SharedEditorClient.cpp \
+                  Symbol.cpp \
                   main.cpp
 
 RESOURCES += textedit.qrc
