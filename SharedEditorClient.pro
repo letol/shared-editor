@@ -9,24 +9,21 @@ HEADERS         = \
     Message.h \
     NetworkServer.h \
     SharedEditor.h \
-    SharedEditorClient.h \
-    Symbol.h
+    Symbol.h \
+    notepad.h
 SOURCES         = \
                   Message.cpp \
                   NetworkServer.cpp \
                   SharedEditor.cpp \
-                  SharedEditorClient.cpp \
                   Symbol.cpp \
-                  main.cpp
+                  main.cpp \
+                  notepad.cpp
 
-RESOURCES += textedit.qrc
-build_all:!build_pass {
-    CONFIG -= build_all
-    CONFIG += release
-}
-
-EXAMPLE_FILES = textedit.qdoc
+RESOURCES += notepad.qrc
 
 # install
-target.path = $$[QT_INSTALL_EXAMPLES]/widgets/richtext/textedit
+target.path = /home/leonardo/Polito/2018-2019/Programmazione di Sistema/Malnati/
 INSTALLS += target
+
+FORMS += \
+    notepad.ui
