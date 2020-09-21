@@ -63,13 +63,18 @@
 #endif // QT_PRINTSUPPORT_LIB
 #include <QFont>
 #include <QFontDialog>
+#include <QDebug>
 
 #include "notepad.h"
 #include "ui_notepad.h"
 
 Notepad::Notepad(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Notepad)
+    ui(new Ui::Notepad),
+    server(),
+    sharedEditor(server),
+    fakeRemoteEditor(server), // TO BE REMOVED
+    fakeRemoteChar('a') // TO BE REMOVED
 {
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
@@ -90,6 +95,8 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->actionUnderline, &QAction::triggered, this, &Notepad::setFontUnderline);
     connect(ui->actionItalic, &QAction::triggered, this, &Notepad::setFontItalic);
     connect(ui->actionAbout, &QAction::triggered, this, &Notepad::about);
+    connect(ui->textEdit, &QTextEdit::textChanged, this, &Notepad::localChange);
+    connect(&sharedEditor, &SharedEditor::remoteTextChanged, this, &Notepad::remoteChange);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -101,12 +108,32 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionCopy->setEnabled(false);
     ui->actionPaste->setEnabled(false);
 #endif
+
+// TO BE REMOVED
+    startTimer(5000);
 }
 
 Notepad::~Notepad()
 {
     delete ui;
 }
+
+// TO BE REMOVED
+void Notepad::timerEvent(QTimerEvent *event)
+{
+    int len = fakeRemoteEditor.to_string().length();
+    int pos = 0;
+    if (len) {
+        pos = rand()%len;
+    }
+
+    qDebug() << "Remote typed: " << fakeRemoteChar << ", at pos: " << pos;
+    fakeRemoteEditor.localInsert(fakeRemoteChar, pos);
+    server.dispatchMessages();
+    qDebug() << "Server Messages dispatched";
+    fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
+}
+
 
 void Notepad::newDocument()
 {
@@ -248,4 +275,18 @@ void Notepad::about()
                 tr("The <b>Notepad</b> example demonstrates how to code a basic "
                    "text editor using QtWidgets"));
 
+}
+
+void Notepad::localChange()
+{
+    QString newStr = ui->textEdit->toPlainText();
+
+    sharedEditor.updateString(newStr);
+
+    qDebug() << sharedEditor.to_string();
+}
+
+void Notepad::remoteChange()
+{
+    ui->textEdit->setText(sharedEditor.to_string());
 }

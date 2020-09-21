@@ -4,7 +4,7 @@
 
 #include "Symbol.h"
 
-Symbol::Symbol(char value, int siteId, int counter, std::vector<int> &fractIndex) {
+Symbol::Symbol(QChar value, int siteId, int counter, std::vector<int> &fractIndex) {
     this->_value = value;
     this->_siteId = siteId;
     this->_counter = counter;
@@ -33,7 +33,7 @@ size_t Symbol::fractIndexSize() {
     return _fractIndex.size();
 }
 
-char Symbol::getValue() {
+QChar Symbol::getValue() {
     return _value;
 }
 
