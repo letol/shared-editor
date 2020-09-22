@@ -12,7 +12,12 @@ private:
     int _counter;
     std::vector<int> _fractIndex;
 public:
-    Symbol(QChar value, int siteId, int counter, std::vector<int> &fractIndex);
+    Symbol(QChar value, int siteId, int counter, std::vector<int> &fractIndex) :
+        _value(value),
+        _siteId(siteId),
+        _counter(counter),
+        _fractIndex(fractIndex) {};
+
     int getFractIndexDigit(int pos) const;
     std::vector<int> getFractIndex() const;
     int getSiteId();

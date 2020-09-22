@@ -24,10 +24,10 @@ public:
     void remoteInsert(Symbol sym);
     void remoteDelete(Symbol sym);
     QString to_string();
-    void updateString(QString newStr);
 
 signals:
-    void remoteTextChanged(void);
+    void remoteCharInserted(QChar value, int index);
+    void remoteCharDeleted(int index);
 
 private:
     NetworkServer& _server;

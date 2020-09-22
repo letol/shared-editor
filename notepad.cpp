@@ -64,6 +64,7 @@
 #include <QFont>
 #include <QFontDialog>
 #include <QDebug>
+#include <QTextBlock>
 
 #include "notepad.h"
 #include "ui_notepad.h"
@@ -95,8 +96,9 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->actionUnderline, &QAction::triggered, this, &Notepad::setFontUnderline);
     connect(ui->actionItalic, &QAction::triggered, this, &Notepad::setFontItalic);
     connect(ui->actionAbout, &QAction::triggered, this, &Notepad::about);
-    connect(ui->textEdit, &QTextEdit::textChanged, this, &Notepad::localChange);
-    connect(&sharedEditor, &SharedEditor::remoteTextChanged, this, &Notepad::remoteChange);
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
+    connect(&sharedEditor, &SharedEditor::remoteCharInserted, this, &Notepad::remoteCharInsert);
+    connect(&sharedEditor, &SharedEditor::remoteCharDeleted, this, &Notepad::remoteCharDelete);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -121,79 +123,33 @@ Notepad::~Notepad()
 // TO BE REMOVED
 void Notepad::timerEvent(QTimerEvent *event)
 {
-    int len = fakeRemoteEditor.to_string().length();
-    int pos = 0;
-    if (len) {
-        pos = rand()%len;
-    }
-
+    int pos = rand()%ui->textEdit->document()->characterCount();
     qDebug() << "Remote typed: " << fakeRemoteChar << ", at pos: " << pos;
     fakeRemoteEditor.localInsert(fakeRemoteChar, pos);
+    qDebug() << "fakeRemoteEditor: " << fakeRemoteEditor.to_string();
     server.dispatchMessages();
-    qDebug() << "Server Messages dispatched";
     fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
 }
 
 
 void Notepad::newDocument()
 {
-    currentFile.clear();
-    ui->textEdit->setText(QString());
+    // TODO: new online document creation
 }
 
 void Notepad::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
-    QFile file(fileName);
-    currentFile = fileName;
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
-        return;
-    }
-    setWindowTitle(fileName);
-    QTextStream in(&file);
-    QString text = in.readAll();
-    ui->textEdit->setText(text);
-    file.close();
+    // TODO: open online document
 }
 
 void Notepad::save()
 {
-    QString fileName;
-    // If we don't have a filename from before, get one.
-    if (currentFile.isEmpty()) {
-        fileName = QFileDialog::getSaveFileName(this, "Save");
-        currentFile = fileName;
-    } else {
-        fileName = currentFile;
-    }
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-        return;
-    }
-    setWindowTitle(fileName);
-    QTextStream out(&file);
-    QString text = ui->textEdit->toPlainText();
-    out << text;
-    file.close();
+    // TODO: remove
 }
 
 void Notepad::saveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save as");
-    QFile file(fileName);
-
-    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-        return;
-    }
-    currentFile = fileName;
-    setWindowTitle(fileName);
-    QTextStream out(&file);
-    QString text = ui->textEdit->toPlainText();
-    out << text;
-    file.close();
+    // TODO: remove
 }
 
 void Notepad::print()
@@ -277,16 +233,34 @@ void Notepad::about()
 
 }
 
-void Notepad::localChange()
+void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
-    QString newStr = ui->textEdit->toPlainText();
-
-    sharedEditor.updateString(newStr);
-
-    qDebug() << sharedEditor.to_string();
+    qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
+    if (!(ui->textEdit->document()->isEmpty() && ui->textEdit->document()->characterAt(0) == 0x2029))
+    for (int i = position; i < position+charsRemoved; i++) {
+        sharedEditor.localErase(position);
+    }
+    for (int i = position; i < position+charsAdded; i++) {
+        sharedEditor.localInsert(ui->textEdit->document()->characterAt(i), i);
+    }
+    qDebug() << "sharedEditor:" << sharedEditor.to_string();
+    server.dispatchMessages(); // TODO: to be removed with real server
 }
 
-void Notepad::remoteChange()
-{
-    ui->textEdit->setText(sharedEditor.to_string());
+void Notepad::remoteCharInsert(QChar value, int index) {
+    QTextDocument *document = ui->textEdit->document();
+    bool oldState = document->blockSignals(true);
+    QTextCursor c(document);
+    c.setPosition(index);
+    c.insertText(value);
+    document->blockSignals(oldState);
+}
+
+void Notepad::remoteCharDelete(int index) {
+    QTextDocument *document = ui->textEdit->document();
+    bool oldState = document->blockSignals(true);
+    QTextCursor c(document);
+    c.setPosition(index);
+    c.deleteChar();
+    document->blockSignals(oldState);
 }

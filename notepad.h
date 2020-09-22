@@ -2,6 +2,7 @@
 #define NOTEPAD_H
 
 #include <QMainWindow>
+#include <QTextDocument>
 
 #include "NetworkServer.h"
 #include "SharedEditor.h"
@@ -41,12 +42,12 @@ private slots:
     void setFontUnderline(bool underline);
     void setFontItalic(bool italic);
     void about();
-    void localChange();
-    void remoteChange();
+    void localChange(int position, int charsRemoved, int charsAdded);
+    void remoteCharInsert(QChar value, int index);
+    void remoteCharDelete(int index);
 
 private:
     Ui::Notepad *ui;
-    QString currentFile;
     NetworkServer server;
     SharedEditor sharedEditor;
     SharedEditor fakeRemoteEditor; // TO BE REMOVED

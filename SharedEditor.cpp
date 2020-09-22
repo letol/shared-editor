@@ -149,19 +149,21 @@ auto SharedEditor::findIndexByPos(const Symbol &sym) {
 
 QString SharedEditor::to_string() {
     QString str;
-    for (Symbol sym : _symbols) {
-        str.push_back(sym.getValue());
+    for (auto it = _symbols.begin(); it != _symbols.end(); it++) {
+        str.push_back(it->getValue());
     }
     return str;
 }
 
 void SharedEditor::remoteInsert(Symbol sym) {
     auto index = findInsertIndex(sym);
+    remoteCharInserted(sym.getValue(), index - _symbols.begin());
     _symbols.insert(index, sym);
 }
 
 void SharedEditor::remoteDelete(Symbol sym) {
     auto index = findIndexByPos(sym);
+    remoteCharDeleted(index - _symbols.begin());
     _symbols.erase(index);
 }
 
@@ -171,32 +173,5 @@ void SharedEditor::process(const Message &m) {
     } else if (m.getOperation() == MSG_ERASE) {
         remoteDelete(m.getSymbol());
     }
-    remoteTextChanged();
 }
-
-void SharedEditor::updateString(QString newStr) {
-    QString oldStr = to_string();
-
-    if (newStr != oldStr) {
-        auto newStrIt = newStr.begin();
-        auto oldStrIt = oldStr.begin();
-        int pos = 0;
-        while (newStrIt != newStr.end() && oldStrIt != oldStr.end() && *newStrIt == *oldStrIt) {
-            newStrIt++;
-            oldStrIt++;
-            pos++;
-        }
-        if (newStr.length() < oldStr.length()) {
-            localErase(pos);
-        } else {
-            localInsert(*newStrIt, pos);
-        }
-    }
-}
-
-
-
-
-
-
 

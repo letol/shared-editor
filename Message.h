@@ -13,7 +13,11 @@ private:
     int _sender;
 
 public:
-    Message(Symbol &sym, int op, int senderSiteId) : _sym(sym), _op(op), _sender(senderSiteId) {};
+    Message(Symbol &sym, int op, int senderSiteId) :
+        _sym(sym),
+        _op(op),
+        _sender(senderSiteId) {};
+
     int getSenderSiteId();
     int getOperation() const;
     Symbol getSymbol() const;
