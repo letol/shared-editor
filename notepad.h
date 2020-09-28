@@ -54,13 +54,22 @@
 //! [all]
 //! [1]
 #include <QMainWindow>
+#include <QTextCharFormat>
 //! [1]
 
 //! [2]
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class Notepad;
+
 }
+
+class QAction;
+class QComboBox;
+class QFontComboBox;
+class QTextCharFormat;
+class QMenu;
+
 QT_END_NAMESPACE
 //! [2]
 
@@ -111,10 +120,57 @@ private slots:
 
     void about();
 
+
 //! [6]
+    void on_actionExport_PDF_triggered();
+
+    void on_actionAt_left_triggered();
+
+    void on_actionCentered_triggered();
+
+    void on_actionAt_right_triggered();
+
+    void on_action6_triggered();
+
+    void on_action36_triggered();
+
+    void on_action7_triggered();
+
+    void on_action8_triggered();
+
+    void on_action9_triggered();
+
+    void on_action10_triggered();
+
+    void on_action11_triggered();
+
+    void on_action12_triggered();
+
+    void on_action14_triggered();
+
+    void on_action24_triggered();
+
+    void on_action18_triggered();
+    void size(const QString &text);
+    void font(const QFont &f);
+    void style(int styleIndex);
+    void textColor();
+    void colorChanged(const QColor &c);
+    void textHighlight();
+
 private:
     Ui::Notepad *ui;
     QString currentFile;
+    QComboBox *comboStyle;
+    QFontComboBox *comboFont;
+    QComboBox *comboSize;
+
+    QToolBar *tb;
+    QAction *actionTextColor;
+    QAction *actionHighlight;
+
+
+
 //! [6]
 };
 //! [all]
