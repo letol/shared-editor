@@ -503,11 +503,9 @@ void Notepad::size(const QString &text)
 {
     qreal pointSize = text.toFloat();
     QTextCursor cursor = ui->textEdit->textCursor();
-    int cursorPos = cursor.position();
     QTextCharFormat fmt = ui->textEdit->currentCharFormat();
     fmt.setFontPointSize(pointSize);
     cursor.mergeCharFormat(fmt);
-    cursor.setPosition(cursorPos, QTextCursor::MoveAnchor);
     ui->textEdit->setTextCursor( cursor );
 }
 
@@ -524,6 +522,7 @@ void Notepad::font(const QFont &f)
    fmt.setFont(f);
    fmt.setFontPointSize(size);
    cursor.mergeCharFormat(fmt);
+
    ui->textEdit->setTextCursor( cursor );
 
 }
