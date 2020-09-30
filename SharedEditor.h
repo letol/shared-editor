@@ -25,6 +25,7 @@ public:
     void remoteInsert(Symbol sym);
     void remoteDelete(Symbol sym);
     QString to_string();
+    int symbolCount();
 
 signals:
     void remoteCharInserted(int remoteSiteId, QChar value, int index);

@@ -6,6 +6,9 @@
 
 SharedEditor::SharedEditor(NetworkServer &server) : _server(server) {
     this->_siteId = _server.connect(this);
+    Symbol newSym = generateSymbol(0x2029, 0);
+    auto it = _symbols.begin();
+    _symbols.insert(it, newSym);
 }
 
 int SharedEditor::getSiteId() {
@@ -182,3 +185,6 @@ void SharedEditor::process(const Message &m) {
     }
 }
 
+int SharedEditor::symbolCount() {
+    return _symbols.size();
+}

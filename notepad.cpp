@@ -621,13 +621,11 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
     qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
 
-    if (!(ui->textEdit->document()->isEmpty() && ui->textEdit->document()->characterAt(0) == 0x2029)) {
-        for (int i = position; i < position+charsRemoved; i++) {
-            sharedEditor.localErase(position);
-        }
-        for (int i = position; i < position+charsAdded; i++) {
-            sharedEditor.localInsert(ui->textEdit->document()->characterAt(i), i);
-        }
+    for (int i = position; i < position+charsRemoved && i < sharedEditor.symbolCount(); i++) {
+        sharedEditor.localErase(position);
+    }
+    for (int i = position; i < position+charsAdded; i++) {
+        sharedEditor.localInsert(ui->textEdit->document()->characterAt(i), i);
     }
 
     //TODO: review signal blocking correctness
