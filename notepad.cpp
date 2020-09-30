@@ -52,6 +52,36 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QColorDialog>
+#include <QComboBox>
+#include <QFontComboBox>
+#include <QTextBlockFormat>
+#include <QFile>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QFontDatabase>
+#include <QMenu>
+#include <QMenuBar>
+#include <QTextCodec>
+#include <QTextEdit>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QTextCursor>
+#include <QTextDocumentWriter>
+#include <QTextList>
+#include <QtDebug>
+#include <QCloseEvent>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QFontDialog>
+#include <QMimeDatabase>
+#include <QFont>
+#include <QFontDialog>
+#include <QDebug>
+
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
 #if QT_CONFIG(printer)
@@ -61,12 +91,17 @@
 #include <QPrinter>
 #endif // QT_CONFIG(printer)
 #endif // QT_PRINTSUPPORT_LIB
-#include <QFont>
-#include <QFontDialog>
-#include <QDebug>
 
 #include "notepad.h"
 #include "ui_notepad.h"
+
+/*#ifdef Q_OS_MAC
+const QString rsrcPath = ":/images/mac";
+#else
+const QString rsrcPath = ":/images/win";
+#endif*/
+
+const QString rsrcPath = ":/images";
 
 Notepad::Notepad(QWidget *parent) :
     QMainWindow(parent),
@@ -76,8 +111,60 @@ Notepad::Notepad(QWidget *parent) :
     fakeRemoteEditor(server), // TO BE REMOVED
     fakeRemoteChar('a') // TO BE REMOVED
 {
+
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
+
+
+    QToolBar *tb = ui->toolBar;
+
+    const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
+
+
+    comboStyle = new QComboBox(tb);
+    tb->addWidget(comboStyle);
+    comboStyle->addItem("Standard");
+    comboStyle->addItem("Bullet List (Disc)");
+    comboStyle->addItem("Bullet List (Circle)");
+    comboStyle->addItem("Bullet List (Square)");
+    comboStyle->addItem("Ordered List (Decimal)");
+    comboStyle->addItem("Ordered List (Alpha lower)");
+    comboStyle->addItem("Ordered List (Alpha upper)");
+    comboStyle->addItem("Ordered List (Roman lower)");
+    comboStyle->addItem("Ordered List (Roman upper)");
+    comboStyle->addItem("Heading 1");
+    comboStyle->addItem("Heading 2");
+    comboStyle->addItem("Heading 3");
+    comboStyle->addItem("Heading 4");
+    comboStyle->addItem("Heading 5");
+    comboStyle->addItem("Heading 6");
+
+
+    comboFont = new QFontComboBox(tb);
+    tb->addWidget(comboFont);
+
+    comboSize = new QComboBox(tb);
+    comboSize->setObjectName("comboSize");
+    tb->addWidget(comboSize);
+    const QList<int> standardSizes = QFontDatabase::standardSizes();
+    for (int size : standardSizes)
+           comboSize->addItem(QString::number(size));
+    comboSize->setCurrentIndex(standardSizes.indexOf(QApplication::font().pointSize()));
+
+    tb->addSeparator();
+
+    QPixmap pix(16, 16);
+    pix.fill(Qt::black);
+    actionTextColor = ui->toolBar->addAction(pix, tr("&Color..."), this, &Notepad::textColor);
+    tb->addAction(actionTextColor);
+
+    QPixmap pm(16, 16);
+    actionHighlight = ui->toolBar->addAction(pm, tr("&Highlight..."), this, &Notepad::textHighlight);
+    tb->addAction(actionHighlight);
+    actionHighlight->setIcon(penMarkerIcon);
+
+
+
 
     connect(ui->actionNew, &QAction::triggered, this, &Notepad::newDocument);
     connect(ui->actionOpen, &QAction::triggered, this, &Notepad::open);
@@ -95,6 +182,26 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->actionUnderline, &QAction::triggered, this, &Notepad::setFontUnderline);
     connect(ui->actionItalic, &QAction::triggered, this, &Notepad::setFontItalic);
     connect(ui->actionAbout, &QAction::triggered, this, &Notepad::about);
+    connect(ui->actionAt_left,&QAction::triggered,this,&Notepad::on_actionAt_left_triggered);
+    connect(ui->actionCentered,&QAction::triggered,this,&Notepad::on_actionCentered_triggered);
+    connect(ui->actionAt_right,&QAction::triggered,this,&Notepad::on_actionAt_right_triggered);
+    connect(ui->actionAt_left_2,&QAction::triggered,this,&Notepad::on_actionAt_left_triggered);
+    connect(ui->actionCentered_2,&QAction::triggered,this,&Notepad::on_actionCentered_triggered);
+    connect(ui->actionAt_right_2,&QAction::triggered,this,&Notepad::on_actionAt_right_triggered);
+    connect(ui->action6,&QAction::triggered,this,&Notepad::on_action6_triggered);
+    connect(ui->action7,&QAction::triggered,this,&Notepad::on_action7_triggered);
+    connect(ui->action8,&QAction::triggered,this,&Notepad::on_action8_triggered);
+    connect(ui->action9,&QAction::triggered,this,&Notepad::on_action9_triggered);
+    connect(ui->action10,&QAction::triggered,this,&Notepad::on_action10_triggered);
+    connect(ui->action11,&QAction::triggered,this,&Notepad::on_action11_triggered);
+    connect(ui->action12,&QAction::triggered,this,&Notepad::on_action12_triggered);
+    connect(ui->action14,&QAction::triggered,this,&Notepad::on_action14_triggered);
+    connect(ui->action18,&QAction::triggered,this,&Notepad::on_action18_triggered);
+    connect(ui->action24,&QAction::triggered,this,&Notepad::on_action24_triggered);
+    connect(ui->action36,&QAction::triggered,this,&Notepad::on_action36_triggered);
+    connect(comboSize, SIGNAL(currentTextChanged(QString)), this, SLOT(size(QString)));
+    connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
+    connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(ui->textEdit, &QTextEdit::textChanged, this, &Notepad::localChange);
     connect(&sharedEditor, &SharedEditor::remoteTextChanged, this, &Notepad::remoteChange);
 
@@ -112,6 +219,7 @@ Notepad::Notepad(QWidget *parent) :
 // TO BE REMOVED
     startTimer(5000);
 }
+
 
 Notepad::~Notepad()
 {
@@ -133,7 +241,6 @@ void Notepad::timerEvent(QTimerEvent *event)
     qDebug() << "Server Messages dispatched";
     fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
 }
-
 
 void Notepad::newDocument()
 {
@@ -198,15 +305,12 @@ void Notepad::saveAs()
 
 void Notepad::print()
 {
-#if defined(QT_PRINTSUPPORT_LIB) && QT_CONFIG(printer)
+
     QPrinter printDev;
-#if QT_CONFIG(printdialog)
     QPrintDialog dialog(&printDev, this);
     if (dialog.exec() == QDialog::Rejected)
         return;
-#endif // QT_CONFIG(printdialog)
     ui->textEdit->print(&printDev);
-#endif // QT_CONFIG(printer)
 }
 
 void Notepad::exit()
@@ -247,10 +351,15 @@ void Notepad::redo()
 
 void Notepad::selectFont()
 {
+
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
     bool fontSelected;
     QFont font = QFontDialog::getFont(&fontSelected, this);
     if (fontSelected)
-        ui->textEdit->setFont(font);
+        fmt.setFont(font);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
 }
 
 void Notepad::setFontUnderline(bool underline)
@@ -272,8 +381,271 @@ void Notepad::setFontBold(bool bold)
 void Notepad::about()
 {
    QMessageBox::about(this, tr("About MDI"),
-                tr("The <b>Notepad</b> example demonstrates how to code a basic "
-                   "text editor using QtWidgets"));
+                tr("This is a rech <b>Notepad</b> "));
+
+}
+
+
+
+void Notepad::on_actionExport_PDF_triggered()
+{
+    QFileDialog fileDialog(this, tr("Export PDF"));
+        fileDialog.setAcceptMode(QFileDialog::AcceptSave);
+        fileDialog.setMimeTypeFilters(QStringList("application/pdf"));
+        fileDialog.setDefaultSuffix("pdf");
+        if (fileDialog.exec() != QDialog::Accepted)
+            return;
+        QString fileName = fileDialog.selectedFiles().first();
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName(fileName);
+        ui->textEdit->document()->print(&printer);
+        statusBar()->showMessage(tr("Exported \"%1\"")
+                                 .arg(QDir::toNativeSeparators(fileName)));
+}
+
+
+void Notepad::on_actionAt_left_triggered()
+{
+    ui->textEdit->
+            setAlignment(Qt::AlignLeft);
+}
+
+void Notepad::on_actionCentered_triggered()
+{
+    ui->textEdit->setAlignment(Qt::AlignCenter);
+}
+
+void Notepad::on_actionAt_right_triggered()
+{
+    ui->textEdit->setAlignment(Qt::AlignRight);
+}
+
+void Notepad::on_action6_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(6);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action36_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(36);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action7_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(7);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action8_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(8);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action9_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(9);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action10_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(10);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action11_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(11);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action12_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(12);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action14_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(14);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action24_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(24);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::on_action18_triggered()
+{
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(18);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::size(const QString &text)
+{
+    qreal pointSize = text.toFloat();
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setFontPointSize(pointSize);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::font(const QFont &f)
+{
+
+   QTextCursor cursor = ui->textEdit->textCursor();
+   QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+   qreal size = fmt.fontPointSize();
+   if(size==0)
+       size=8;
+
+
+   fmt.setFont(f);
+   fmt.setFontPointSize(size);
+   cursor.mergeCharFormat(fmt);
+
+   ui->textEdit->setTextCursor( cursor );
+
+}
+
+void Notepad::style(int styleIndex){
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextListFormat::Style style = QTextListFormat::ListStyleUndefined;
+
+
+       switch (styleIndex) {
+       case 1:
+           style = QTextListFormat::ListDisc;
+           break;
+       case 2:
+           style = QTextListFormat::ListCircle;
+           break;
+       case 3:
+           style = QTextListFormat::ListSquare;
+           break;
+       case 4:
+           style = QTextListFormat::ListDecimal;
+           break;
+       case 5:
+           style = QTextListFormat::ListLowerAlpha;
+           break;
+       case 6:
+           style = QTextListFormat::ListUpperAlpha;
+           break;
+       case 7:
+           style = QTextListFormat::ListLowerRoman;
+           break;
+       case 8:
+           style = QTextListFormat::ListUpperRoman;
+           break;
+       default:
+           break;
+       }
+
+       cursor.beginEditBlock();
+
+       QTextBlockFormat blockFmt = cursor.blockFormat();
+
+       if (style == QTextListFormat::ListStyleUndefined) {
+           blockFmt.setObjectIndex(-1);
+           int headingLevel = styleIndex >= 11 ? styleIndex - 11 + 1 : 0; // H1 to H6, or Standard
+           blockFmt.setHeadingLevel(headingLevel);
+           cursor.setBlockFormat(blockFmt);
+
+           int sizeAdjustment = headingLevel ? 4 - headingLevel : 0; // H1 to H6: +3 to -2
+           QTextCharFormat fmt;
+           fmt.setFontWeight(headingLevel ? QFont::Bold : QFont::Normal);
+           fmt.setProperty(QTextFormat::FontSizeAdjustment, sizeAdjustment);
+           cursor.select(QTextCursor::LineUnderCursor);
+           cursor.mergeCharFormat(fmt);
+           ui->textEdit->mergeCurrentCharFormat(fmt);
+       } else {
+
+           cursor.setBlockFormat(blockFmt);
+           QTextListFormat listFmt;
+           if (cursor.currentList()) {
+               listFmt = cursor.currentList()->format();
+           } else {
+               listFmt.setIndent(blockFmt.indent() + 1);
+               blockFmt.setIndent(0);
+               cursor.setBlockFormat(blockFmt);
+           }
+           listFmt.setStyle(style);
+           cursor.createList(listFmt);
+       }
+
+       cursor.endEditBlock();
+
+}
+void Notepad::colorChanged(const QColor &c)
+{
+    QPixmap pix(16, 16);
+    pix.fill(c);
+    actionTextColor->setIcon(pix);
+}
+void Notepad::textColor()
+{
+    QColor col = QColorDialog::getColor(ui->textEdit->textColor(), this);
+    QTextCursor cursor = ui->textEdit->textCursor();
+    if (!col.isValid())
+        return;
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setForeground(col);
+    cursor.mergeCharFormat(fmt);
+    colorChanged(col);
+    ui->textEdit->setTextCursor( cursor );
+}
+
+void Notepad::textHighlight()
+{
+    QColor col = QColorDialog::getColor(ui->textEdit->textColor(), this);
+    QTextCursor cursor = ui->textEdit->textCursor();
+    if (!col.isValid())
+        return;
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    fmt.setBackground(col);
+    cursor.mergeCharFormat(fmt);
+    ui->textEdit->setTextCursor( cursor );
 
 }
 
