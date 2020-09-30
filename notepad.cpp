@@ -78,6 +78,10 @@
 #include <QMimeData>
 #include <QFontDialog>
 #include <QMimeDatabase>
+#include <QFont>
+#include <QFontDialog>
+#include <QDebug>
+
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
 #if QT_CONFIG(printer)
@@ -88,10 +92,6 @@
 #endif // QT_CONFIG(printer)
 #endif // QT_PRINTSUPPORT_LIB
 
-const QString rsrcPath = ":/images";
-
-
-
 #include "notepad.h"
 #include "ui_notepad.h"
 
@@ -101,9 +101,15 @@ const QString rsrcPath = ":/images/mac";
 const QString rsrcPath = ":/images/win";
 #endif*/
 
+const QString rsrcPath = ":/images";
+
 Notepad::Notepad(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::Notepad)
+    ui(new Ui::Notepad),
+    server(),
+    sharedEditor(server),
+    fakeRemoteEditor(server), // TO BE REMOVED
+    fakeRemoteChar('a') // TO BE REMOVED
 {
 
     ui->setupUi(this);
@@ -196,11 +202,8 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboSize, SIGNAL(currentTextChanged(QString)), this, SLOT(size(QString)));
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
-
-
-
-
-
+    connect(ui->textEdit, &QTextEdit::textChanged, this, &Notepad::localChange);
+    connect(&sharedEditor, &SharedEditor::remoteTextChanged, this, &Notepad::remoteChange);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -212,6 +215,9 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionCopy->setEnabled(false);
     ui->actionPaste->setEnabled(false);
 #endif
+
+// TO BE REMOVED
+    startTimer(5000);
 }
 
 
@@ -220,6 +226,21 @@ Notepad::~Notepad()
     delete ui;
 }
 
+// TO BE REMOVED
+void Notepad::timerEvent(QTimerEvent *event)
+{
+    int len = fakeRemoteEditor.to_string().length();
+    int pos = 0;
+    if (len) {
+        pos = rand()%len;
+    }
+
+    qDebug() << "Remote typed: " << fakeRemoteChar << ", at pos: " << pos;
+    fakeRemoteEditor.localInsert(fakeRemoteChar, pos);
+    server.dispatchMessages();
+    qDebug() << "Server Messages dispatched";
+    fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
+}
 
 void Notepad::newDocument()
 {
@@ -615,8 +636,6 @@ void Notepad::textColor()
     ui->textEdit->setTextCursor( cursor );
 }
 
-
-
 void Notepad::textHighlight()
 {
     QColor col = QColorDialog::getColor(ui->textEdit->textColor(), this);
@@ -628,6 +647,18 @@ void Notepad::textHighlight()
     cursor.mergeCharFormat(fmt);
     ui->textEdit->setTextCursor( cursor );
 
-
 }
 
+void Notepad::localChange()
+{
+    QString newStr = ui->textEdit->toPlainText();
+
+    sharedEditor.updateString(newStr);
+
+    qDebug() << sharedEditor.to_string();
+}
+
+void Notepad::remoteChange()
+{
+    ui->textEdit->setText(sharedEditor.to_string());
+}
