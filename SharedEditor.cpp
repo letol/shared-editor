@@ -12,7 +12,7 @@ int SharedEditor::getSiteId() {
     return _siteId;
 }
 
-void SharedEditor::localInsert(char value, int index) {
+void SharedEditor::localInsert(QChar value, int index) {
     Symbol newSym = generateSymbol(value, index);
     auto it = _symbols.begin();
     it+=index;
@@ -21,7 +21,7 @@ void SharedEditor::localInsert(char value, int index) {
     _server.send(msg);
 }
 
-Symbol SharedEditor::generateSymbol(char value, int index) {
+Symbol SharedEditor::generateSymbol(QChar value, int index) {
     std::vector<int> newFractIndex;
     if (index == 0) {
         if (_symbols.empty()) {
@@ -128,7 +128,6 @@ auto SharedEditor::findInsertIndex(const Symbol &sym) {
 
 auto SharedEditor::findInsertIndex(const Symbol &sym) {
     auto it = _symbols.begin();
-    auto index = it;
 
     while (it != _symbols.end() && it->getFractIndex() < sym.getFractIndex()){
         it++;
@@ -139,7 +138,6 @@ auto SharedEditor::findInsertIndex(const Symbol &sym) {
 
 auto SharedEditor::findIndexByPos(const Symbol &sym) {
     auto it = _symbols.begin();
-    auto index = it;
 
     while (it != _symbols.end() && it->getFractIndex() != sym.getFractIndex()) {
         it++;
@@ -149,8 +147,8 @@ auto SharedEditor::findIndexByPos(const Symbol &sym) {
 }
 
 
-std::string SharedEditor::to_string() {
-    std::string str;
+QString SharedEditor::to_string() {
+    QString str;
     for (Symbol sym : _symbols) {
         str.push_back(sym.getValue());
     }
@@ -172,6 +170,27 @@ void SharedEditor::process(const Message &m) {
         remoteInsert(m.getSymbol());
     } else if (m.getOperation() == MSG_ERASE) {
         remoteDelete(m.getSymbol());
+    }
+    remoteTextChanged();
+}
+
+void SharedEditor::updateString(QString newStr) {
+    QString oldStr = to_string();
+
+    if (newStr != oldStr) {
+        auto newStrIt = newStr.begin();
+        auto oldStrIt = oldStr.begin();
+        int pos = 0;
+        while (newStrIt != newStr.end() && oldStrIt != oldStr.end() && *newStrIt == *oldStrIt) {
+            newStrIt++;
+            oldStrIt++;
+            pos++;
+        }
+        if (newStr.length() < oldStr.length()) {
+            localErase(pos);
+        } else {
+            localInsert(*newStrIt, pos);
+        }
     }
 }
 
