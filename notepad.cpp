@@ -65,6 +65,7 @@
 #include <QFontDialog>
 #include <QDebug>
 #include <QTextBlock>
+#include <QPainter>
 
 #include "notepad.h"
 #include "ui_notepad.h"
@@ -75,7 +76,15 @@ Notepad::Notepad(QWidget *parent) :
     server(),
     sharedEditor(server),
     fakeRemoteEditor(server), // TO BE REMOVED
-    fakeRemoteChar('a') // TO BE REMOVED
+    fakeRemoteChar('a'), // TO BE REMOVED
+    colors{
+        QColorConstants::Green,
+        QColorConstants::Red,
+        QColorConstants::Cyan,
+        QColorConstants::Magenta,
+        QColorConstants::Yellow,
+        QColorConstants::LightGray
+        }
 {
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
@@ -96,6 +105,7 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->actionUnderline, &QAction::triggered, this, &Notepad::setFontUnderline);
     connect(ui->actionItalic, &QAction::triggered, this, &Notepad::setFontItalic);
     connect(ui->actionAbout, &QAction::triggered, this, &Notepad::about);
+    connect(ui->actionHighlight_owners, &QAction::triggered, this, &Notepad::setHighlightOwners);
     connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
     connect(&sharedEditor, &SharedEditor::remoteCharInserted, this, &Notepad::remoteCharInsert);
     connect(&sharedEditor, &SharedEditor::remoteCharDeleted, this, &Notepad::remoteCharDelete);
@@ -111,7 +121,8 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionPaste->setEnabled(false);
 #endif
 
-// TO BE REMOVED
+    // TO BE REMOVED
+    addRemoteUser(fakeRemoteEditor.getSiteId());
     startTimer(5000);
 }
 
@@ -236,31 +247,135 @@ void Notepad::about()
 void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
     qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
-    if (!(ui->textEdit->document()->isEmpty() && ui->textEdit->document()->characterAt(0) == 0x2029))
-    for (int i = position; i < position+charsRemoved; i++) {
-        sharedEditor.localErase(position);
+
+    if (!(ui->textEdit->document()->isEmpty() && ui->textEdit->document()->characterAt(0) == 0x2029)) {
+        for (int i = position; i < position+charsRemoved; i++) {
+            sharedEditor.localErase(position);
+        }
+        for (int i = position; i < position+charsAdded; i++) {
+            sharedEditor.localInsert(ui->textEdit->document()->characterAt(i), i);
+        }
     }
-    for (int i = position; i < position+charsAdded; i++) {
-        sharedEditor.localInsert(ui->textEdit->document()->characterAt(i), i);
+
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    if (ui->actionHighlight_owners->isChecked()) {
+        QTextCursor c(ui->textEdit->document());
+        c.setPosition(position);
+        c.setPosition(position+charsAdded, QTextCursor::KeepAnchor);
+        QTextCharFormat format = c.charFormat();
+        format.clearBackground();
+        c.setCharFormat(format);
     }
+    ui->textEdit->document()->blockSignals(oldState);
+
     qDebug() << "sharedEditor:" << sharedEditor.to_string();
+    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
     server.dispatchMessages(); // TODO: to be removed with real server
 }
 
-void Notepad::remoteCharInsert(QChar value, int index) {
-    QTextDocument *document = ui->textEdit->document();
-    bool oldState = document->blockSignals(true);
-    QTextCursor c(document);
-    c.setPosition(index);
-    c.insertText(value);
-    document->blockSignals(oldState);
+void Notepad::remoteCharInsert(int siteId, QChar value, int index)
+{
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    auto it = remoteUserCursors.find(siteId);
+    if (it != remoteUserCursors.end()) {
+        QTextCursor c = it.value();
+        c.setPosition(index);
+        if (ui->actionHighlight_owners->isChecked()) {
+            QTextCharFormat format;
+            QColor remoteUserColor = remoteUserColors.find(siteId).value();
+            format.setBackground(remoteUserColor);
+            c.insertText(value, format);
+        } else {
+            c.insertText(value);
+        }
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
-void Notepad::remoteCharDelete(int index) {
-    QTextDocument *document = ui->textEdit->document();
-    bool oldState = document->blockSignals(true);
-    QTextCursor c(document);
-    c.setPosition(index);
-    c.deleteChar();
-    document->blockSignals(oldState);
+void Notepad::remoteCharDelete(int siteId, int index)
+{
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    auto it = remoteUserCursors.find(siteId);
+    if (it != remoteUserCursors.end()) {
+        QTextCursor c = it.value();
+        c.setPosition(index);
+        c.deleteChar();
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
+
+void Notepad::setHighlightOwners(bool highlightOwners)
+{
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    QTextCursor c(ui->textEdit->document());
+    if (!ui->textEdit->document()->isEmpty()) {
+        if (highlightOwners) {
+            int pos = 0;
+            int numChars = ui->textEdit->document()->characterCount();
+            while (pos < numChars) {
+                c.clearSelection();
+                c.setPosition(pos);
+                QTextCharFormat format;
+                int siteId = sharedEditor.getSymbolSiteId(pos);
+                int selection = 1;
+                if (siteId != sharedEditor.getSiteId()) {
+                    QColor remoteUserColor = remoteUserColors.find(siteId).value();
+                    format.setBackground(remoteUserColor);
+                    int nextSiteId = sharedEditor.getSymbolSiteId(pos+selection);
+                    while (nextSiteId == siteId) {
+                        selection++;
+                        siteId = nextSiteId;
+                        nextSiteId = sharedEditor.getSymbolSiteId(pos+selection);
+                    }
+                    c.setPosition(pos+selection, QTextCursor::KeepAnchor);
+                    c.mergeCharFormat(format);
+                }
+                pos += selection;
+            }
+        } else {
+            c.clearSelection();
+            c.setPosition(0);
+            c.setPosition(ui->textEdit->document()->characterCount()-1, QTextCursor::KeepAnchor);
+            QTextCharFormat format = c.charFormat();
+            format.clearBackground();
+            c.setCharFormat(format);
+        }
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+}
+
+void Notepad::addRemoteUser(int siteId)
+{
+    if (!remoteUserCursors.contains(siteId)) {
+        QColor c = colors[remoteUserCursors.size() % colors.size()];
+        remoteUserCursors.insert(siteId, QTextCursor(ui->textEdit->document()));
+        remoteUserColors.insert(siteId, c);
+    }
+}
+
+void Notepad::removeRemoteUser(int siteId)
+{
+    if (remoteUserCursors.contains(siteId)) {
+        remoteUserCursors.remove(siteId);
+        remoteUserColors.remove(siteId);
+    }
+}
+
+void Notepad::remoteCursorPositionChanged(int siteId, int newPos)
+{
+    auto it = remoteUserCursors.find(siteId);
+    if (it != remoteUserCursors.end()) {
+        QTextCursor c = it.value();
+        c.setPosition(newPos);
+    }
+}
+

@@ -18,6 +18,7 @@ public:
     SharedEditor() = delete;
     explicit SharedEditor(NetworkServer &server);
     int getSiteId();
+    int getSymbolSiteId(int index);
     void localInsert(QChar value, int index);
     void localErase(int index);
     void process(const Message& m);
@@ -26,8 +27,8 @@ public:
     QString to_string();
 
 signals:
-    void remoteCharInserted(QChar value, int index);
-    void remoteCharDeleted(int index);
+    void remoteCharInserted(int remoteSiteId, QChar value, int index);
+    void remoteCharDeleted(int remoteSiteId, int index);
 
 private:
     NetworkServer& _server;

@@ -12,6 +12,13 @@ int SharedEditor::getSiteId() {
     return _siteId;
 }
 
+int SharedEditor::getSymbolSiteId(int index) {
+    auto it = _symbols.begin();
+    it+=index;
+    return it->getSiteId();
+}
+
+
 void SharedEditor::localInsert(QChar value, int index) {
     Symbol newSym = generateSymbol(value, index);
     auto it = _symbols.begin();
@@ -157,13 +164,13 @@ QString SharedEditor::to_string() {
 
 void SharedEditor::remoteInsert(Symbol sym) {
     auto index = findInsertIndex(sym);
-    remoteCharInserted(sym.getValue(), index - _symbols.begin());
+    remoteCharInserted(sym.getSiteId(), sym.getValue(), index - _symbols.begin());
     _symbols.insert(index, sym);
 }
 
 void SharedEditor::remoteDelete(Symbol sym) {
     auto index = findIndexByPos(sym);
-    remoteCharDeleted(index - _symbols.begin());
+    remoteCharDeleted(sym.getSiteId(), index - _symbols.begin());
     _symbols.erase(index);
 }
 

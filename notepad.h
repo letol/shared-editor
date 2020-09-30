@@ -41,10 +41,14 @@ private slots:
     void setFontBold(bool bold);
     void setFontUnderline(bool underline);
     void setFontItalic(bool italic);
+    void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
-    void remoteCharInsert(QChar value, int index);
-    void remoteCharDelete(int index);
+    void remoteCharInsert(int siteId, QChar value, int index);
+    void remoteCharDelete(int siteId, int index);
+    void addRemoteUser(int siteId);
+    void removeRemoteUser(int siteId);
+    void remoteCursorPositionChanged(int siteId, int newPos);
 
 private:
     Ui::Notepad *ui;
@@ -52,6 +56,9 @@ private:
     SharedEditor sharedEditor;
     SharedEditor fakeRemoteEditor; // TO BE REMOVED
     QChar fakeRemoteChar; // TO BE REMOVED
+    QMap<int,QTextCursor> remoteUserCursors;
+    QVector<QColor> colors;
+    QMap<int,QColor> remoteUserColors;
 };
 
 #endif // NOTEPAD_H
