@@ -2,7 +2,7 @@
 #define NOTEPAD_H
 
 #include <QMainWindow>
-#include <QTextCharFormat>
+#include <QTextDocument>
 
 #include "NetworkServer.h"
 #include "SharedEditor.h"
@@ -10,7 +10,6 @@
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class Notepad;
-
 }
 
 class QAction;
@@ -49,9 +48,14 @@ private slots:
     void setFontBold(bool bold);
     void setFontUnderline(bool underline);
     void setFontItalic(bool italic);
+    void setHighlightOwners(bool highlightOwners);
     void about();
-    void localChange();
-    void remoteChange();
+    void localChange(int position, int charsRemoved, int charsAdded);
+    void remoteCharInsert(int siteId, QChar value, int index);
+    void remoteCharDelete(int siteId, int index);
+    void addRemoteUser(int siteId);
+    void removeRemoteUser(int siteId);
+    void remoteCursorPositionChanged(int siteId, int newPos);
     void on_actionExport_PDF_triggered();
     void on_actionAt_left_triggered();
     void on_actionCentered_triggered();
@@ -80,7 +84,7 @@ private:
     QComboBox *comboStyle;
     QFontComboBox *comboFont;
     QComboBox *comboSize;
-
+    
     QToolBar *tb;
     QAction *actionTextColor;
     QAction *actionHighlight;
@@ -89,6 +93,9 @@ private:
     SharedEditor sharedEditor;
     SharedEditor fakeRemoteEditor; // TO BE REMOVED
     QChar fakeRemoteChar; // TO BE REMOVED
+    QMap<int,QTextCursor> remoteUserCursors;
+    QVector<QColor> colors;
+    QMap<int,QColor> remoteUserColors;
 };
 
 #endif // NOTEPAD_H

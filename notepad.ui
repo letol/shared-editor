@@ -26,7 +26,7 @@
      <x>0</x>
      <y>0</y>
      <width>766</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -85,9 +85,16 @@
     <addaction name="actionFont"/>
     <addaction name="menuAlignment"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionHighlight_owners"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuFormat"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -467,6 +474,14 @@
   <action name="action14">
    <property name="text">
     <string>14</string>
+   </property>
+  </action>
+  <action name="actionHighlight_owners">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Highlight owners</string>
    </property>
   </action>
  </widget>

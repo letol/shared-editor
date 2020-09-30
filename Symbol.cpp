@@ -4,13 +4,6 @@
 
 #include "Symbol.h"
 
-Symbol::Symbol(QChar value, int siteId, int counter, std::vector<int> &fractIndex) {
-    this->_value = value;
-    this->_siteId = siteId;
-    this->_counter = counter;
-    this->_fractIndex = fractIndex;
-}
-
 int Symbol::getFractIndexDigit(int pos) const {
     int digit;
     try {
@@ -36,5 +29,3 @@ size_t Symbol::fractIndexSize() {
 QChar Symbol::getValue() {
     return _value;
 }
-
-

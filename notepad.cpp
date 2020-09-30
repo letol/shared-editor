@@ -52,6 +52,20 @@
 #include <QFileDialog>
 #include <QTextStream>
 #include <QMessageBox>
+#if defined(QT_PRINTSUPPORT_LIB)
+#include <QtPrintSupport/qtprintsupportglobal.h>
+#if QT_CONFIG(printer)
+#if QT_CONFIG(printdialog)
+#include <QPrintDialog>
+#endif // QT_CONFIG(printdialog)
+#include <QPrinter>
+#endif // QT_CONFIG(printer)
+#endif // QT_PRINTSUPPORT_LIB
+#include <QFont>
+#include <QFontDialog>
+#include <QDebug>
+#include <QTextBlock>
+#include <QPainter>
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
@@ -59,8 +73,6 @@
 #include <QComboBox>
 #include <QFontComboBox>
 #include <QTextBlockFormat>
-#include <QFile>
-#include <QFileDialog>
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QMenu>
@@ -72,15 +84,9 @@
 #include <QTextCursor>
 #include <QTextDocumentWriter>
 #include <QTextList>
-#include <QtDebug>
 #include <QCloseEvent>
-#include <QMessageBox>
 #include <QMimeData>
-#include <QFontDialog>
 #include <QMimeDatabase>
-#include <QFont>
-#include <QFontDialog>
-#include <QDebug>
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -109,17 +115,21 @@ Notepad::Notepad(QWidget *parent) :
     server(),
     sharedEditor(server),
     fakeRemoteEditor(server), // TO BE REMOVED
-    fakeRemoteChar('a') // TO BE REMOVED
+    fakeRemoteChar('a'), // TO BE REMOVED
+    colors{
+        QColorConstants::Green,
+        QColorConstants::Red,
+        QColorConstants::Cyan,
+        QColorConstants::Magenta,
+        QColorConstants::Yellow,
+        QColorConstants::LightGray
+        }
 {
-
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
-
-
+  
     QToolBar *tb = ui->toolBar;
-
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
-
 
     comboStyle = new QComboBox(tb);
     tb->addWidget(comboStyle);
@@ -138,7 +148,6 @@ Notepad::Notepad(QWidget *parent) :
     comboStyle->addItem("Heading 4");
     comboStyle->addItem("Heading 5");
     comboStyle->addItem("Heading 6");
-
 
     comboFont = new QFontComboBox(tb);
     tb->addWidget(comboFont);
@@ -163,9 +172,6 @@ Notepad::Notepad(QWidget *parent) :
     tb->addAction(actionHighlight);
     actionHighlight->setIcon(penMarkerIcon);
 
-
-
-
     connect(ui->actionNew, &QAction::triggered, this, &Notepad::newDocument);
     connect(ui->actionOpen, &QAction::triggered, this, &Notepad::open);
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
@@ -182,6 +188,10 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->actionUnderline, &QAction::triggered, this, &Notepad::setFontUnderline);
     connect(ui->actionItalic, &QAction::triggered, this, &Notepad::setFontItalic);
     connect(ui->actionAbout, &QAction::triggered, this, &Notepad::about);
+    connect(ui->actionHighlight_owners, &QAction::triggered, this, &Notepad::setHighlightOwners);
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
+    connect(&sharedEditor, &SharedEditor::remoteCharInserted, this, &Notepad::remoteCharInsert);
+    connect(&sharedEditor, &SharedEditor::remoteCharDeleted, this, &Notepad::remoteCharDelete);
     connect(ui->actionAt_left,&QAction::triggered,this,&Notepad::on_actionAt_left_triggered);
     connect(ui->actionCentered,&QAction::triggered,this,&Notepad::on_actionCentered_triggered);
     connect(ui->actionAt_right,&QAction::triggered,this,&Notepad::on_actionAt_right_triggered);
@@ -202,8 +212,6 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboSize, SIGNAL(currentTextChanged(QString)), this, SLOT(size(QString)));
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
-    connect(ui->textEdit, &QTextEdit::textChanged, this, &Notepad::localChange);
-    connect(&sharedEditor, &SharedEditor::remoteTextChanged, this, &Notepad::remoteChange);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -216,10 +224,10 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionPaste->setEnabled(false);
 #endif
 
-// TO BE REMOVED
+    // TO BE REMOVED
+    addRemoteUser(fakeRemoteEditor.getSiteId());
     startTimer(5000);
 }
-
 
 Notepad::~Notepad()
 {
@@ -244,73 +252,35 @@ void Notepad::timerEvent(QTimerEvent *event)
 
 void Notepad::newDocument()
 {
-    currentFile.clear();
-    ui->textEdit->setText(QString());
+    // TODO: new online document creation
 }
 
 void Notepad::open()
 {
-    QString fileName = QFileDialog::getOpenFileName(this, "Open the file");
-    QFile file(fileName);
-    currentFile = fileName;
-    if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
-        return;
-    }
-    setWindowTitle(fileName);
-    QTextStream in(&file);
-    QString text = in.readAll();
-    ui->textEdit->setText(text);
-    file.close();
+    // TODO: open online document
 }
 
 void Notepad::save()
 {
-    QString fileName;
-    // If we don't have a filename from before, get one.
-    if (currentFile.isEmpty()) {
-        fileName = QFileDialog::getSaveFileName(this, "Save");
-        currentFile = fileName;
-    } else {
-        fileName = currentFile;
-    }
-    QFile file(fileName);
-    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-        return;
-    }
-    setWindowTitle(fileName);
-    QTextStream out(&file);
-    QString text = ui->textEdit->toPlainText();
-    out << text;
-    file.close();
+    // TODO: remove
 }
 
 void Notepad::saveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save as");
-    QFile file(fileName);
-
-    if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
-        return;
-    }
-    currentFile = fileName;
-    setWindowTitle(fileName);
-    QTextStream out(&file);
-    QString text = ui->textEdit->toPlainText();
-    out << text;
-    file.close();
+    // TODO: remove
 }
 
 void Notepad::print()
 {
-
+#if defined(QT_PRINTSUPPORT_LIB) && QT_CONFIG(printer)
     QPrinter printDev;
+#if QT_CONFIG(printdialog)
     QPrintDialog dialog(&printDev, this);
     if (dialog.exec() == QDialog::Rejected)
         return;
+#endif // QT_CONFIG(printdialog)
     ui->textEdit->print(&printDev);
+#endif // QT_CONFIG(printer)
 }
 
 void Notepad::exit()
@@ -351,7 +321,6 @@ void Notepad::redo()
 
 void Notepad::selectFont()
 {
-
     QTextCursor cursor = ui->textEdit->textCursor();
     QTextCharFormat fmt = ui->textEdit->currentCharFormat();
     bool fontSelected;
@@ -381,11 +350,9 @@ void Notepad::setFontBold(bool bold)
 void Notepad::about()
 {
    QMessageBox::about(this, tr("About MDI"),
-                tr("This is a rech <b>Notepad</b> "));
+                tr("This is a shared <b>Notepad</b> "));
 
 }
-
-
 
 void Notepad::on_actionExport_PDF_triggered()
 {
@@ -403,7 +370,6 @@ void Notepad::on_actionExport_PDF_triggered()
         statusBar()->showMessage(tr("Exported \"%1\"")
                                  .arg(QDir::toNativeSeparators(fileName)));
 }
-
 
 void Notepad::on_actionAt_left_triggered()
 {
@@ -617,12 +583,14 @@ void Notepad::style(int styleIndex){
        cursor.endEditBlock();
 
 }
+
 void Notepad::colorChanged(const QColor &c)
 {
     QPixmap pix(16, 16);
     pix.fill(c);
     actionTextColor->setIcon(pix);
 }
+
 void Notepad::textColor()
 {
     QColor col = QColorDialog::getColor(ui->textEdit->textColor(), this);
@@ -649,16 +617,137 @@ void Notepad::textHighlight()
 
 }
 
-void Notepad::localChange()
+void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
-    QString newStr = ui->textEdit->toPlainText();
+    qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
 
-    sharedEditor.updateString(newStr);
+    if (!(ui->textEdit->document()->isEmpty() && ui->textEdit->document()->characterAt(0) == 0x2029)) {
+        for (int i = position; i < position+charsRemoved; i++) {
+            sharedEditor.localErase(position);
+        }
+        for (int i = position; i < position+charsAdded; i++) {
+            sharedEditor.localInsert(ui->textEdit->document()->characterAt(i), i);
+        }
+    }
 
-    qDebug() << sharedEditor.to_string();
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    if (ui->actionHighlight_owners->isChecked()) {
+        QTextCursor c(ui->textEdit->document());
+        c.setPosition(position);
+        c.setPosition(position+charsAdded, QTextCursor::KeepAnchor);
+        QTextCharFormat format = c.charFormat();
+        format.clearBackground();
+        c.setCharFormat(format);
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+
+    qDebug() << "sharedEditor:" << sharedEditor.to_string();
+    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+    server.dispatchMessages(); // TODO: to be removed with real server
 }
 
-void Notepad::remoteChange()
+void Notepad::remoteCharInsert(int siteId, QChar value, int index)
 {
-    ui->textEdit->setText(sharedEditor.to_string());
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    auto it = remoteUserCursors.find(siteId);
+    if (it != remoteUserCursors.end()) {
+        QTextCursor c = it.value();
+        c.setPosition(index);
+        if (ui->actionHighlight_owners->isChecked()) {
+            QTextCharFormat format;
+            QColor remoteUserColor = remoteUserColors.find(siteId).value();
+            format.setBackground(remoteUserColor);
+            c.insertText(value, format);
+        } else {
+            c.insertText(value);
+        }
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+}
+
+void Notepad::remoteCharDelete(int siteId, int index)
+{
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    auto it = remoteUserCursors.find(siteId);
+    if (it != remoteUserCursors.end()) {
+        QTextCursor c = it.value();
+        c.setPosition(index);
+        c.deleteChar();
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+}
+
+void Notepad::setHighlightOwners(bool highlightOwners)
+{
+    //TODO: review signal blocking correctness
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    QTextCursor c(ui->textEdit->document());
+    if (!ui->textEdit->document()->isEmpty()) {
+        if (highlightOwners) {
+            int pos = 0;
+            int numChars = ui->textEdit->document()->characterCount();
+            while (pos < numChars) {
+                c.clearSelection();
+                c.setPosition(pos);
+                QTextCharFormat format;
+                int siteId = sharedEditor.getSymbolSiteId(pos);
+                int selection = 1;
+                if (siteId != sharedEditor.getSiteId()) {
+                    QColor remoteUserColor = remoteUserColors.find(siteId).value();
+                    format.setBackground(remoteUserColor);
+                    int nextSiteId = sharedEditor.getSymbolSiteId(pos+selection);
+                    while (nextSiteId == siteId) {
+                        selection++;
+                        siteId = nextSiteId;
+                        nextSiteId = sharedEditor.getSymbolSiteId(pos+selection);
+                    }
+                    c.setPosition(pos+selection, QTextCursor::KeepAnchor);
+                    c.mergeCharFormat(format);
+                }
+                pos += selection;
+            }
+        } else {
+            c.clearSelection();
+            c.setPosition(0);
+            c.setPosition(ui->textEdit->document()->characterCount()-1, QTextCursor::KeepAnchor);
+            QTextCharFormat format = c.charFormat();
+            format.clearBackground();
+            c.setCharFormat(format);
+        }
+    }
+    ui->textEdit->document()->blockSignals(oldState);
+}
+
+void Notepad::addRemoteUser(int siteId)
+{
+    if (!remoteUserCursors.contains(siteId)) {
+        QColor c = colors[remoteUserCursors.size() % colors.size()];
+        remoteUserCursors.insert(siteId, QTextCursor(ui->textEdit->document()));
+        remoteUserColors.insert(siteId, c);
+    }
+}
+
+void Notepad::removeRemoteUser(int siteId)
+{
+    if (remoteUserCursors.contains(siteId)) {
+        remoteUserCursors.remove(siteId);
+        remoteUserColors.remove(siteId);
+    }
+}
+
+void Notepad::remoteCursorPositionChanged(int siteId, int newPos)
+{
+    auto it = remoteUserCursors.find(siteId);
+    if (it != remoteUserCursors.end()) {
+        QTextCursor c = it.value();
+        c.setPosition(newPos);
+    }
 }
