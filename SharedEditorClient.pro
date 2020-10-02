@@ -10,14 +10,16 @@ HEADERS         = \
     NetworkServer.h \
     SharedEditor.h \
     Symbol.h \
-    notepad.h
+    notepad.h \
+    registrationdialog.h
 SOURCES         = \
                   Message.cpp \
                   NetworkServer.cpp \
                   SharedEditor.cpp \
                   Symbol.cpp \
                   main.cpp \
-                  notepad.cpp
+                  notepad.cpp \
+                  registrationdialog.cpp
 
 RESOURCES += notepad.qrc
 
@@ -26,4 +28,5 @@ target.path = /home/leonardo/Polito/2018-2019/Programmazione di Sistema/Malnati/
 INSTALLS += target
 
 FORMS += \
-    notepad.ui
+    notepad.ui \
+    registrationdialog.ui

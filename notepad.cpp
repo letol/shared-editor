@@ -87,6 +87,7 @@
 #include <QCloseEvent>
 #include <QMimeData>
 #include <QMimeDatabase>
+#include <QColor>
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -751,3 +752,5 @@ void Notepad::remoteCursorPositionChanged(int siteId, int newPos)
         c.setPosition(newPos);
     }
 }
+
+

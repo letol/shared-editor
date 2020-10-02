@@ -7,6 +7,7 @@
 #include "NetworkServer.h"
 #include "SharedEditor.h"
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class Notepad;
@@ -78,6 +79,7 @@ private slots:
     void colorChanged(const QColor &c);
     void textHighlight();
 
+
 private:
     Ui::Notepad *ui;
     QString currentFile;
@@ -96,6 +98,8 @@ private:
     QMap<int,QTextCursor> remoteUserCursors;
     QVector<QColor> colors;
     QMap<int,QColor> remoteUserColors;
+
+
 };
 
 #endif // NOTEPAD_H

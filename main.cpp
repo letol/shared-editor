@@ -48,14 +48,14 @@
 **
 ****************************************************************************/
 
-#include "notepad.h"
+#include "registrationdialog.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
-    Notepad Editor;
-    Editor.show();
+    RegistrationDialog registrationDialog;
+    registrationDialog.show();
 
     return EditorApp.exec();
 }
