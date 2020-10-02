@@ -32,8 +32,27 @@ void RegistrationDialog::on_pushButton_image_clicked()
             ui->lbl_image->setPixmap(QPixmap::fromImage(image));
         }
         else{
-            //Error handling
+            ui->lbl_error->setText("Choose an other image");
+
+
 
         }
     }
+}
+
+void RegistrationDialog::on_pushButton_clicked()
+{
+    QString name = ui->lineEdit_name->text();
+    QString surname = ui->lineEdit_surname->text();
+    QString nickname = ui->lineEdit_nickname->text();
+    QString email = ui->lineEdit_email->text();
+    QString pwd = ui->lineEdit_password->text();
+    QString pwdRepeat = ui->lineEdit_password->text();
+
+
+    //if(QString::compare(pwd,pwdRepeat)!=0){
+
+        ui->lbl_error->setText("Password must coincide");
+        //ui->lbl_error->setStyleSheet("QLabel {color : red; }");
+    //}
 }

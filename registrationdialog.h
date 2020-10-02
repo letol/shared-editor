@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QFileDialog>
+#include <user.h>
 
 namespace Ui {
 class RegistrationDialog;
@@ -19,8 +20,11 @@ public:
 private slots:
     void on_pushButton_image_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::RegistrationDialog *ui;
+   // User *user;
 };
 
 #endif // REGISTRATIONDIALOG_H

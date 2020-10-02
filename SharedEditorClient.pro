@@ -12,7 +12,8 @@ HEADERS         = \
     Symbol.h \
     logindialog.h \
     notepad.h \
-    registrationdialog.h
+    registrationdialog.h \
+    user.h
 SOURCES         = \
                   Message.cpp \
                   NetworkServer.cpp \
@@ -21,7 +22,8 @@ SOURCES         = \
                   logindialog.cpp \
                   main.cpp \
                   notepad.cpp \
-                  registrationdialog.cpp
+                  registrationdialog.cpp \
+                  user.cpp
 
 RESOURCES += notepad.qrc
 
