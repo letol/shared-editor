@@ -48,11 +48,15 @@ void RegistrationDialog::on_pushButton_clicked()
     QString email = ui->lineEdit_email->text();
     QString pwd = ui->lineEdit_password->text();
     QString pwdRepeat = ui->lineEdit_password->text();
-
+    //QImage image = ui->lbl_image; convertire pixmap in image
+    //todo controllo sulla lungezza di tutti i campi
+    //controllo email
+    //controllo nickname valido
+    //capire come mandare user al server
 
     //if(QString::compare(pwd,pwdRepeat)!=0){
 
-        ui->lbl_error->setText("Password must coincide");
+        ui->lbl_error->setText("Passwords must match");
         //ui->lbl_error->setStyleSheet("QLabel {color : red; }");
     //}
 }
