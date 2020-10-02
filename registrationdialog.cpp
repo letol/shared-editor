@@ -1,12 +1,17 @@
 #include "registrationdialog.h"
 #include "ui_registrationdialog.h"
-#include <QMessageBox>
+#include <QPixmap>
 
 RegistrationDialog::RegistrationDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RegistrationDialog)
 {
     ui->setupUi(this);
+    QImage image;
+    image.load(":/images/profile.png");
+    image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+    image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
+    ui->lbl_image->setPixmap(QPixmap::fromImage(image));
 }
 
 RegistrationDialog::~RegistrationDialog()
@@ -14,17 +19,21 @@ RegistrationDialog::~RegistrationDialog()
     delete ui;
 }
 
-
-void RegistrationDialog::on_pushButton_login_clicked()
+void RegistrationDialog::on_pushButton_image_clicked()
 {
-    QString username = ui->lineEdit_username->text();
-    QString password = ui->lineEdit_password->text();
+    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg)"));
 
-    if(username ==  "test" && password == "test") {
-        Notepad *notepad = new Notepad(this);
-        notepad->showMaximized();
-    }
-    else {
-        QMessageBox::warning(this,"Login", "Username and password is not correct");
+    if(QString::compare(filename,QString())!=0){
+        QImage image;
+        bool valid = image.load(filename);
+        if(valid){
+            image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+            image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
+            ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+        }
+        else{
+            //Error handling
+
+        }
     }
 }

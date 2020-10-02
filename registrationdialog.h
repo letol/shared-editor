@@ -2,7 +2,7 @@
 #define REGISTRATIONDIALOG_H
 
 #include <QDialog>
-#include <notepad.h>
+#include <QFileDialog>
 
 namespace Ui {
 class RegistrationDialog;
@@ -17,11 +17,10 @@ public:
     ~RegistrationDialog();
 
 private slots:
-    void on_pushButton_login_clicked();
+    void on_pushButton_image_clicked();
 
 private:
     Ui::RegistrationDialog *ui;
-    Notepad *notepad;
 };
 
 #endif // REGISTRATIONDIALOG_H

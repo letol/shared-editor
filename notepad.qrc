@@ -31,5 +31,6 @@
         <file>images/edit_undo.png</file>
         <file>images/italic.png</file>
         <file>images/marker.png</file>
+        <file>images/profile.png</file>
     </qresource>
 </RCC>

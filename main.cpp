@@ -48,14 +48,14 @@
 **
 ****************************************************************************/
 
-#include "registrationdialog.h"
+#include "LoginDialog.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
-    RegistrationDialog registrationDialog;
-    registrationDialog.show();
+    LoginDialog loginDialog;
+    loginDialog.show();
 
     return EditorApp.exec();
 }
