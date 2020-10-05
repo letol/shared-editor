@@ -10,14 +10,20 @@ HEADERS         = \
     NetworkServer.h \
     SharedEditor.h \
     Symbol.h \
-    notepad.h
+    notepad.h \
+    remoteuser.h \
+    remoteuserlabel.h \
+    texteditoreventfilter.h
 SOURCES         = \
                   Message.cpp \
                   NetworkServer.cpp \
                   SharedEditor.cpp \
                   Symbol.cpp \
                   main.cpp \
-                  notepad.cpp
+                  notepad.cpp \
+                  remoteuser.cpp \
+                  remoteuserlabel.cpp \
+                  texteditoreventfilter.cpp
 
 RESOURCES += notepad.qrc
 
