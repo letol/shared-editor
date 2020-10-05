@@ -27,6 +27,9 @@ SOURCES         = \
 
 RESOURCES += notepad.qrc
 
+include(network/network.pri)
+include(network/messages/messages.pri)
+
 # install
 target.path = /home/leonardo/Polito/2018-2019/Programmazione di Sistema/Malnati/
 INSTALLS += target
