@@ -69,6 +69,8 @@ void RegistrationDialog::on_pushButton_clicked()
 
 
 
+
+
     //controllo nickname valido interroga server
     //capire come mandare user al server
 

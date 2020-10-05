@@ -1,6 +1,6 @@
 #include "user.h"
 
-User::User(QString name, QString surname, QString nickname, QString email, QString password,QByteArray *image)
+User::User(QString name, QString surname, QString nickname, QString email, QString password,QByteArray image)
 {
     this->name=name;
     this->surname=surname;
@@ -9,6 +9,9 @@ User::User(QString name, QString surname, QString nickname, QString email, QStri
     this->password=password;
     this->image=image;
 
+}
+User::User(QString username, QString password)
+    : email(username), password(password) {
 }
 
 QString User::getEmail(){
@@ -26,6 +29,16 @@ QString User::getPassword(){
 QString User::getSurname(){
     return surname;
 }
-QByteArray* User::getImage(){
+QByteArray User::getImage(){
     return this->image;
+}
+
+QDataStream &User::serialize(QDataStream &stream) const {
+  stream << email << password << nickname << name << surname << image;
+  return stream;
+}
+
+QDataStream &User::unserialize(QDataStream &stream) {
+  stream >> email >> password >> nickname >> name >> surname >> image;
+  return stream;
 }
