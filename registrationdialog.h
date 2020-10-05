@@ -19,12 +19,26 @@ public:
 
 private slots:
     void on_pushButton_image_clicked();
-
     void on_pushButton_clicked();
+    void on_lineEdit_name_textChanged(const QString &arg1);
+
+    void on_lineEdit_surname_textChanged(const QString &arg1);
+
+    void on_lineEdit_nickname_textChanged(const QString &arg1);
+
+    void on_lineEdit_email_textChanged(const QString &arg1);
+
+    void on_lineEdit_password_textChanged(const QString &arg1);
+
+    void on_lineEdit_pwdrepeat_textChanged(const QString &arg1);
 
 private:
     Ui::RegistrationDialog *ui;
    // User *user;
+    bool valid[6];//six fields
+
+    void checkValid(bool* valid);
+
 };
 
 #endif // REGISTRATIONDIALOG_H

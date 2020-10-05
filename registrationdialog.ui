@@ -183,11 +183,13 @@
       <x>30</x>
       <y>810</y>
       <width>331</width>
-      <height>51</height>
+      <height>71</height>
      </rect>
     </property>
     <property name="font">
      <font>
+      <family>Times New Roman</family>
+      <pointsize>7</pointsize>
       <weight>75</weight>
       <bold>true</bold>
      </font>

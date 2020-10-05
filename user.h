@@ -12,15 +12,15 @@ private:
     QString nickname;
     QString email;
     QString password;
-    QImage *image;
+    QByteArray *image;
 public:
-    User(QString name, QString surname, QString nickname, QString email, QString password,QImage *image);
+    User(QString name, QString surname, QString nickname, QString email, QString password,QByteArray *image);
     QString getEmail();
     QString getNickname();
     QString getPassword();
     QString getName();
     QString getSurname();
-    QImage*  getImage();
+    QByteArray*  getImage();
 
 };
 

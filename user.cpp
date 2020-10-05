@@ -1,6 +1,6 @@
 #include "user.h"
 
-User::User(QString name, QString surname, QString nickname, QString email, QString password,QImage *image)
+User::User(QString name, QString surname, QString nickname, QString email, QString password,QByteArray *image)
 {
     this->name=name;
     this->surname=surname;
@@ -26,6 +26,6 @@ QString User::getPassword(){
 QString User::getSurname(){
     return surname;
 }
-QImage* User::getImage(){
+QByteArray* User::getImage(){
     return this->image;
 }
