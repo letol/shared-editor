@@ -6,7 +6,7 @@
 
 SharedEditor::SharedEditor(NetworkServer &server) : _server(server) {
     this->_siteId = _server.connect(this);
-    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), 0);
+    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
     auto it = _symbols.begin();
     _symbols.insert(it, newSym);
 }
@@ -24,11 +24,11 @@ int SharedEditor::getSymbolSiteId(int index) {
 QTextCharFormat SharedEditor::getSymbolFormat(int index) {
     auto it = _symbols.begin();
     it+=index;
-    return it->getFormat();
+    return it->getCharFormat();
 }
 
-void SharedEditor::localInsert(QChar value, QTextCharFormat format, int index) {
-    Symbol newSym = generateSymbol(value, format, index);
+void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
+    Symbol newSym = generateSymbol(value, charFormat, blockFormat, index);
     auto it = _symbols.begin();
     it+=index;
     _symbols.insert(it, newSym);
@@ -36,7 +36,7 @@ void SharedEditor::localInsert(QChar value, QTextCharFormat format, int index) {
     _server.send(msg);
 }
 
-Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat format, int index) {
+Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
     std::vector<int> newFractIndex;
     if (index == 0) {
         if (_symbols.empty()) {
@@ -48,7 +48,7 @@ Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat format, int ind
             for (int i = 0; i < size - 1; ++i) {
                 startFractIndex.push_back(0);
             }
-            Symbol sym1('$', QTextCharFormat(), this->_siteId, 0, startFractIndex);
+            Symbol sym1('$', QTextCharFormat(), QTextBlockFormat(), this->_siteId, 0, startFractIndex);
             generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
         }
     } else if (_symbols.size() == index) {
@@ -60,7 +60,7 @@ Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat format, int ind
         generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
     }
 
-    return Symbol(value, format, this->_siteId, this->_counter++, newFractIndex);
+    return Symbol(value, charFormat, blockFormat, this->_siteId, this->_counter++, newFractIndex);
 }
 
 void
@@ -172,7 +172,7 @@ QString SharedEditor::to_string() {
 
 void SharedEditor::remoteInsert(Symbol sym) {
     auto index = findInsertIndex(sym);
-    remoteCharInserted(sym.getSiteId(), sym.getValue(), sym.getFormat(), index - _symbols.begin());
+    remoteCharInserted(sym.getSiteId(), sym.getValue(), sym.getCharFormat(), sym.getBlockFormat(), index - _symbols.begin());
     _symbols.insert(index, sym);
 }
 

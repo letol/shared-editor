@@ -250,14 +250,14 @@ void Notepad::timerEvent(QTimerEvent *event)
     qDebug() << "Remote 1 typed: " << fakeRemoteChar << ", at pos: " << pos;
     QTextCharFormat fmt;
     fmt.setFontItalic(true);
-    fakeRemoteEditor.localInsert(fakeRemoteChar, fmt, pos);
+    fakeRemoteEditor.localInsert(fakeRemoteChar, fmt, QTextBlockFormat(), pos);
     server.dispatchMessages();
     fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
 
     qDebug() << "Remote 2 typed: " << fakeRemoteChar2 << ", at pos: " << pos2;
     QTextCharFormat fmt2;
     fmt2.setFontItalic(true);
-    fakeRemoteEditor2.localInsert(fakeRemoteChar2, fmt2, pos2);
+    fakeRemoteEditor2.localInsert(fakeRemoteChar2, fmt2, QTextBlockFormat(), pos2);
     server.dispatchMessages();
     fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;
 }
@@ -644,7 +644,7 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
         c.setPosition(i);
         c.setPosition(i+1, QTextCursor::KeepAnchor);
         QTextCharFormat fmt = c.charFormat();
-        sharedEditor.localInsert(ch, fmt, i);
+        sharedEditor.localInsert(ch, fmt, c.blockFormat(), i);
     }
 
     //TODO: review signal blocking correctness
@@ -665,7 +665,7 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
     server.dispatchMessages(); // TODO: to be removed with real server
 }
 
-void Notepad::remoteCharInsert(int siteId, QChar value, QTextCharFormat format, int index)
+void Notepad::remoteCharInsert(int siteId, QChar value, QTextCharFormat format, QTextBlockFormat blockFormat, int index)
 {
     //TODO: review signal blocking correctness
     bool oldState = ui->textEdit->document()->blockSignals(true);
@@ -673,6 +673,7 @@ void Notepad::remoteCharInsert(int siteId, QChar value, QTextCharFormat format, 
     if (it != remoteUsers.end()) {
         QTextCursor *c = it.value().getCursor();
         c->setPosition(index);
+
         if (ui->actionHighlight_owners->isChecked()) {
             QTextCharFormat highlightOwnersFormat = format;
             QColor remoteUserColor = remoteUsers.find(siteId).value().getColor();
@@ -681,6 +682,11 @@ void Notepad::remoteCharInsert(int siteId, QChar value, QTextCharFormat format, 
         } else {
             c->insertText(value, format);
         }
+
+        if (c->blockFormat() != blockFormat) {
+            c->setBlockFormat(blockFormat);
+        }
+
         it.value().printCursor();
     }
     ui->textEdit->document()->blockSignals(oldState);

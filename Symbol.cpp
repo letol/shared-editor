@@ -30,6 +30,10 @@ QChar Symbol::getValue() {
     return _value;
 }
 
-QTextCharFormat Symbol::getFormat() {
-    return _format;
+QTextCharFormat Symbol::getCharFormat() {
+    return _charFormat;
+}
+
+QTextBlockFormat Symbol::getBlockFormat() {
+    return _blockFormat;
 }

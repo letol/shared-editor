@@ -20,7 +20,7 @@ public:
     int getSiteId();
     int getSymbolSiteId(int index);
     QTextCharFormat getSymbolFormat(int index);
-    void localInsert(QChar value, QTextCharFormat format, int index);
+    void localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void localErase(int index);
     void process(const Message& m);
     void remoteInsert(Symbol sym);
@@ -29,7 +29,7 @@ public:
     int symbolCount();
 
 signals:
-    void remoteCharInserted(int remoteSiteId, QChar value, QTextCharFormat format, int index);
+    void remoteCharInserted(int remoteSiteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDeleted(int remoteSiteId, int index);
 
 private:
@@ -38,7 +38,7 @@ private:
     std::vector<Symbol> _symbols;
     int _counter=1;
 
-    Symbol generateSymbol(QChar value, QTextCharFormat format, int index);
+    Symbol generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, std::vector<int> &newFractIndex);
     auto findInsertIndex(const Symbol &sym);
     auto findIndexByPos(const Symbol &sym);

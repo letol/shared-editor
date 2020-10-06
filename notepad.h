@@ -54,7 +54,7 @@ private slots:
     void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
-    void remoteCharInsert(int siteId, QChar value, QTextCharFormat format, int index);
+    void remoteCharInsert(int siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDelete(int siteId, int index);
     void addRemoteUser(int siteId);
     void removeRemoteUser(int siteId);
