@@ -15,15 +15,16 @@ RemoteUser::RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *color
     //Visible cursor init
     cursorFrame = new QFrame(textEditor);
     cursorFrame->setFrameStyle(QFrame::VLine | QFrame::Plain);
-    cursorFrame->setAutoFillBackground(true);
+    cursorFrame->setLineWidth(3);
     cursorFrame->setPalette(pal);
 
     //Cursor blinking
-    QPropertyAnimation *blink = new QPropertyAnimation(cursorFrame, "frameShape");
+    QPropertyAnimation *blink = new QPropertyAnimation(cursorFrame, "lineWidth");
     blink->setDuration(1000);
-    blink->setStartValue(QFrame::NoFrame);
-    blink->setEndValue(QFrame::VLine);
+    blink->setStartValue(3);
+    blink->setEndValue(0);
     blink->setLoopCount(-1);
+    blink->setEasingCurve(QEasingCurve::InOutExpo);
     blink->start(QPropertyAnimation::DeleteWhenStopped);
 
     //Label init
@@ -55,11 +56,12 @@ void RemoteUser::printCursor()
     if (!cursorFrame->isVisible()) {
         cursorFrame->setVisible(true);
     }
+    //curRect.adjust(-2,0,0,0);
     cursorFrame->setGeometry(curRect);
     cursorFrame->raise();
 
     QSize labelSize = label->size();
-    QPoint labelAnchor = curRect.bottomRight();
+    QPoint labelAnchor = curRect.bottomLeft();
 
     if (labelAnchor.y() + labelSize.height() > textEditor->height()) {
         labelAnchor = curRect.topLeft();
