@@ -6,9 +6,9 @@
 #include <QChar>
 #include <QString>
 
-#include "Message.h"
-#include "NetworkServer.h"
-#include "Symbol.h"
+#include "editingmessage.h"
+#include "networkserver.h"
+#include "symbol.h"
 
 class SharedEditor : public QObject
 {
@@ -22,7 +22,7 @@ public:
     QTextCharFormat getSymbolFormat(int index);
     void localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void localErase(int index);
-    void process(const Message& m);
+    void process(const EditingMessage& m);
     void remoteInsert(Symbol sym);
     void remoteDelete(Symbol sym);
     QString to_string();

@@ -1,19 +1,19 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include "Symbol.h"
+#include "symbol.h"
 
 #define MSG_INSERT  0
 #define MSG_ERASE   1
 
-class Message {
+class EditingMessage {
 private:
     Symbol _sym;
     int _op;
     int _sender;
 
 public:
-    Message(Symbol &sym, int op, int senderSiteId) :
+    EditingMessage(Symbol &sym, int op, int senderSiteId) :
         _sym(sym),
         _op(op),
         _sender(senderSiteId) {};

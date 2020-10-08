@@ -2,8 +2,8 @@
 // Created by leonardo on 07/05/19.
 //
 
-#include "NetworkServer.h"
-#include "SharedEditor.h"
+#include "networkserver.h"
+#include "sharededitor.h"
 
 int NetworkServer::connect(SharedEditor *sharedEditor) {
     _connectedEditors.insert(_connectedEditors.end(), sharedEditor);
@@ -17,13 +17,13 @@ void NetworkServer::disconnect(SharedEditor *sharedEditor) {
     }
 }
 
-void NetworkServer::send(const Message &m) {
+void NetworkServer::send(const EditingMessage &m) {
     _msgQ.push(m);
 }
 
 void NetworkServer::dispatchMessages() {
     while (!_msgQ.empty()) {
-        Message m = _msgQ.front();
+        EditingMessage m = _msgQ.front();
         std::for_each(_connectedEditors.cbegin(), _connectedEditors.cend(),[&m](SharedEditor *sharedEditor){
             if (sharedEditor->getSiteId() != m.getSenderSiteId()) {
                 sharedEditor->process(m);

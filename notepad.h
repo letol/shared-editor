@@ -3,8 +3,8 @@
 
 #include <QMainWindow>
 
-#include "NetworkServer.h"
-#include "SharedEditor.h"
+#include "networkserver.h"
+#include "sharededitor.h"
 #include "remoteuser.h"
 #include "texteditoreventfilter.h"
 

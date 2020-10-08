@@ -2,7 +2,7 @@
 // Created by leonardo on 07/05/19.
 //
 
-#include "SharedEditor.h"
+#include "sharededitor.h"
 
 SharedEditor::SharedEditor(NetworkServer &server) : _server(server) {
     this->_siteId = _server.connect(this);
@@ -32,7 +32,7 @@ void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlo
     auto it = _symbols.begin();
     it+=index;
     _symbols.insert(it, newSym);
-    Message msg(newSym, MSG_INSERT, this->_siteId);
+    EditingMessage msg(newSym, MSG_INSERT, this->_siteId);
     _server.send(msg);
 }
 
@@ -98,7 +98,7 @@ SharedEditor::generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos
 }
 
 void SharedEditor::localErase(int index) {
-    Message msg(_symbols[index], MSG_ERASE, this->_siteId);
+    EditingMessage msg(_symbols[index], MSG_ERASE, this->_siteId);
     auto it = _symbols.begin();
     it+=index;
     _symbols.erase(it);
@@ -182,7 +182,7 @@ void SharedEditor::remoteDelete(Symbol sym) {
     _symbols.erase(index);
 }
 
-void SharedEditor::process(const Message &m) {
+void SharedEditor::process(const EditingMessage &m) {
     if (m.getOperation() == MSG_INSERT) {
         remoteInsert(m.getSymbol());
     } else if (m.getOperation() == MSG_ERASE) {
