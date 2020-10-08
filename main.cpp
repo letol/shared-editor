@@ -48,14 +48,14 @@
 **
 ****************************************************************************/
 
-#include "notepad.h"
+#include "LoginDialog.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
-    Notepad Editor;
-    Editor.show();
+    LoginDialog loginDialog;
+    loginDialog.show();
 
     return EditorApp.exec();
 }

@@ -784,3 +784,5 @@ void Notepad::updateCursors()
         u.printCursor();
     }
 }
+
+

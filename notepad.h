@@ -8,6 +8,7 @@
 #include "remoteuser.h"
 #include "texteditoreventfilter.h"
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class Notepad;
@@ -81,6 +82,7 @@ private slots:
     void colorChanged(const QColor &c);
     void textHighlight();
     void updateCursors();
+
 
 private:
     Ui::Notepad *ui;
