@@ -2,10 +2,13 @@
 // Created by leonardo on 07/05/19.
 //
 
-#include "SharedEditor.h"
+#include "sharededitor.h"
 
 SharedEditor::SharedEditor(NetworkServer &server) : _server(server) {
     this->_siteId = _server.connect(this);
+    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
+    auto it = _symbols.begin();
+    _symbols.insert(it, newSym);
 }
 
 int SharedEditor::getSiteId() {
@@ -18,17 +21,22 @@ int SharedEditor::getSymbolSiteId(int index) {
     return it->getSiteId();
 }
 
+QTextCharFormat SharedEditor::getSymbolFormat(int index) {
+    auto it = _symbols.begin();
+    it+=index;
+    return it->getCharFormat();
+}
 
-void SharedEditor::localInsert(QChar value, int index) {
-    Symbol newSym = generateSymbol(value, index);
+void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
+    Symbol newSym = generateSymbol(value, charFormat, blockFormat, index);
     auto it = _symbols.begin();
     it+=index;
     _symbols.insert(it, newSym);
-    Message msg(newSym, MSG_INSERT, this->_siteId);
+    EditingMessage msg(newSym, MSG_INSERT, this->_siteId);
     _server.send(msg);
 }
 
-Symbol SharedEditor::generateSymbol(QChar value, int index) {
+Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
     std::vector<int> newFractIndex;
     if (index == 0) {
         if (_symbols.empty()) {
@@ -40,7 +48,7 @@ Symbol SharedEditor::generateSymbol(QChar value, int index) {
             for (int i = 0; i < size - 1; ++i) {
                 startFractIndex.push_back(0);
             }
-            Symbol sym1('$', this->_siteId, 0, startFractIndex);
+            Symbol sym1('$', QTextCharFormat(), QTextBlockFormat(), this->_siteId, 0, startFractIndex);
             generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
         }
     } else if (_symbols.size() == index) {
@@ -52,7 +60,7 @@ Symbol SharedEditor::generateSymbol(QChar value, int index) {
         generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
     }
 
-    return Symbol(value, this->_siteId, this->_counter++, newFractIndex);
+    return Symbol(value, charFormat, blockFormat, this->_siteId, this->_counter++, newFractIndex);
 }
 
 void
@@ -90,7 +98,7 @@ SharedEditor::generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos
 }
 
 void SharedEditor::localErase(int index) {
-    Message msg(_symbols[index], MSG_ERASE, this->_siteId);
+    EditingMessage msg(_symbols[index], MSG_ERASE, this->_siteId);
     auto it = _symbols.begin();
     it+=index;
     _symbols.erase(it);
@@ -164,7 +172,7 @@ QString SharedEditor::to_string() {
 
 void SharedEditor::remoteInsert(Symbol sym) {
     auto index = findInsertIndex(sym);
-    remoteCharInserted(sym.getSiteId(), sym.getValue(), index - _symbols.begin());
+    remoteCharInserted(sym.getSiteId(), sym.getValue(), sym.getCharFormat(), sym.getBlockFormat(), index - _symbols.begin());
     _symbols.insert(index, sym);
 }
 
@@ -174,7 +182,7 @@ void SharedEditor::remoteDelete(Symbol sym) {
     _symbols.erase(index);
 }
 
-void SharedEditor::process(const Message &m) {
+void SharedEditor::process(const EditingMessage &m) {
     if (m.getOperation() == MSG_INSERT) {
         remoteInsert(m.getSymbol());
     } else if (m.getOperation() == MSG_ERASE) {
@@ -182,3 +190,6 @@ void SharedEditor::process(const Message &m) {
     }
 }
 
+int SharedEditor::symbolCount() {
+    return _symbols.size();
+}

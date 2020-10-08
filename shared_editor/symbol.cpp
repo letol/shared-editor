@@ -2,7 +2,7 @@
 // Created by leonardo on 07/05/19.
 //
 
-#include "Symbol.h"
+#include "symbol.h"
 
 int Symbol::getFractIndexDigit(int pos) const {
     int digit;
@@ -28,4 +28,12 @@ size_t Symbol::fractIndexSize() {
 
 QChar Symbol::getValue() {
     return _value;
+}
+
+QTextCharFormat Symbol::getCharFormat() {
+    return _charFormat;
+}
+
+QTextBlockFormat Symbol::getBlockFormat() {
+    return _blockFormat;
 }

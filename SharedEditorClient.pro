@@ -6,26 +6,28 @@ TEMPLATE        = app
 TARGET          = SharedEditorClient
 
 HEADERS         = \
-    Message.h \
-    NetworkServer.h \
-    SharedEditor.h \
-    Symbol.h \
-    logindialog.h \
     notepad.h \
+    logindialog.h \
     registrationdialog.h \
     user.h
-SOURCES         = \
-                  Message.cpp \
-                  NetworkServer.cpp \
-                  SharedEditor.cpp \
-                  Symbol.cpp \
-                  logindialog.cpp \
-                  main.cpp \
-                  notepad.cpp \
-                  registrationdialog.cpp \
-                  user.cpp
 
-RESOURCES += notepad.qrc
+SOURCES         = \
+    logindialog.cpp \
+    main.cpp \
+    notepad.cpp \
+    registrationdialog.cpp \
+    user.cpp
+
+RESOURCES += \
+    notepad.qrc
+
+FORMS += \
+    logindialog.ui \
+    notepad.ui \
+    registrationdialog.ui
+
+include(mock/mock.pri)
+include(shared_editor/shared_editor.pri)
 
 include(network/network.pri)
 include(network/messages/messages.pri)
@@ -33,8 +35,3 @@ include(network/messages/messages.pri)
 # install
 target.path = /home/leonardo/Polito/2018-2019/Programmazione di Sistema/Malnati/
 INSTALLS += target
-
-FORMS += \
-    logindialog.ui \
-    notepad.ui \
-    registrationdialog.ui

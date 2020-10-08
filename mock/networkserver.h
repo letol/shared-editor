@@ -6,20 +6,20 @@
 #include <queue>
 #include <algorithm>
 
-#include "Message.h"
+#include "editingmessage.h"
 
 class SharedEditor;
 
 class NetworkServer {
 private:
     std::vector<SharedEditor*> _connectedEditors;
-    std::queue<Message> _msgQ;
+    std::queue<EditingMessage> _msgQ;
     int _counter = 0;
 public:
     ~NetworkServer();
     int connect(SharedEditor *sharedEditor);
     void disconnect(SharedEditor *sharedEditor);
-    void send(const Message& m);
+    void send(const EditingMessage& m);
     void dispatchMessages();
 };
 
