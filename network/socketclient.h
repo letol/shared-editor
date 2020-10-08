@@ -7,6 +7,7 @@
 #include <QAbstractSocket>
 #include "header.h"
 #include "messageType.h"
+#include "user.h"
 
 class SocketClient : public QObject
 {
@@ -22,6 +23,7 @@ public slots:
     void disconnected();
     void bytesWritten (qint64 bytes);
     void readyRead();
+    void registrationMessage(User userRegistration);
 
 private:
     QTcpSocket *socket;

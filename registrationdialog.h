@@ -3,7 +3,9 @@
 
 #include <QDialog>
 #include <QFileDialog>
-#include <user.h>
+#include "user.h"
+#include "socketclient.h"
+
 
 namespace Ui {
 class RegistrationDialog;
@@ -34,8 +36,8 @@ private slots:
 
 private:
     Ui::RegistrationDialog *ui;
-   // User *user;
-    bool valid[6];//six fields
+
+    bool valid[6];//six fields form registration
 
     void checkValid(bool* valid);
 

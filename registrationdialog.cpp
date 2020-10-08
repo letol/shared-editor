@@ -68,6 +68,14 @@ void RegistrationDialog::on_pushButton_clicked()
     pixmap->save(&buffer, "PNG");
 
 
+    User userMessage(nickname,name,surname,email,pwd,bArray);
+
+    SocketClient s;
+    s.setSocket();
+    s.registrationMessage(userMessage);
+    s.readyRead();
+
+
 
 
 

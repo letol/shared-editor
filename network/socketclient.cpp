@@ -51,7 +51,7 @@ void SocketClient::disconnected()
 // Finished of writing all data in buffer
 void SocketClient::bytesWritten (qint64 bytes)
 {
-    qDebug() << "we wrote: " << bytes;
+    qInfo() << "we wrote: " << bytes;
 }
 
 
@@ -59,7 +59,22 @@ void SocketClient::bytesWritten (qint64 bytes)
 // Read from socket
 void SocketClient::readyRead()
 {
+
+
+
     qDebug() << "Reading...";
     qDebug() << socket->readAll();
+
 }
 
+void SocketClient::registrationMessage(User userRegistration){
+
+    qInfo() << "Registratione";
+    Header haederReg(MessageType::C_REGISTER) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet registration";
+    clientStream << haederReg << userRegistration;
+}
+
+//Password#01

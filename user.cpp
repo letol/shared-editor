@@ -34,11 +34,11 @@ QByteArray User::getImage(){
 }
 
 QDataStream &User::serialize(QDataStream &stream) const {
-  stream << email << password << nickname << name << surname << image;
+  stream << nickname << password << email << name << surname << image;
   return stream;
 }
 
 QDataStream &User::unserialize(QDataStream &stream) {
-  stream >> email >> password >> nickname >> name >> surname >> image;
+  stream >> nickname >> password >> email >> name >> surname >> image;
   return stream;
 }
