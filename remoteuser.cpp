@@ -56,7 +56,7 @@ void RemoteUser::printCursor()
     if (!cursorFrame->isVisible()) {
         cursorFrame->setVisible(true);
     }
-    //curRect.adjust(-2,0,0,0);
+    curRect.adjust(-1,0,1,0);
     cursorFrame->setGeometry(curRect);
     cursorFrame->raise();
 
@@ -76,5 +76,6 @@ void RemoteUser::printCursor()
 
     if (!label->isMouseOver()) {
         label->show();
+        label->raise();
     }
 }
