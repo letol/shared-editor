@@ -29,3 +29,11 @@ size_t Symbol::fractIndexSize() {
 QChar Symbol::getValue() {
     return _value;
 }
+
+QTextCharFormat Symbol::getCharFormat() {
+    return _charFormat;
+}
+
+QTextBlockFormat Symbol::getBlockFormat() {
+    return _blockFormat;
+}

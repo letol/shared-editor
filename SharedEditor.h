@@ -19,15 +19,17 @@ public:
     explicit SharedEditor(NetworkServer &server);
     int getSiteId();
     int getSymbolSiteId(int index);
-    void localInsert(QChar value, int index);
+    QTextCharFormat getSymbolFormat(int index);
+    void localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void localErase(int index);
     void process(const Message& m);
     void remoteInsert(Symbol sym);
     void remoteDelete(Symbol sym);
     QString to_string();
+    int symbolCount();
 
 signals:
-    void remoteCharInserted(int remoteSiteId, QChar value, int index);
+    void remoteCharInserted(int remoteSiteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDeleted(int remoteSiteId, int index);
 
 private:
@@ -36,7 +38,7 @@ private:
     std::vector<Symbol> _symbols;
     int _counter=1;
 
-    Symbol generateSymbol(QChar value, int index);
+    Symbol generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, std::vector<int> &newFractIndex);
     auto findInsertIndex(const Symbol &sym);
     auto findIndexByPos(const Symbol &sym);

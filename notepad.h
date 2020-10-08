@@ -2,10 +2,11 @@
 #define NOTEPAD_H
 
 #include <QMainWindow>
-#include <QTextDocument>
 
 #include "NetworkServer.h"
 #include "SharedEditor.h"
+#include "remoteuser.h"
+#include "texteditoreventfilter.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,7 +17,9 @@ class QAction;
 class QComboBox;
 class QFontComboBox;
 class QTextCharFormat;
+class QTextDocument;
 class QMenu;
+class QLabel;
 
 QT_END_NAMESPACE
 
@@ -51,7 +54,7 @@ private slots:
     void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
-    void remoteCharInsert(int siteId, QChar value, int index);
+    void remoteCharInsert(int siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDelete(int siteId, int index);
     void addRemoteUser(int siteId);
     void removeRemoteUser(int siteId);
@@ -77,6 +80,7 @@ private slots:
     void textColor();
     void colorChanged(const QColor &c);
     void textHighlight();
+    void updateCursors();
 
 private:
     Ui::Notepad *ui;
@@ -93,9 +97,11 @@ private:
     SharedEditor sharedEditor;
     SharedEditor fakeRemoteEditor; // TO BE REMOVED
     QChar fakeRemoteChar; // TO BE REMOVED
-    QMap<int,QTextCursor> remoteUserCursors;
+    SharedEditor fakeRemoteEditor2; // TO BE REMOVED
+    QChar fakeRemoteChar2; // TO BE REMOVED
     QVector<QColor> colors;
-    QMap<int,QColor> remoteUserColors;
+    QMap<int,RemoteUser> remoteUsers;
+    TextEditorEventFilter *textEditorEventFilter;
 };
 
 #endif // NOTEPAD_H
