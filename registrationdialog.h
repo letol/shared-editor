@@ -4,7 +4,6 @@
 #include <QDialog>
 #include <QFileDialog>
 #include "user.h"
-#include "socketclient.h"
 
 
 namespace Ui {
@@ -18,6 +17,9 @@ class RegistrationDialog : public QDialog
 public:
     explicit RegistrationDialog(QWidget *parent = nullptr);
     ~RegistrationDialog();
+
+signals:
+    void registratationData(const User &user);
 
 private slots:
     void on_pushButton_image_clicked();

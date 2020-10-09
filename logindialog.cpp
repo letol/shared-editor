@@ -6,6 +6,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginDialog)
 {
+    socket.setSocket();
     ui->setupUi(this);
 }
 
@@ -33,4 +34,9 @@ void LoginDialog::on_pushButton_clicked()
     this->hide();
     RegistrationDialog *registration = new RegistrationDialog(this);
     registration->show();
+}
+
+void LoginDialog::receveRegistrationData(const User &user)
+{
+    socket.registrationMessage(user);
 }

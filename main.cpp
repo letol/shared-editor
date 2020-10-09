@@ -48,7 +48,7 @@
 **
 ****************************************************************************/
 
-#include "LoginDialog.h"
+#include "logindialog.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])

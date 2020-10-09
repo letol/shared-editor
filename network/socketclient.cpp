@@ -29,7 +29,7 @@ void SocketClient::setSocket()
 // esempio di come mandare un pacchetto.
 void SocketClient::connected()
 {
-    qDebug() << "Connected!";
+    /*qDebug() << "Connected!";
     Header header(MessageType::C_LOGIN);
     // Message messageLogin(QString("pippo"), QString("plutio"));
 
@@ -37,7 +37,7 @@ void SocketClient::connected()
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     qDebug() << "Send packet";
-    clientStream << header;
+    clientStream << header;*/
 }
 
 

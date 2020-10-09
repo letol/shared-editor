@@ -21,6 +21,8 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
 
     }
 
+    connect(this,SIGNAL(registratationData(User)),parent,SLOT(receveRegistrationData(User)));
+
 
 
 }
@@ -62,26 +64,22 @@ void RegistrationDialog::on_pushButton_clicked()
     QString pwdRepeat = ui->lineEdit_password->text();
     // Preparation of our QPixmap
     const QPixmap* pixmap = ui->lbl_image->pixmap();
-    /*QByteArray bArray;
-    QBuffer buffer(&bArray);
-    buffer.open(QIODevice::WriteOnly);
-    pixmap->save(&buffer, "PNG");*/
-    QByteArray bArray ="ciao";
+    QImage image = pixmap->toImage();
+    QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
+    qInfo()<<"sart image";
+    qInfo()<<arr;
+    qInfo()<<"END IMAGE";
+    User userMessage(nickname,name,surname,email,pwd,arr);
+    emit registratationData(userMessage);
 
 
-    User userMessage(nickname,name,surname,email,pwd,bArray);
-
-    SocketClient s;
-    s.setSocket();
-    s.registrationMessage(userMessage);
-    s.readyRead();
 
 
 
 
 
     //controllo nickname valido interroga server
-    //capire come mandare user al server
+
 
 
 
