@@ -47,9 +47,12 @@ void LoginDialog::receveRegistrationData(const User &user)
 void LoginDialog::regOK()
 {
 
-    Notepad *notepad = new Notepad(this);
+
+    Notepad *notepad = new Notepad();
     notepad->showMaximized();
-    registration->hide();
+    emit closeRegDialog();
+
+
 }
 
 void LoginDialog::regKO()
@@ -59,9 +62,10 @@ void LoginDialog::regKO()
 
 void LoginDialog::logOK()
 {
-    Notepad *notepad = new Notepad(this);
-    notepad->showMaximized();
     this->hide();
+    Notepad *notepad = new Notepad();
+    notepad->showMaximized();
+
 }
 
 void LoginDialog::logKO()

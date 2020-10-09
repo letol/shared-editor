@@ -68,16 +68,10 @@ void SocketClient::readyRead()
 
     socketStream >> header;
 
-    qDebug() << "Reading...";
-
-    //QByteArray message = socket->readAll();
-
-   // message >> header; // try to read packet atomically
     switch(header.getType())
     {
 
         case MessageType::S_REGISTER_OK:{
-         qDebug() << "REGOK...";
          emit registrationOK();
             break;
         }
@@ -118,7 +112,7 @@ void SocketClient::loginMessage(User userLogin)
     Header haederReg(MessageType::C_LOGIN) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
-    qInfo() << "Send packet registration";
+    qInfo() << "Send packet login";
     clientStream << haederReg << userLogin;
 }
 

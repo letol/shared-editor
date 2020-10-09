@@ -23,17 +23,18 @@ signals:
 
 public slots:
     void errorHeadling(const QString &str);
+    void close();
 
 private slots:
     void on_pushButton_image_clicked();
     void on_pushButton_clicked();
-    void on_lineEdit_name_textChanged(const QString &arg1);
+    void on_lineEdit_name_textChanged();
 
-    void on_lineEdit_surname_textChanged(const QString &arg1);
+    void on_lineEdit_surname_textChanged();
 
-    void on_lineEdit_nickname_textChanged(const QString &arg1);
+    void on_lineEdit_nickname_textChanged();
 
-    void on_lineEdit_email_textChanged(const QString &arg1);
+    void on_lineEdit_email_textChanged();
 
     void on_lineEdit_password_textChanged(const QString &arg1);
 
@@ -43,9 +44,13 @@ private slots:
 private:
     Ui::RegistrationDialog *ui;
 
-    bool valid[6];//six fields form registration
-
-    void checkValid(bool* valid);
+    QMap<QString, bool> valid={{"name", false},
+                               {"surname", false},
+                               {"nickname", false},
+                               {"email",false},
+                               {"pwd",false},
+                              {"pwdR",false}};
+   void checkValid(QMap<QString,bool> valid);
 
 };
 

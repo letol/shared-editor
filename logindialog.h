@@ -20,6 +20,7 @@ public:
 
 signals:
     void messageRegDialog(const QString& str);
+    void closeRegDialog();
 
 
 private slots:
