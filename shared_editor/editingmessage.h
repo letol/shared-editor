@@ -11,13 +11,13 @@ class EditingMessage : public Serialization {
 private:
     Symbol sym;
     int op;
-    int sender;
+    int senderSiteId;
 
 public:
     EditingMessage(Symbol &sym, int op, int senderSiteId) :
         sym(sym),
         op(op),
-        sender(senderSiteId) {};
+        senderSiteId(senderSiteId) {};
 
     int getSenderSiteId();
     int getOperation() const;
