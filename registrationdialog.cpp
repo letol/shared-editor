@@ -22,7 +22,7 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
     }
 
     connect(this,SIGNAL(registratationData(User)),parent,SLOT(receveRegistrationData(User)));
-
+    connect(parent,SIGNAL(messageRegDialog(QString)),this,SLOT(errorHeadling(QString)));
 
 
 }
@@ -65,10 +65,12 @@ void RegistrationDialog::on_pushButton_clicked()
     // Preparation of our QPixmap
     const QPixmap* pixmap = ui->lbl_image->pixmap();
     QImage image = pixmap->toImage();
-    QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
-    qInfo()<<"sart image";
+    QByteArray arr = "ciao";//QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
+
+
+   /*qInfo()<<"sart image";
     qInfo()<<arr;
-    qInfo()<<"END IMAGE";
+    qInfo()<<"END IMAGE";*/
     User userMessage(nickname,name,surname,email,pwd,arr);
     emit registratationData(userMessage);
 
@@ -208,6 +210,11 @@ void RegistrationDialog::on_lineEdit_pwdrepeat_textChanged(const QString &arg1)
         valid[5]=true;
         checkValid(valid);
      }*/
+}
+
+void RegistrationDialog::errorHeadling(const QString &str)
+{
+    ui->lbl_error->setText(str);
 }
 
 void RegistrationDialog::checkValid(bool* valid){

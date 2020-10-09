@@ -21,6 +21,9 @@ public:
 signals:
     void registratationData(const User &user);
 
+public slots:
+    void errorHeadling(const QString &str);
+
 private slots:
     void on_pushButton_image_clicked();
     void on_pushButton_clicked();
@@ -35,6 +38,7 @@ private slots:
     void on_lineEdit_password_textChanged(const QString &arg1);
 
     void on_lineEdit_pwdrepeat_textChanged(const QString &arg1);
+
 
 private:
     Ui::RegistrationDialog *ui;

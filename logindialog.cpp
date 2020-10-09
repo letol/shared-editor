@@ -6,8 +6,16 @@ LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginDialog)
 {
+
     socket.setSocket();
     ui->setupUi(this);
+
+    connect(&socket,&SocketClient::registrationOK,this,&LoginDialog::regOK);
+    connect(&socket,&SocketClient::registrationKO,this,&LoginDialog::regKO);
+    connect(&socket,&SocketClient::loginOK,this,&LoginDialog::logOK);
+    connect(&socket,&SocketClient::loginKO,this,&LoginDialog::logKO);
+    connect(&socket,&SocketClient::errorDB,this,&LoginDialog::errorDB);
+
 }
 
 LoginDialog::~LoginDialog()
@@ -19,14 +27,9 @@ void LoginDialog::on_pushButton_login_clicked()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
+    User userlogin(username,password);
+    socket.loginMessage(userlogin);
 
-    if(username ==  "test" && password == "test") {
-        Notepad *notepad = new Notepad(this);
-        notepad->showMaximized();
-    }
-    else {
-        QMessageBox::warning(this,"Login", "Username and password is not correct");
-    }
 }
 
 void LoginDialog::on_pushButton_clicked()
@@ -39,4 +42,36 @@ void LoginDialog::on_pushButton_clicked()
 void LoginDialog::receveRegistrationData(const User &user)
 {
     socket.registrationMessage(user);
+}
+
+void LoginDialog::regOK()
+{
+
+    Notepad *notepad = new Notepad(this);
+    notepad->showMaximized();
+    registration->hide();
+}
+
+void LoginDialog::regKO()
+{
+    emit messageRegDialog("Email or nickname are already used");
+}
+
+void LoginDialog::logOK()
+{
+    Notepad *notepad = new Notepad(this);
+    notepad->showMaximized();
+    this->hide();
+}
+
+void LoginDialog::logKO()
+{
+  QMessageBox::warning(this,"Login", "Username and password are not valid");
+
+}
+
+void LoginDialog::errorDB()
+{
+    QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
+    this->close();
 }

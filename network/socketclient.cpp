@@ -59,11 +59,46 @@ void SocketClient::bytesWritten (qint64 bytes)
 // Read from socket
 void SocketClient::readyRead()
 {
+    if(!sender()) return;
+    QDataStream socketStream(socket);
 
+    socketStream.setVersion(QDataStream::Qt_5_12);
 
+    Header header;
+
+    socketStream >> header;
 
     qDebug() << "Reading...";
-    qDebug() << socket->readAll();
+
+    //QByteArray message = socket->readAll();
+
+   // message >> header; // try to read packet atomically
+    switch(header.getType())
+    {
+
+        case MessageType::S_REGISTER_OK:{
+         qDebug() << "REGOK...";
+         emit registrationOK();
+            break;
+        }
+        case MessageType::S_REGISTER_KO:{
+            emit registrationKO();
+            break;
+        }
+        case MessageType::S_ERROR_DB:{
+            emit errorDB();
+            break;
+        }
+        case MessageType::S_LOGIN_OK:{
+            emit loginOK();
+            break;
+        }
+        case MessageType::S_LOGIN_KO:{
+            emit loginKO();
+            break;
+        }
+    }
+
 
 }
 
@@ -75,6 +110,16 @@ void SocketClient::registrationMessage(User userRegistration){
     clientStream.setVersion(QDataStream::Qt_5_12);
     qInfo() << "Send packet registration";
     clientStream << haederReg << userRegistration;
+}
+
+void SocketClient::loginMessage(User userLogin)
+{
+    qInfo() << "Login";
+    Header haederReg(MessageType::C_LOGIN) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet registration";
+    clientStream << haederReg << userLogin;
 }
 
 //Password#01

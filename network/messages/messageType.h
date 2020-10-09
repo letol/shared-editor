@@ -18,6 +18,8 @@ enum class MessageType : qint32 {
     S_LOGIN_KO = -2,
     S_REGISTER_OK = -3,
     S_REGISTER_KO = -4,
+    S_ERROR_DB = -5,
+
 
 };
 

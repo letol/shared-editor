@@ -18,11 +18,20 @@ public:
     explicit LoginDialog(QWidget *parent = nullptr);
     ~LoginDialog();
 
+signals:
+    void messageRegDialog(const QString& str);
+
+
 private slots:
     void on_pushButton_login_clicked();
-
     void on_pushButton_clicked();
     void receveRegistrationData(const User& user);
+    void regOK();
+    void regKO();
+    void logOK();
+    void logKO();
+    void errorDB();
+
 
 private:
     Ui::LoginDialog *ui;
