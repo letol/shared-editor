@@ -37,13 +37,13 @@ void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlo
 }
 
 Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
-    std::vector<int> newFractIndex;
+    QVector<int> newFractIndex;
     if (index == 0) {
         if (_symbols.empty()) {
             newFractIndex.push_back(1);
         } else {
             Symbol sym2 = _symbols[index];
-            std::vector<int> startFractIndex;
+            QVector<int> startFractIndex;
             int size = sym2.fractIndexSize();
             for (int i = 0; i < size - 1; ++i) {
                 startFractIndex.push_back(0);
@@ -64,7 +64,7 @@ Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTe
 }
 
 void
-SharedEditor::generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, std::vector<int> &newFractIndex) {
+SharedEditor::generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, QVector<int> &newFractIndex) {
     int digit1 = sym1.getFractIndexDigit(pos1);
     int digit2 = sym2.getFractIndexDigit(pos2);
 

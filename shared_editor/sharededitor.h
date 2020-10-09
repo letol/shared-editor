@@ -2,7 +2,6 @@
 #define SHAREDEDITOR_H
 
 #include <QObject>
-#include <vector>
 #include <QChar>
 #include <QString>
 
@@ -39,7 +38,7 @@ private:
     int _counter=1;
 
     Symbol generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
-    void generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, std::vector<int> &newFractIndex);
+    void generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, QVector<int> &newFractIndex);
     auto findInsertIndex(const Symbol &sym);
     auto findIndexByPos(const Symbol &sym);
 };

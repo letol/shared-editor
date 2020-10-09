@@ -5,15 +5,23 @@
 #include "editingmessage.h"
 
 int EditingMessage::getSenderSiteId() {
-    return _sender;
+    return sender;
 }
 
 int EditingMessage::getOperation() const {
-    return _op;
+    return op;
 }
 
 Symbol EditingMessage::getSymbol() const {
-    return _sym;
+    return sym;
 }
 
+QDataStream &EditingMessage::serialize(QDataStream &stream) const {
+    stream << op << sym << sender;
+    return stream;
+}
 
+QDataStream &EditingMessage::unserialize(QDataStream &stream) {
+    stream >> op >> sym >> sender;
+    return stream;
+}
