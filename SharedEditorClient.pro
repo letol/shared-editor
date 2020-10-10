@@ -8,6 +8,7 @@ TARGET          = SharedEditorClient
 HEADERS         = \
     notepad.h \
     logindialog.h \
+    onlineUsersDialog.h \
     registrationdialog.h \
     user.h
 
@@ -15,6 +16,7 @@ SOURCES         = \
     logindialog.cpp \
     main.cpp \
     notepad.cpp \
+    onlineUsersDialog.cpp \
     registrationdialog.cpp \
     user.cpp
 
@@ -24,6 +26,7 @@ RESOURCES += \
 FORMS += \
     logindialog.ui \
     notepad.ui \
+    onlineusersdialog.ui \
     registrationdialog.ui
 
 include(mock/mock.pri)
