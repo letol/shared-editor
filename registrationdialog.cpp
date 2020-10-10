@@ -2,7 +2,7 @@
 #include "ui_registrationdialog.h"
 #include <QPixmap>
 #include <QBuffer>
-#include<QDebug>
+#include <QDebug>
 #include <QRegExpValidator>
 
 RegistrationDialog::RegistrationDialog(QWidget *parent) :

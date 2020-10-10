@@ -267,9 +267,20 @@ void Notepad::newDocument()
     // TODO: new online document creation
 }
 
-void Notepad::open()
+void Notepad::open(const QString& path)
 {
-    // TODO: open online document
+
+        QFile file(path);
+        currentFile = path;
+        if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
+            QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
+            return;
+        }
+        setWindowTitle(path);
+        QTextStream in(&file);
+        QString text = in.readAll();
+        ui->textEdit->setText(text);
+        file.close();
 }
 
 void Notepad::save()
