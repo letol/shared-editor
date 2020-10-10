@@ -87,6 +87,7 @@ void RegistrationDialog::on_pushButton_clicked()
     qInfo()<<arr;
     qInfo()<<"END IMAGE";*/
     User userMessage(nickname,name,surname,email,pwd,arr);
+
     emit registratationData(userMessage);
 
 }
