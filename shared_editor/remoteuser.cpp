@@ -2,10 +2,11 @@
 
 #include "remoteuser.h"
 
-RemoteUser::RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *colors) :
+RemoteUser::RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *colors, User userInfo) :
     textEditor(textEditor),
     siteId(siteId),
-    cursor(QTextCursor(textEditor->document()))
+    cursor(QTextCursor(textEditor->document())),
+    userInfo(userInfo)
 {
     color = colors->at(siteId % colors->size());
     QPalette pal = QPalette();
@@ -78,4 +79,9 @@ void RemoteUser::printCursor()
         label->show();
         label->raise();
     }
+}
+
+User RemoteUser::getUserInfo()
+{
+    return userInfo;
 }

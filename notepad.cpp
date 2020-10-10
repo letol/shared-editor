@@ -223,8 +223,8 @@ Notepad::Notepad(QWidget *parent) :
 #endif
 
     // TO BE REMOVED
-    addRemoteUser(fakeRemoteEditor.getSiteId());
-    addRemoteUser(fakeRemoteEditor2.getSiteId());
+    addRemoteUser(fakeRemoteEditor.getSiteId(), User("fake 1", "user", "fake_user_1", "address1@email.com", "pass1", ""));
+    addRemoteUser(fakeRemoteEditor2.getSiteId(), User("fake 2", "user", "fake_user_2", "address2@email.com", "pass2", ""));
     startTimer(5000);
 }
 
@@ -753,10 +753,10 @@ void Notepad::setHighlightOwners(bool highlightOwners)
     ui->textEdit->document()->blockSignals(oldState);
 }
 
-void Notepad::addRemoteUser(int siteId)
+void Notepad::addRemoteUser(int siteId, User userInfo)
 {
     if (!remoteUsers.contains(siteId)) {
-        auto it = remoteUsers.insert(siteId, RemoteUser(ui->textEdit, siteId, &colors));
+        auto it = remoteUsers.insert(siteId, RemoteUser(ui->textEdit, siteId, &colors, userInfo));
         it.value().printCursor();
     }
 }
