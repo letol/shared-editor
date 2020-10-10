@@ -1,35 +1,39 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
 
-#include <vector>
 #include <QChar>
 #include <QTextCharFormat>
 #include <stdexcept>
 
-class Symbol {
+#include "serialization.h"
+
+class Symbol : public Serialization {
 private:
-    QChar _value;
-    QTextCharFormat _charFormat;
-    QTextBlockFormat _blockFormat;
-    int _siteId;
-    int _counter;
-    std::vector<int> _fractIndex;
+    QChar value;
+    QTextCharFormat charFormat;
+    QTextBlockFormat blockFormat;
+    int siteId;
+    int counter;
+    QVector<int> fractIndex;
 public:
-    Symbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int siteId, int counter, std::vector<int> &fractIndex) :
-        _value(value),
-        _charFormat(charFormat),
-        _blockFormat(blockFormat),
-        _siteId(siteId),
-        _counter(counter),
-        _fractIndex(fractIndex) {};
+    Symbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int siteId, int counter, QVector<int> &fractIndex) :
+        value(value),
+        charFormat(charFormat),
+        blockFormat(blockFormat),
+        siteId(siteId),
+        counter(counter),
+        fractIndex(fractIndex) {};
 
     int getFractIndexDigit(int pos) const;
-    std::vector<int> getFractIndex() const;
+    QVector<int> getFractIndex() const;
     int getSiteId();
     size_t fractIndexSize();
     QChar getValue();
     QTextCharFormat getCharFormat();
     QTextBlockFormat getBlockFormat();
+
+    QDataStream &serialize(QDataStream &stream) const override;
+    QDataStream &unserialize(QDataStream &stream) override;
 };
 
 

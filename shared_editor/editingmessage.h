@@ -1,27 +1,31 @@
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef EDITINGMESSAGE_H
+#define EDITINGMESSAGE_H
 
+#include "serialization.h"
 #include "symbol.h"
 
 #define MSG_INSERT  0
 #define MSG_ERASE   1
 
-class EditingMessage {
+class EditingMessage : public Serialization {
 private:
-    Symbol _sym;
-    int _op;
-    int _sender;
+    Symbol sym;
+    int op;
+    int senderSiteId;
 
 public:
     EditingMessage(Symbol &sym, int op, int senderSiteId) :
-        _sym(sym),
-        _op(op),
-        _sender(senderSiteId) {};
+        sym(sym),
+        op(op),
+        senderSiteId(senderSiteId) {};
 
     int getSenderSiteId();
     int getOperation() const;
     Symbol getSymbol() const;
+
+    QDataStream &serialize(QDataStream &stream) const override;
+    QDataStream &unserialize(QDataStream &stream) override;
 };
 
 
-#endif //MESSAGE_H
+#endif //EDITINGMESSAGE_H

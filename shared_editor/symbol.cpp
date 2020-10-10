@@ -7,33 +7,43 @@
 int Symbol::getFractIndexDigit(int pos) const {
     int digit;
     try {
-        digit = _fractIndex.at(pos);
+        digit = fractIndex.at(pos);
     } catch (std::out_of_range& e) {
         return -1;
     }
     return digit;
 }
 
-std::vector<int> Symbol::getFractIndex() const {
-    return _fractIndex;
+QVector<int> Symbol::getFractIndex() const {
+    return fractIndex;
 }
 
 int Symbol::getSiteId() {
-    return _siteId;
+    return siteId;
 }
 
 size_t Symbol::fractIndexSize() {
-    return _fractIndex.size();
+    return fractIndex.size();
 }
 
 QChar Symbol::getValue() {
-    return _value;
+    return value;
 }
 
 QTextCharFormat Symbol::getCharFormat() {
-    return _charFormat;
+    return charFormat;
 }
 
 QTextBlockFormat Symbol::getBlockFormat() {
-    return _blockFormat;
+    return blockFormat;
+}
+
+QDataStream &Symbol::serialize(QDataStream &stream) const {
+    stream << value << charFormat << blockFormat << siteId << counter << fractIndex;
+    return stream;
+}
+
+QDataStream &Symbol::unserialize(QDataStream &stream) {
+    stream >> value >> charFormat >> blockFormat >> siteId >> counter >> fractIndex;
+    return stream;
 }
