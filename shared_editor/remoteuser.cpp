@@ -29,7 +29,7 @@ RemoteUser::RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *color
     blink->start(QPropertyAnimation::DeleteWhenStopped);
 
     //Label init
-    label = new RemoteUserLabel("remote_user", textEditor); //TODO: change with nickname
+    label = new RemoteUserLabel(userInfo.getNickname(), textEditor);
     label->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
     label->setAutoFillBackground(true);
     label->setPalette(pal);
