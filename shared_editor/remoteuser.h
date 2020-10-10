@@ -6,15 +6,17 @@
 #include <QTextCursor>
 
 #include "remoteuserlabel.h"
+#include "user.h"
 
 class RemoteUser
 {
 public:
-    explicit RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *colors);
+    explicit RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *colors, User userInfo);
     int getSiteId();
     QColor getColor();
     QTextCursor* getCursor();
     void printCursor();
+    User getUserInfo();
 
 private:
     QTextEdit *textEditor;
@@ -23,6 +25,7 @@ private:
     QTextCursor cursor;
     QFrame *cursorFrame;
     RemoteUserLabel *label;
+    User userInfo;
 };
 
 #endif // REMOTEUSER_H

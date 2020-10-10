@@ -6,9 +6,9 @@
 
 int Symbol::getFractIndexDigit(int pos) const {
     int digit;
-    try {
+    if (0 <= pos && pos < fractIndex.size()) {
         digit = fractIndex.at(pos);
-    } catch (std::out_of_range& e) {
+    } else {
         return -1;
     }
     return digit;

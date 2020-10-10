@@ -57,7 +57,7 @@ private slots:
     void localChange(int position, int charsRemoved, int charsAdded);
     void remoteCharInsert(int siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDelete(int siteId, int index);
-    void addRemoteUser(int siteId);
+    void addRemoteUser(int siteId, User userInfo);
     void removeRemoteUser(int siteId);
     void remoteCursorPositionChanged(int siteId, int newPos);
     void on_actionExport_PDF_triggered();
