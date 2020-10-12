@@ -20,7 +20,7 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
      QModelIndex idx = fileModel->index(fileModel->rootPath());
      ui->listView->setRootIndex(idx);
      ui->listView->setViewMode(QListView::IconMode);
-     //connect(this,&OpenFileDialog::openFile,&notepad,&Notepad::open);
+
 
 
 
@@ -44,7 +44,7 @@ void OpenFileDialog::on_listView_doubleClicked(const QModelIndex &index)
         ui->listView->setRootIndex(fileModel->setRootPath(path));
     }else{
         QString path = fileModel->fileInfo(index).absoluteFilePath();
-        emit openFile("ciao");
+        //emit openFile();
 
 
 

@@ -72,6 +72,7 @@ void SocketClient::readyRead()
     {
 
         case MessageType::S_REGISTER_OK:{
+
          emit registrationOK();
             break;
         }
@@ -88,6 +89,7 @@ void SocketClient::readyRead()
             break;
         }
         case MessageType::S_LOGIN_KO:{
+
             emit loginKO();
             break;
         }

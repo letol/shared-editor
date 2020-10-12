@@ -170,7 +170,7 @@ Notepad::Notepad(QWidget *parent) :
     ui->textEdit->installEventFilter(textEditorEventFilter);
 
     connect(ui->actionNew, &QAction::triggered, this, &Notepad::newDocument);
-    connect(ui->actionOpen, &QAction::triggered, this, &Notepad::open);
+    //connect(ui->actionOpen, &QAction::triggered, this, &Notepad::open);
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
     connect(ui->actionPrint, &QAction::triggered, this, &Notepad::print);
@@ -210,6 +210,7 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
+
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -262,12 +263,14 @@ void Notepad::timerEvent(QTimerEvent *event)
     fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;
 }
 
+
+
 void Notepad::newDocument()
 {
     // TODO: new online document creation
 }
 
-void Notepad::open(const QString& path)
+/*void Notepad::open(const QString& path)
 {
 
         QFile file(path);
@@ -281,7 +284,7 @@ void Notepad::open(const QString& path)
         QString text = in.readAll();
         ui->textEdit->setText(text);
         file.close();
-}
+}*/
 
 void Notepad::save()
 {

@@ -80,12 +80,12 @@ void RegistrationDialog::on_pushButton_clicked()
     // Preparation of our QPixmap
     const QPixmap* pixmap = ui->lbl_image->pixmap();
     QImage image = pixmap->toImage();
-    QByteArray arr = "ciao";//QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
+    QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
 
 
-   /*qInfo()<<"sart image";
-    qInfo()<<arr;
-    qInfo()<<"END IMAGE";*/
+
+    qInfo()<<arr.size();
+
     User userMessage(nickname,name,surname,email,pwd,arr);
 
     emit registratationData(userMessage);

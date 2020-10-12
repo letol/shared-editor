@@ -16,8 +16,10 @@ class OpenFileDialog : public QDialog
 public:
     explicit OpenFileDialog(QWidget *parent = nullptr);
     ~OpenFileDialog();
+
+
 signals:
-    void openFile(const QString& path);
+    //void openFile();
 private slots:
 
     void on_listView_doubleClicked(const QModelIndex &index);
@@ -25,7 +27,7 @@ private slots:
 private:
     Ui::OpenFileDialog *ui;
     QFileSystemModel *fileModel;
-    Notepad notepad;
+
 
 };
 
