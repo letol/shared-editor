@@ -92,7 +92,7 @@
 
 #include "notepad.h"
 #include "ui_notepad.h"
-#include "onlineUsersDialog.h"
+#include "onlineusersdialog.h"
 //#include "ui_onlineUsersDialog.h"
 
 /*#ifdef Q_OS_MAC

@@ -8,7 +8,7 @@ TARGET          = SharedEditorClient
 HEADERS         = \
     notepad.h \
     logindialog.h \
-    onlineUsersDialog.h \
+    onlineusersdialog.h \
     openfiledialog.h \
     registrationdialog.h \
     user.h
@@ -17,7 +17,7 @@ SOURCES         = \
     logindialog.cpp \
     main.cpp \
     notepad.cpp \
-    onlineUsersDialog.cpp \
+    onlineusersdialog.cpp \
     openfiledialog.cpp \
     registrationdialog.cpp \
     user.cpp

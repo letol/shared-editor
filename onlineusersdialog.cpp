@@ -1,6 +1,6 @@
-#include "onlineUsersDialog.h"
+#include "onlineusersdialog.h"
 #include "remoteuser.h"
-#include "ui_onlineUsersDialog.h"
+#include "ui_onlineusersdialog.h"
 
 OnlineUsersDialog::OnlineUsersDialog(QWidget *parent) :
     QDialog(parent),
@@ -14,6 +14,6 @@ OnlineUsersDialog::~OnlineUsersDialog()
     delete ui;
 }
 
-OnlineUsersDialog::getCountofUsers(QMap<int,RemoteUser> OnlineUsers){
+void OnlineUsersDialog::getCountofUsers(QMap<int,RemoteUser> OnlineUsers){
 
 }
