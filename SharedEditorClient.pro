@@ -9,6 +9,7 @@ HEADERS         = \
     notepad.h \
     logindialog.h \
     onlineUsersDialog.h \
+    openfiledialog.h \
     registrationdialog.h \
     user.h
 
@@ -17,6 +18,7 @@ SOURCES         = \
     main.cpp \
     notepad.cpp \
     onlineUsersDialog.cpp \
+    openfiledialog.cpp \
     registrationdialog.cpp \
     user.cpp
 
@@ -27,6 +29,7 @@ FORMS += \
     logindialog.ui \
     notepad.ui \
     onlineusersdialog.ui \
+    openfiledialog.ui \
     registrationdialog.ui
 
 include(mock/mock.pri)

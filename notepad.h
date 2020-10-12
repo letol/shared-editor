@@ -36,9 +36,11 @@ public:
 protected:
     void timerEvent(QTimerEvent *event) override;
 
-private slots:
+public slots:
+    //void apri();
+    void open(const QString& path);
     void newDocument();
-    void open();
+private slots:
     void save();
     void saveAs();
     void print();

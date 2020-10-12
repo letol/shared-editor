@@ -48,12 +48,15 @@
 **
 ****************************************************************************/
 
-#include "LoginDialog.h"
+#include "logindialog.h"
+#include "openfiledialog.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
+    //OpenFileDialog f;
+    //f.show();
     LoginDialog loginDialog;
     loginDialog.show();
 

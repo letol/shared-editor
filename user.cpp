@@ -1,6 +1,6 @@
 #include "user.h"
 
-User::User(QString name, QString surname, QString nickname, QString email, QString password,QByteArray image)
+User::User(QString nickname, QString name, QString surname, QString email, QString password,QByteArray image)
 {
     this->name=name;
     this->surname=surname;
