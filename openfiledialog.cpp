@@ -8,7 +8,7 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     fileModel = new QFileSystemModel(this);
-    QString sPath = "C:\\Users\\Raluca\\Desktop";//TODO server
+    QString sPath = "";//"C:\\Users\\Raluca\\Desktop";//TODO server
     fileModel->setRootPath(sPath);
 
 
