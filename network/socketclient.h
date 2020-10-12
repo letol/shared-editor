@@ -17,6 +17,11 @@ public:
     void setSocket();
 
 signals:
+    void registrationOK();
+    void registrationKO();
+    void loginOK();
+    void loginKO();
+    void errorDB();
 
 public slots:
     void connected();
@@ -24,6 +29,7 @@ public slots:
     void bytesWritten (qint64 bytes);
     void readyRead();
     void registrationMessage(User userRegistration);
+    void loginMessage(User userLogin);
 
 private:
     QTcpSocket *socket;

@@ -29,7 +29,7 @@ void SocketClient::setSocket()
 // esempio di come mandare un pacchetto.
 void SocketClient::connected()
 {
-    qDebug() << "Connected!";
+    /*qDebug() << "Connected!";
     Header header(MessageType::C_LOGIN);
     // Message messageLogin(QString("pippo"), QString("plutio"));
 
@@ -37,7 +37,7 @@ void SocketClient::connected()
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     qDebug() << "Send packet";
-    clientStream << header;
+    clientStream << header;*/
 }
 
 
@@ -59,11 +59,42 @@ void SocketClient::bytesWritten (qint64 bytes)
 // Read from socket
 void SocketClient::readyRead()
 {
+    if(!sender()) return;
+    QDataStream socketStream(socket);
 
+    socketStream.setVersion(QDataStream::Qt_5_12);
 
+    Header header;
 
-    qDebug() << "Reading...";
-    qDebug() << socket->readAll();
+    socketStream >> header;
+
+    switch(header.getType())
+    {
+
+        case MessageType::S_REGISTER_OK:{
+
+         emit registrationOK();
+            break;
+        }
+        case MessageType::S_REGISTER_KO:{
+            emit registrationKO();
+            break;
+        }
+        case MessageType::S_ERROR_DB:{
+            emit errorDB();
+            break;
+        }
+        case MessageType::S_LOGIN_OK:{
+            emit loginOK();
+            break;
+        }
+        case MessageType::S_LOGIN_KO:{
+
+            emit loginKO();
+            break;
+        }
+    }
+
 
 }
 
@@ -75,6 +106,16 @@ void SocketClient::registrationMessage(User userRegistration){
     clientStream.setVersion(QDataStream::Qt_5_12);
     qInfo() << "Send packet registration";
     clientStream << haederReg << userRegistration;
+}
+
+void SocketClient::loginMessage(User userLogin)
+{
+    qInfo() << "Login";
+    Header haederReg(MessageType::C_LOGIN) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet login";
+    clientStream << haederReg << userLogin;
 }
 
 //Password#01
