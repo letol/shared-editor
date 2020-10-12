@@ -84,6 +84,8 @@ private slots:
     void colorChanged(const QColor &c);
     void textHighlight();
     void updateCursors();
+    void onlineUsersTriggered();
+
 
 
 private:
