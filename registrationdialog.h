@@ -20,6 +20,7 @@ public:
 
 signals:
     void registratationData(const User &user);
+    void openLogin();
 
 public slots:
     void errorHeadling(const QString &str);
@@ -40,6 +41,7 @@ private slots:
 
     void on_lineEdit_pwdrepeat_textChanged(const QString &arg1);
 
+    void on_login_pushButton_clicked();
 
 private:
     Ui::RegistrationDialog *ui;

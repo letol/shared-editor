@@ -30,6 +30,8 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
     connect(this,SIGNAL(registratationData(User)),parent,SLOT(receveRegistrationData(User)));
     connect(parent,SIGNAL(messageRegDialog(QString)),this,SLOT(errorHeadling(QString)));
     connect(parent,SIGNAL(closeRegDialog()),this,SLOT(close()));
+    connect(this,SIGNAL(openLogin()),parent,SLOT(showDialog()));
+
 
 
 }
@@ -222,4 +224,12 @@ void RegistrationDialog::checkValid(QMap<QString,bool> valid){
 
    }
 
+}
+
+
+
+void RegistrationDialog::on_login_pushButton_clicked()
+{
+    this->hide();
+    emit openLogin();
 }

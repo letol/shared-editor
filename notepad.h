@@ -38,10 +38,9 @@ protected:
 
 public slots:
     //void apri();
-    //void open(const QString& path);
-private slots:
+    void open(const QString& path);
     void newDocument();
-
+private slots:
     void save();
     void saveAs();
     void print();

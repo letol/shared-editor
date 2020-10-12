@@ -48,8 +48,10 @@ void LoginDialog::regOK()
 {
 
 
-    Notepad *notepad = new Notepad();
-    notepad->showMaximized();
+    //Notepad *notepad = new Notepad();
+    //notepad->showMaximized();
+    OpenFileDialog *openfile= new OpenFileDialog(this);
+    openfile->show();
     emit closeRegDialog();
 
 
@@ -63,8 +65,10 @@ void LoginDialog::regKO()
 void LoginDialog::logOK()
 {
     this->hide();
-    Notepad *notepad = new Notepad();
-    notepad->showMaximized();
+    OpenFileDialog *openfile= new OpenFileDialog(this);
+    openfile->show();
+    //Notepad *notepad = new Notepad();
+    //notepad->showMaximized();
 
 }
 
@@ -78,4 +82,9 @@ void LoginDialog::errorDB()
 {
     QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
     this->close();
+}
+
+void LoginDialog::showDialog()
+{
+    this->show();
 }

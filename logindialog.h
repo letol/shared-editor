@@ -5,6 +5,7 @@
 #include "notepad.h"
 #include "registrationdialog.h"
 #include "socketclient.h"
+#include "openfiledialog.h"
 
 namespace Ui {
 class LoginDialog;
@@ -32,11 +33,13 @@ private slots:
     void logOK();
     void logKO();
     void errorDB();
+    void showDialog();
 
 
 private:
     Ui::LoginDialog *ui;
-    Notepad *notepad;
+    OpenFileDialog *openfile;
+    //Notepad *notepad;
     RegistrationDialog *registration;
     SocketClient socket;
 

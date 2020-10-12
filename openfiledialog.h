@@ -19,14 +19,18 @@ public:
 
 
 signals:
-    //void openFile();
+    void openFile(const QString& path);
+    void openNewFile();
 private slots:
 
     void on_listView_doubleClicked(const QModelIndex &index);
 
+    void on_pushButton_clicked();
+
 private:
     Ui::OpenFileDialog *ui;
     QFileSystemModel *fileModel;
+    Notepad *notepad;
 
 
 };
