@@ -11,6 +11,7 @@ HEADERS         = \
     onlineusersdialog.h \
     openfiledialog.h \
     registrationdialog.h \
+    updateform.h \
     user.h
 
 SOURCES         = \
@@ -20,6 +21,7 @@ SOURCES         = \
     onlineusersdialog.cpp \
     openfiledialog.cpp \
     registrationdialog.cpp \
+    updateform.cpp \
     user.cpp
 
 RESOURCES += \
@@ -30,7 +32,8 @@ FORMS += \
     notepad.ui \
     onlineusersdialog.ui \
     openfiledialog.ui \
-    registrationdialog.ui
+    registrationdialog.ui \
+    updateform.ui
 
 include(mock/mock.pri)
 include(shared_editor/shared_editor.pri)

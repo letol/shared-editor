@@ -51,6 +51,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QWidgetAction>
 #include <QMessageBox>
 #include <QFont>
 #include <QFontDialog>
@@ -62,6 +63,7 @@
 #include <QClipboard>
 #include <QColorDialog>
 #include <QComboBox>
+#include <QPushButton>
 #include <QFontComboBox>
 #include <QTextBlockFormat>
 #include <QFileInfo>
@@ -79,6 +81,7 @@
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QLabel>
+#include "updateform.h"
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -171,8 +174,31 @@ Notepad::Notepad(QWidget *parent) :
     textEditorEventFilter = new TextEditorEventFilter(this);
     ui->textEdit->installEventFilter(textEditorEventFilter);
 
-   // connect(ui->actionNew, &QAction::triggered, this, &Notepad::newDocument);
-    //connect(ui->actionOpen, &QAction::triggered, this, &Notepad::open);
+    /*QPushButton* updateButton = new QPushButton(ui->menuBar);
+
+
+    updateButton->setFixedHeight(35);
+    updateButton->setFixedWidth(35);
+    QRect *rect = new QRect(0,0,35,35);
+    QRegion* region = new QRegion(*rect,QRegion::Ellipse);
+    updateButton->setMask(*region);
+    updateButton->setIcon(QIcon(":/images/profile.png"));
+    updateButton->setIconSize(updateButton->size());
+    updateButton->setFlat(true);*/
+
+
+
+
+
+    updateButton = new QToolButton(ui->menuBar);
+    updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    updateButton->setIcon(QIcon(":/images/profile.png"));
+    updateButton->setText("Name Surname");
+    updateButton->setPopupMode(QToolButton::InstantPopup);
+    ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
+
+
+
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
     connect(ui->actionPrint, &QAction::triggered, this, &Notepad::print);
@@ -212,8 +238,8 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
-    connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
-
+    //connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
+     connect(updateButton,&QToolButton::clicked, this, &Notepad::showUpdateForm);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -828,5 +854,11 @@ void Notepad::updateCursors()
 void Notepad::onlineUsersTriggered(){
     OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(this);
     onlineUsersDialog->show();
+}
+
+void Notepad::showUpdateForm()
+{
+    UpdateForm *up= new UpdateForm();
+    up->show();
 }
 

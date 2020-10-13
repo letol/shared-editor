@@ -2,6 +2,7 @@
 #define NOTEPAD_H
 
 #include <QMainWindow>
+#include <QToolButton>
 
 #include "networkserver.h"
 #include "sharededitor.h"
@@ -85,6 +86,7 @@ private slots:
     void textHighlight();
     void updateCursors();
     void onlineUsersTriggered();
+    void showUpdateForm();
 
 
 
@@ -94,6 +96,7 @@ private:
     QComboBox *comboStyle;
     QFontComboBox *comboFont;
     QComboBox *comboSize;
+    QToolButton* updateButton;
     
     QToolBar *tb;
     QAction *actionTextColor;

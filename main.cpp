@@ -55,10 +55,10 @@
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
-    //OpenFileDialog f;
-    //f.show();
-    LoginDialog loginDialog;
-    loginDialog.show();
+    Notepad notepad;
+    notepad.showMaximized();
+    //LoginDialog loginDialog;
+    //loginDialog.show();
 
     return EditorApp.exec();
 }
