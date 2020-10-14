@@ -8,7 +8,7 @@ ConfirmPassword::ConfirmPassword(QWidget *parent) :
     ui(new Ui::ConfirmPassword)
 {
     ui->setupUi(this);
-
+    ui->pushButton_ok->setEnabled(false);
     QRegularExpression rx("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
     ui->new_password->setValidator(new QRegularExpressionValidator(rx, this));
 
@@ -79,10 +79,10 @@ void ConfirmPassword::on_new_rpwd_textChanged(const QString &arg1)
 void ConfirmPassword::checkValid(QMap<QString, bool> valid)
 {
     if(valid["pwd"]&&valid["pwdR"]){
-        //manda al server
+         ui->pushButton_ok->setEnabled(true);
 
     }else{
-
+         ui->pushButton_ok->setEnabled(false);
 
     }
 
