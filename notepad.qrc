@@ -32,5 +32,6 @@
         <file>images/italic.png</file>
         <file>images/marker.png</file>
         <file>images/profile.png</file>
+        <file>images/edit.png</file>
     </qresource>
 </RCC>
