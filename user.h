@@ -26,7 +26,7 @@ public:
     QString getPassword();
     QString getName();
     QString getSurname();
-    QByteArray  getImage();
+    QByteArray  getImage() const;
 
     QDataStream &serialize(QDataStream &stream) const override;
     QDataStream &unserialize(QDataStream &stream) override;

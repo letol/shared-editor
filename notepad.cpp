@@ -212,8 +212,8 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
+    connect(parent, SIGNAL(loggedUser(const User&)), this, SLOT(setLocalUser(const User&)));
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
-
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -828,5 +828,13 @@ void Notepad::updateCursors()
 void Notepad::onlineUsersTriggered(){
     OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(this);
     onlineUsersDialog->show();
+
 }
+
+
+void Notepad::setLocalUser(const User &user){
+    localUser = user;
+    ui->actionOnlineUsers->setIcon(QPixmap(user.getImage()));
+}
+
 

@@ -22,7 +22,7 @@ public:
 signals:
     void messageRegDialog(const QString& str);
     void closeRegDialog();
-
+    void loggedUser(const User &user);
 
 private slots:
     void on_pushButton_login_clicked();
@@ -42,7 +42,7 @@ private:
     //Notepad *notepad;
     RegistrationDialog *registration;
     SocketClient socket;
-
+    User loginUser;
 };
 
 #endif // LOGINDIALOG_H

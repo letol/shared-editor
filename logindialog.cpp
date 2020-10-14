@@ -69,6 +69,7 @@ void LoginDialog::logOK()
     openfile->show();
     //Notepad *notepad = new Notepad();
     //notepad->showMaximized();
+     emit loggedUser(loginUser);
 
 }
 

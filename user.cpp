@@ -29,7 +29,7 @@ QString User::getPassword(){
 QString User::getSurname(){
     return surname;
 }
-QByteArray User::getImage(){
+QByteArray User::getImage() const{
     return this->image;
 }
 

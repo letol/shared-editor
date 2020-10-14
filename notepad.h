@@ -85,6 +85,7 @@ private slots:
     void textHighlight();
     void updateCursors();
     void onlineUsersTriggered();
+    void setLocalUser(const User &user);
 
 
 
@@ -108,6 +109,7 @@ private:
     QVector<QColor> colors;
     QMap<int,RemoteUser> remoteUsers;
     TextEditorEventFilter *textEditorEventFilter;
+    User localUser;
 };
 
 #endif // NOTEPAD_H
