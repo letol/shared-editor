@@ -6,6 +6,7 @@ TEMPLATE        = app
 TARGET          = SharedEditorClient
 
 HEADERS         = \
+    confirmpassword.h \
     notepad.h \
     logindialog.h \
     onlineusersdialog.h \
@@ -15,6 +16,7 @@ HEADERS         = \
     user.h
 
 SOURCES         = \
+    confirmpassword.cpp \
     logindialog.cpp \
     main.cpp \
     notepad.cpp \
@@ -28,6 +30,7 @@ RESOURCES += \
     notepad.qrc
 
 FORMS += \
+    confirmpassword.ui \
     logindialog.ui \
     notepad.ui \
     onlineusersdialog.ui \

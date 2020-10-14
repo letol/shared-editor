@@ -173,23 +173,6 @@ Notepad::Notepad(QWidget *parent) :
 
     textEditorEventFilter = new TextEditorEventFilter(this);
     ui->textEdit->installEventFilter(textEditorEventFilter);
-
-    /*QPushButton* updateButton = new QPushButton(ui->menuBar);
-
-
-    updateButton->setFixedHeight(35);
-    updateButton->setFixedWidth(35);
-    QRect *rect = new QRect(0,0,35,35);
-    QRegion* region = new QRegion(*rect,QRegion::Ellipse);
-    updateButton->setMask(*region);
-    updateButton->setIcon(QIcon(":/images/profile.png"));
-    updateButton->setIconSize(updateButton->size());
-    updateButton->setFlat(true);*/
-
-
-
-
-
     updateButton = new QToolButton(ui->menuBar);
     updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     updateButton->setIcon(QIcon(":/images/profile.png"));

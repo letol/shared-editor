@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>updateForm</class>
- <widget class="QWidget" name="updateForm">
+ <class>UpdateForm</class>
+ <widget class="QWidget" name="UpdateForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>176</height>
+    <width>422</width>
+    <height>260</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>30</x>
      <y>40</y>
-     <width>111</width>
-     <height>91</height>
+     <width>121</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -33,31 +33,13 @@
     <string/>
    </property>
   </widget>
-  <widget class="QPushButton" name="button_password">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>100</y>
-     <width>111</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Change password</string>
-   </property>
-   <property name="icon">
-    <iconset>
-     <normalon>:/images/edit.png</normalon>
-    </iconset>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButton_image">
    <property name="geometry">
     <rect>
      <x>120</x>
      <y>130</y>
-     <width>20</width>
-     <height>21</height>
+     <width>31</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="text">
@@ -69,68 +51,109 @@
     </iconset>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QLabel" name="lbl_nome">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>40</y>
-     <width>112</width>
-     <height>26</height>
+     <x>190</x>
+     <y>30</y>
+     <width>168</width>
+     <height>60</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
-     <widget class="QLabel" name="lbl_nome">
-      <property name="text">
-       <string>Raluca Gabriela</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButto_nome">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normalon>:/images/edit.png</normalon>
-       </iconset>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="text">
+    <string>Raluca Gabriela</string>
+   </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QPushButton" name="pushButto_nome">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>70</y>
-     <width>111</width>
+     <x>370</x>
+     <y>40</y>
+     <width>31</width>
      <height>31</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
-     <widget class="QLabel" name="label">
-      <property name="text">
-       <string>Tabacaru         </string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QPushButton" name="pushButton_cognome">
-      <property name="text">
-       <string/>
-      </property>
-      <property name="icon">
-       <iconset>
-        <normalon>:/images/edit.png</normalon>
-       </iconset>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
   </widget>
+  <widget class="QLabel" name="lbl_cognome">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>100</y>
+     <width>171</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Tabacaru</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_cognome">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>110</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="button_password">
+   <property name="geometry">
+    <rect>
+     <x>190</x>
+     <y>160</y>
+     <width>211</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Change password</string>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/edit.png</normalon>
+    </iconset>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbl_error">
+   <property name="geometry">
+    <rect>
+     <x>26</x>
+     <y>213</y>
+     <width>361</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <zorder>lb_image</zorder>
+  <zorder>pushButton_image</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>lbl_nome</zorder>
+  <zorder>pushButto_nome</zorder>
+  <zorder>lbl_cognome</zorder>
+  <zorder>pushButton_cognome</zorder>
+  <zorder>lbl_error</zorder>
+  <zorder>button_password</zorder>
  </widget>
  <resources/>
  <connections/>
