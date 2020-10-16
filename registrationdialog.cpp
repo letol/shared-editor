@@ -29,7 +29,6 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
 
     connect(this,SIGNAL(registratationData(User)),parent,SLOT(receveRegistrationData(User)));
     connect(parent,SIGNAL(messageRegDialog(QString)),this,SLOT(errorHeadling(QString)));
-    connect(parent,SIGNAL(closeRegDialog()),this,SLOT(close()));
     connect(this,SIGNAL(openLogin()),parent,SLOT(showDialog()));
 
 
@@ -206,12 +205,6 @@ void RegistrationDialog::errorHeadling(const QString &str)
     ui->lbl_error->setText(str);
 }
 
-void RegistrationDialog::close()
-{
-
-    this->hide();
-
-}
 
 void RegistrationDialog::checkValid(QMap<QString,bool> valid){
    if(valid["name"]&&valid["surname"]&&valid["nickname"]

@@ -8,6 +8,10 @@
 #include "sharededitor.h"
 #include "remoteuser.h"
 #include "texteditoreventfilter.h"
+#include "logindialog.h"
+#include "socketclient.h"
+#include "messageType.h"
+#include "openfiledialog.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -37,10 +41,17 @@ public:
 protected:
     void timerEvent(QTimerEvent *event) override;
 
+
+signals:
+     void errorLogin(const QString& str);
+     void regClose();
+     void errorReg(const QString& str);
 public slots:
-    //void apri();
     void open(const QString& path);
     void newDocument();
+    void loginData(const User& user);
+    void regData(const User& user);
+
 private slots:
     void save();
     void saveAs();
@@ -88,6 +99,13 @@ private slots:
     void onlineUsersTriggered();
     void showUpdateForm();
 
+    void regOK();
+    void regKO();
+    void logOK();
+    void logKO();
+    void errorDB();
+
+
 
 
 private:
@@ -111,6 +129,12 @@ private:
     QVector<QColor> colors;
     QMap<int,RemoteUser> remoteUsers;
     TextEditorEventFilter *textEditorEventFilter;
+
+    LoginDialog *logindialog;
+    OpenFileDialog *openfile;
+    SocketClient socket;
+
+
 };
 
 #endif // NOTEPAD_H

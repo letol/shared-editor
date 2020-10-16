@@ -48,17 +48,16 @@
 **
 ****************************************************************************/
 
-#include "logindialog.h"
-#include "openfiledialog.h"
+#include "notepad.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
     Notepad notepad;
-    notepad.showMaximized();
-    //LoginDialog loginDialog;
-    //loginDialog.show();
+    notepad.hide();
+
+
 
     return EditorApp.exec();
 }

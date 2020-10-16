@@ -180,6 +180,21 @@ Notepad::Notepad(QWidget *parent) :
     updateButton->setPopupMode(QToolButton::InstantPopup);
     ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
 
+    logindialog = new LoginDialog(this);
+    logindialog->setModal(Qt::WindowModal);
+    logindialog->show();
+
+    openfile = new OpenFileDialog(this);
+    openfile->setModal(Qt::WindowModal);
+
+    socket.setSocket();
+    connect(&socket,&SocketClient::registrationOK,this,&Notepad::regOK);
+    connect(&socket,&SocketClient::registrationKO,this,&Notepad::regKO);
+    connect(&socket,&SocketClient::loginOK,this,&Notepad::logOK);
+    connect(&socket,&SocketClient::loginKO,this,&Notepad::logKO);
+    connect(&socket,&SocketClient::errorDB,this,&Notepad::errorDB);
+
+
 
 
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
@@ -844,4 +859,45 @@ void Notepad::showUpdateForm()
     UpdateForm *up= new UpdateForm();
     up->show();
 }
+
+void Notepad::regOK()
+{
+    emit regClose();
+    openfile->show();
+}
+
+void Notepad::regKO()
+{
+   emit errorReg("Email or nickname are already used");
+
+}
+
+void Notepad::logOK()
+{
+    logindialog->close();
+    openfile->show();
+}
+
+void Notepad::logKO()
+{
+  emit errorLogin("Username and password are not valid");
+}
+
+void Notepad::errorDB()
+{
+    QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
+    this->close();
+}
+
+void Notepad::loginData(const User &user)
+{
+    socket.loginMessage(user);
+}
+
+void Notepad::regData(const User &user)
+{
+    socket.registrationMessage(user);
+
+}
+
 

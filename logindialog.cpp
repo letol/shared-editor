@@ -1,20 +1,26 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include <QMessageBox>
-
+#include "notepad.h"
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginDialog)
 {
 
-    socket.setSocket();
+
     ui->setupUi(this);
 
-    connect(&socket,&SocketClient::registrationOK,this,&LoginDialog::regOK);
-    connect(&socket,&SocketClient::registrationKO,this,&LoginDialog::regKO);
-    connect(&socket,&SocketClient::loginOK,this,&LoginDialog::logOK);
-    connect(&socket,&SocketClient::loginKO,this,&LoginDialog::logKO);
-    connect(&socket,&SocketClient::errorDB,this,&LoginDialog::errorDB);
+    registration = new RegistrationDialog(this);
+    registration->setModal(Qt::ApplicationModal);
+
+    connect(this,SIGNAL(loginData(User)),parent,SLOT(loginData(User)));
+    connect(parent,SIGNAL(errorLogin(QString)),this,SLOT(logKO(QString)));
+    connect(this,SIGNAL(registrationData(User)),parent,SLOT(regData(User)));
+    connect(parent,SIGNAL(regClose()),this,SLOT(regOK()));
+    connect(parent,SIGNAL(errorReg(QString)),this,SLOT(regKO(QString)));
+
+
+
 
 }
 
@@ -28,61 +34,41 @@ void LoginDialog::on_pushButton_login_clicked()
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
     User userlogin(username,password);
-    socket.loginMessage(userlogin);
+    emit loginData(userlogin);
+
+
 
 }
 
 void LoginDialog::on_pushButton_clicked()
 {
     this->hide();
-    RegistrationDialog *registration = new RegistrationDialog(this);
     registration->show();
 }
 
 void LoginDialog::receveRegistrationData(const User &user)
 {
-    socket.registrationMessage(user);
+    emit registrationData(user);
 }
 
 void LoginDialog::regOK()
 {
-
-
-    //Notepad *notepad = new Notepad();
-    //notepad->showMaximized();
-    OpenFileDialog *openfile= new OpenFileDialog(this);
-    openfile->show();
-    emit closeRegDialog();
-
-
+    registration->close();
 }
 
-void LoginDialog::regKO()
+void LoginDialog::regKO(const QString& str)
 {
-    emit messageRegDialog("Email or nickname are already used");
+    emit messageRegDialog(str);
 }
 
-void LoginDialog::logOK()
+
+
+void LoginDialog::logKO(const QString& str)
 {
-    this->hide();
-    OpenFileDialog *openfile= new OpenFileDialog(this);
-    openfile->show();
-    //Notepad *notepad = new Notepad();
-    //notepad->showMaximized();
+  QMessageBox::warning(this,"Erorr Login", str);
 
 }
 
-void LoginDialog::logKO()
-{
-  QMessageBox::warning(this,"Login", "Username and password are not valid");
-
-}
-
-void LoginDialog::errorDB()
-{
-    QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
-    this->close();
-}
 
 void LoginDialog::showDialog()
 {

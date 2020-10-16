@@ -24,7 +24,6 @@ signals:
 
 public slots:
     void errorHeadling(const QString &str);
-    void close();
 
 private slots:
     void on_pushButton_image_clicked();

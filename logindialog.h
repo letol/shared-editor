@@ -2,10 +2,10 @@
 #define LOGINDIALOG_H
 
 #include <QDialog>
-#include "notepad.h"
 #include "registrationdialog.h"
-#include "socketclient.h"
-#include "openfiledialog.h"
+#include "user.h"
+
+
 
 namespace Ui {
 class LoginDialog;
@@ -21,7 +21,8 @@ public:
 
 signals:
     void messageRegDialog(const QString& str);
-    void closeRegDialog();
+    void loginData(const User& user);
+    void registrationData(const User& user);
 
 
 private slots:
@@ -29,19 +30,16 @@ private slots:
     void on_pushButton_clicked();
     void receveRegistrationData(const User& user);
     void regOK();
-    void regKO();
-    void logOK();
-    void logKO();
-    void errorDB();
+    void regKO(const QString& str);
+
+    void logKO(const QString& str);
     void showDialog();
 
 
 private:
     Ui::LoginDialog *ui;
-    OpenFileDialog *openfile;
-    //Notepad *notepad;
     RegistrationDialog *registration;
-    SocketClient socket;
+
 
 };
 

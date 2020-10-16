@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include <QFileSystemModel>
-#include "notepad.h"
+
 
 namespace Ui {
 class OpenFileDialog;
@@ -30,7 +30,7 @@ private slots:
 private:
     Ui::OpenFileDialog *ui;
     QFileSystemModel *fileModel;
-    Notepad *notepad;
+
 
 
 };
