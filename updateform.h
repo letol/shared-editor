@@ -33,6 +33,8 @@ private:
     Ui::UpdateForm *ui;
     QLineEdit *lineNome;
     QLineEdit *lineCognome;
+    bool nameValid = false;
+    bool surnameValid=false;
 };
 
 #endif // UPDATEFORM_H

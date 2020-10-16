@@ -2,6 +2,8 @@
 #include "ui_updateform.h"
 
 #include <QDebug>
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
 
 
 UpdateForm::UpdateForm(QWidget *parent) :
@@ -22,6 +24,10 @@ UpdateForm::UpdateForm(QWidget *parent) :
     lineCognome= new QLineEdit(this);
     lineNome->hide();
     lineCognome->hide();
+    QRegularExpression rxString("^(?!\\s*$).+.",QRegularExpression::CaseInsensitiveOption);
+    lineNome->setValidator(new QRegularExpressionValidator(rxString, this));
+    lineCognome->setValidator(new QRegularExpressionValidator(rxString, this));
+
     connect(lineNome,&QLineEdit::returnPressed,this,&UpdateForm::changeName);
     connect(lineCognome,&QLineEdit::returnPressed,this,&UpdateForm::changeCognome);
 
@@ -42,25 +48,29 @@ void UpdateForm::on_pushButto_nome_clicked()
     lineNome->show();
 
 
-
 }
 
 void UpdateForm::changeName()
 {
+    if(lineNome->hasAcceptableInput()){
+        ui->lbl_nome->setText(lineNome->text());
+        lineNome->hide();
+        ui->lbl_nome->show();
+        //send to server aspetta conferma
+    }
 
-    ui->lbl_nome->setText(lineNome->text());
-    lineNome->hide();
-    ui->lbl_nome->show();
-    //send to server aspetta conferma
 
 }
 
 void UpdateForm::changeCognome()
 {
-    ui->lbl_cognome->setText(lineCognome->text());
-    lineCognome->hide();
-    ui->lbl_cognome->show();
-    //send to server aspetta conferma
+    if(lineCognome->hasAcceptableInput()){
+        ui->lbl_error->clear();
+        ui->lbl_cognome->setText(lineCognome->text());
+        lineCognome->hide();
+        ui->lbl_cognome->show();
+        //send to server aspetta conferma
+    }
 
 }
 
@@ -71,6 +81,7 @@ void UpdateForm::on_pushButton_cognome_clicked()
     lineCognome->setGeometry(pos);
     lineCognome->setText(ui->lbl_cognome->text());
     lineCognome->show();
+
 }
 
 void UpdateForm::on_pushButton_image_clicked()
@@ -103,3 +114,5 @@ void UpdateForm::on_button_password_clicked()
     ConfirmPassword *cp = new ConfirmPassword(this);
     cp->show();
 }
+
+

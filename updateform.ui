@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>422</width>
-    <height>260</height>
+    <height>282</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -137,8 +137,11 @@
      <x>26</x>
      <y>213</y>
      <width>361</width>
-     <height>31</height>
+     <height>61</height>
     </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {color : red; }</string>
    </property>
    <property name="text">
     <string/>
@@ -146,8 +149,6 @@
   </widget>
   <zorder>lb_image</zorder>
   <zorder>pushButton_image</zorder>
-  <zorder>layoutWidget</zorder>
-  <zorder>layoutWidget</zorder>
   <zorder>lbl_nome</zorder>
   <zorder>pushButto_nome</zorder>
   <zorder>lbl_cognome</zorder>
