@@ -81,7 +81,7 @@
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QLabel>
-#include "updateform.h"
+
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -125,6 +125,10 @@ Notepad::Notepad(QWidget *parent) :
         }
 {
     ui->setupUi(this);
+    logindialog = new LoginDialog(this);
+    logindialog->setModal(Qt::WindowModal);
+    logindialog->show();
+
     this->setCentralWidget(ui->textEdit);
   
     QToolBar *tb = ui->toolBar;
@@ -173,16 +177,7 @@ Notepad::Notepad(QWidget *parent) :
 
     textEditorEventFilter = new TextEditorEventFilter(this);
     ui->textEdit->installEventFilter(textEditorEventFilter);
-    updateButton = new QToolButton(ui->menuBar);
-    updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    updateButton->setIcon(QIcon(":/images/profile.png"));
-    updateButton->setText("Name Surname");
-    updateButton->setPopupMode(QToolButton::InstantPopup);
-    ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
 
-    logindialog = new LoginDialog(this);
-    logindialog->setModal(Qt::WindowModal);
-    logindialog->show();
 
     openfile = new OpenFileDialog(this);
     openfile->setModal(Qt::WindowModal);
@@ -193,9 +188,18 @@ Notepad::Notepad(QWidget *parent) :
     connect(&socket,&SocketClient::loginOK,this,&Notepad::logOK);
     connect(&socket,&SocketClient::loginKO,this,&Notepad::logKO);
     connect(&socket,&SocketClient::errorDB,this,&Notepad::errorDB);
+    connect(&socket,&SocketClient::errorOldPwd,this,&Notepad::errorPwd);
+    connect(&socket,&SocketClient::notLogged,this,&Notepad::notLogged);
+    connect(&socket,&SocketClient::updateOK,this,&Notepad::updateOK);
+    connect(&socket,&SocketClient::updateKO,this,&Notepad::updeteKO);
 
+    updateButton = new QToolButton(ui->menuBar);
+    updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    updateButton->setPopupMode(QToolButton::InstantPopup);
+    ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
+    updateForm = new UpdateFormDialog(this);
 
-
+    connect(updateButton,&QToolButton::clicked, this, &Notepad::showUpdateForm);
 
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
@@ -237,7 +241,6 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
     //connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
-     connect(updateButton,&QToolButton::clicked, this, &Notepad::showUpdateForm);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -264,7 +267,7 @@ Notepad::~Notepad()
 // TO BE REMOVED
 void Notepad::timerEvent(QTimerEvent *event)
 {
-    int len = fakeRemoteEditor.to_string().length();
+    /*int len = fakeRemoteEditor.to_string().length();
     int len2 = fakeRemoteEditor.to_string().length();
     int pos = 0;
     int pos2 = 0;
@@ -287,7 +290,7 @@ void Notepad::timerEvent(QTimerEvent *event)
     fmt2.setFontItalic(true);
     fakeRemoteEditor2.localInsert(fakeRemoteChar2, fmt2, QTextBlockFormat(), pos2);
     server.dispatchMessages();
-    fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;
+    fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;*/
 }
 
 
@@ -856,12 +859,21 @@ void Notepad::onlineUsersTriggered(){
 
 void Notepad::showUpdateForm()
 {
-    UpdateForm *up= new UpdateForm();
-    up->show();
+    updateForm->show();
 }
 
-void Notepad::regOK()
+void Notepad::regOK(const User& user)
 {
+    currentUser = user;
+
+    QPixmap pixImage;
+    if(pixImage.loadFromData(currentUser.getImage(),"PNG")|| pixImage.loadFromData(currentUser.getImage(),"JPG")){
+
+        updateButton->setIcon(QIcon(pixImage));
+    }else{qInfo()<<"Pixmap size"<<pixImage.size();}
+
+    updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
+
     emit regClose();
     openfile->show();
 }
@@ -872,8 +884,23 @@ void Notepad::regKO()
 
 }
 
-void Notepad::logOK()
+void Notepad::logOK(const User& user)
 {
+
+    currentUser=user;
+    emit userLogged(user);
+    qInfo()<<currentUser.getImage().size();
+
+    QPixmap pixImage;
+    if(pixImage.loadFromData(currentUser.getImage(),"PNG")|| pixImage.loadFromData(currentUser.getImage(),"JPG")){
+
+        updateButton->setIcon(QIcon(pixImage));
+    }else{qInfo()<<"Pixmap size"<<pixImage.size();}
+
+    updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
+
+
+
     logindialog->close();
     openfile->show();
 }
@@ -889,6 +916,57 @@ void Notepad::errorDB()
     this->close();
 }
 
+void Notepad::notLogged()
+{
+    QMessageBox::warning(this,"Error", "Plese login");
+    logindialog->show();
+}
+
+void Notepad::updateOK(const User& user)
+{
+   User userChanged= user;
+   currentUser = User(userChanged.getName(),userChanged.getSurname(),currentUser.getNickname(),currentUser.getEmail(),userChanged.getPassword(),userChanged.getImage());
+   QPixmap pixImage;
+   pixImage.loadFromData(currentUser.getImage());
+   updateButton->setIcon(pixImage);
+   emit userIsChanged(currentUser);
+}
+
+void Notepad::updeteKO()
+{
+    emit udpKO("Something went wrong. Try later.");
+}
+
+void Notepad::errorPwd()
+{
+    emit pwdKO("Password not valid.");
+}
+
+void Notepad::pwdChanged(const QString &pwd, const QString &pwdr)
+{
+    User userChange = User(currentUser.getName(),currentUser.getSurname(),currentUser.getNickname(),pwd,pwdr,currentUser.getImage());
+    socket.updatePassword(userChange);
+}
+
+void Notepad::nameChanged(const QString &name)
+{
+    User userChange = User(name,currentUser.getSurname(),currentUser.getNickname(),currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
+
+    socket.updateName(userChange);
+}
+
+void Notepad::surnameChanged(const QString &surname)
+{
+    User userChange = User(currentUser.getName(),surname,currentUser.getNickname(),currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
+    socket.updateSurname(userChange);
+}
+
+void Notepad::imageChanged(const QByteArray &image)
+{
+    User userChange = User(currentUser.getImage(),currentUser.getSurname(),currentUser.getNickname(),currentUser.getEmail(),currentUser.getPassword(),image);
+    socket.updateImage(userChange);
+}
+
 void Notepad::loginData(const User &user)
 {
     socket.loginMessage(user);
@@ -896,6 +974,7 @@ void Notepad::loginData(const User &user)
 
 void Notepad::regData(const User &user)
 {
+
     socket.registrationMessage(user);
 
 }

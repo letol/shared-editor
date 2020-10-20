@@ -36,8 +36,6 @@ void LoginDialog::on_pushButton_login_clicked()
     User userlogin(username,password);
     emit loginData(userlogin);
 
-
-
 }
 
 void LoginDialog::on_pushButton_clicked()

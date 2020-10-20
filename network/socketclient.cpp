@@ -25,21 +25,6 @@ void SocketClient::setSocket()
     }
 }
 
-// connected to server
-// esempio di come mandare un pacchetto.
-void SocketClient::connected()
-{
-    /*qDebug() << "Connected!";
-    Header header(MessageType::C_LOGIN);
-    // Message messageLogin(QString("pippo"), QString("plutio"));
-
-   // socket->write("HEAD / HTTP/1.0\r\n\r\n\r\n");
-    QDataStream clientStream(socket);
-    clientStream.setVersion(QDataStream::Qt_5_12);
-    qDebug() << "Send packet";
-    clientStream << header;*/
-}
-
 
 // Disconnected
 void SocketClient::disconnected()
@@ -65,15 +50,17 @@ void SocketClient::readyRead()
     socketStream.setVersion(QDataStream::Qt_5_12);
 
     Header header;
-
+    User userMessage;
     socketStream >> header;
+
+    QByteArray image;
 
     switch(header.getType())
     {
 
         case MessageType::S_REGISTER_OK:{
 
-         emit registrationOK();
+         emit registrationOK(userData);
             break;
         }
         case MessageType::S_REGISTER_KO:{
@@ -85,12 +72,31 @@ void SocketClient::readyRead()
             break;
         }
         case MessageType::S_LOGIN_OK:{
-            emit loginOK();
+
+            socketStream >> userMessage;
+            qDebug()<< "received: " << userMessage.getImage().size();
+            emit loginOK(userMessage);
             break;
         }
         case MessageType::S_LOGIN_KO:{
-
             emit loginKO();
+            break;
+        }
+        case MessageType::S_INPUT_KO:{
+            //Old psw not correct
+            emit errorOldPwd();
+            break;
+        }
+        case MessageType::S_NOT_LOGGED:{
+            emit notLogged();
+            break;
+        }
+        case MessageType::S_UPD_KO:{
+            emit updateKO();
+            break;
+        }
+        case MessageType::S_UPD_OK:{
+            emit updateOK(userData);
             break;
         }
     }
@@ -100,6 +106,7 @@ void SocketClient::readyRead()
 
 void SocketClient::registrationMessage(User userRegistration){
 
+    userData=userRegistration;
     qInfo() << "Registratione";
     Header haederReg(MessageType::C_REGISTER) ;
     QDataStream clientStream(socket);
@@ -118,4 +125,48 @@ void SocketClient::loginMessage(User userLogin)
     clientStream << haederReg << userLogin;
 }
 
-//Password#01
+void SocketClient::updateImage(User user)
+{
+    userData = user;
+    qInfo() << "Update Image";
+    Header haederReg(MessageType::C_UPD_IMG) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet update image";
+    clientStream << haederReg << user;
+}
+
+void SocketClient::updateName(User user)
+{
+    userData = user;
+    qInfo()<<"Update name";
+    Header haederReg(MessageType::C_UPD_NAME) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet update name";
+    clientStream << haederReg << user;
+}
+
+void SocketClient::updateSurname(User user)
+{
+    userData = user;
+    qInfo()<<"Update surname";
+    Header haederReg(MessageType::C_UPD_SURN) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet update surname";
+    clientStream << haederReg << user;
+}
+
+void SocketClient::updatePassword(User user)
+{
+    userData = user;
+    qInfo()<<"Update password";
+    Header haederReg(MessageType::C_UPD_PASS) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    qInfo() << "Send packet update password";
+    clientStream << haederReg << user;
+}
+
+

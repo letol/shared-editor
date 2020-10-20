@@ -12,6 +12,7 @@
 #include "socketclient.h"
 #include "messageType.h"
 #include "openfiledialog.h"
+#include "updateformdialog.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -46,11 +47,17 @@ signals:
      void errorLogin(const QString& str);
      void regClose();
      void errorReg(const QString& str);
+     void udpKO(const QString& str);
+     void pwdKO(const QString& str);
+     void userIsChanged(const User& user);
+     void userLogged(const User& user);
 public slots:
     void open(const QString& path);
     void newDocument();
     void loginData(const User& user);
     void regData(const User& user);
+
+
 
 private slots:
     void save();
@@ -99,11 +106,19 @@ private slots:
     void onlineUsersTriggered();
     void showUpdateForm();
 
-    void regOK();
+    void regOK(const User& user);
     void regKO();
-    void logOK();
+    void logOK(const User& user);
     void logKO();
     void errorDB();
+    void notLogged();
+    void updateOK(const User& user);
+    void updeteKO();
+    void errorPwd();
+    void pwdChanged(const QString& pwd,const QString& pwdr);
+    void nameChanged(const QString& name);
+    void surnameChanged(const QString& surname);
+    void imageChanged(const QByteArray& image);
 
 
 
@@ -132,6 +147,9 @@ private:
 
     LoginDialog *logindialog;
     OpenFileDialog *openfile;
+    UpdateFormDialog *updateForm;
+    User currentUser;
+
     SocketClient socket;
 
 

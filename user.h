@@ -28,6 +28,7 @@ public:
     QString getSurname();
     QByteArray  getImage();
 
+
     QDataStream &serialize(QDataStream &stream) const override;
     QDataStream &unserialize(QDataStream &stream) override;
 };

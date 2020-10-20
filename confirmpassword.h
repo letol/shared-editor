@@ -15,15 +15,15 @@ class ConfirmPassword : public QDialog
 public:
     explicit ConfirmPassword(QWidget *parent = nullptr);
     ~ConfirmPassword();
-
+signals:
+    void passwordData(const QString& pwd,const QString& pwdr);
+public slots:
+    void errorPwd();
 private slots:
     void on_new_password_textChanged(const QString &arg1);
-
     void on_new_rpwd_textChanged(const QString &arg1);
-
-    void on_buttonBox_accepted();
-
     void on_pushButton_clicked();
+
 
     void on_pushButton_cancel_clicked();
 
