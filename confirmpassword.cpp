@@ -36,6 +36,7 @@ void ConfirmPassword::updOK()
     this->ui->new_password->clear();
     this->ui->password->clear();
     this->ui->new_rpwd->clear();
+    ui->error->clear();
 }
 
 void ConfirmPassword::on_new_password_textChanged(const QString &arg1)

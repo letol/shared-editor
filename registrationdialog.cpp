@@ -160,18 +160,19 @@ void RegistrationDialog::on_lineEdit_password_textChanged(const QString &arg1)
         ui->lbl_error->clear();
         valid["pwd"]=true;
         checkValid(valid);
+        if(str.compare(ui->lineEdit_pwdrepeat->text())!=0){
+            ui->lbl_error->setText("Passwords must match");
+            valid["pwdR"]=false;
+
+        }
+        else{
+            ui->lbl_error->clear();
+            valid["pwdR"]=true;
+            checkValid(valid);
+         }
     }
 
-    if(str.compare(ui->lineEdit_pwdrepeat->text())!=0){
-        ui->lbl_error->setText("Passwords must match");
-        valid["pwdR"]=false;
 
-    }
-    else{
-        ui->lbl_error->clear();
-        valid["pwdR"]=true;
-        checkValid(valid);
-     }
    /*
 
     " Password must be:\n" +
