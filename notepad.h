@@ -115,7 +115,7 @@ private slots:
     void updateOK(const User& user);
     void updeteKO();
     void errorPwd();
-    void pwdChanged(const QString& pwd,const QString& pwdr);
+    void pwdChanged(const QString& pwd,const QString& pwdNew);
     void nameChanged(const QString& name);
     void surnameChanged(const QString& surname);
     void imageChanged(const QByteArray& image);

@@ -18,10 +18,12 @@ public:
     explicit UpdateFormDialog(QWidget *parent = nullptr);
     ~UpdateFormDialog();
 signals:
-    void pwdChange(const QString& pwd,const QString& pwdr);
+    void pwdChange(const QString& pwd,const QString& pwdNew);
     void nameChange(const QString& name);
     void surnameChange(const QString& surname);
     void imageChange(const QByteArray& image);
+    void pwdKO(const QString& str);
+    void pwdOK();
 public slots:
     void updateOK(const User& user);
     void updateKO(const QString& str);
@@ -37,7 +39,7 @@ private slots:
     void on_surnameChange_clicked();
     void changeName();
     void changeCognome();
-    void pwdData(const QString& pwd,const QString& pwdr);
+    void pwdData(const QString& pwd,const QString& pwdNew);
 
 
 private:
@@ -46,6 +48,7 @@ private:
     User user;
     QLineEdit *lineName;
     QLineEdit *lineSurname;
+    bool changePwd=false;
 };
 
 #endif // UPDATEFORMDIALOG_H

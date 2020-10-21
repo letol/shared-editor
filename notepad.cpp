@@ -864,16 +864,12 @@ void Notepad::showUpdateForm()
 
 void Notepad::regOK(const User& user)
 {
-    currentUser = user;
-
-    QPixmap pixImage;
-    if(pixImage.loadFromData(currentUser.getImage(),"PNG")|| pixImage.loadFromData(currentUser.getImage(),"JPG")){
-
-        updateButton->setIcon(QIcon(pixImage));
-    }else{qInfo()<<"Pixmap size"<<pixImage.size();}
-
+    currentUser = std::move(user);
+    emit userLogged(currentUser);
+    QImage imagex;
+    imagex.loadFromData(currentUser.getImage());
     updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
-
+    updateButton->setIcon(QIcon(QPixmap::fromImage(imagex)));
     emit regClose();
     openfile->show();
 }
@@ -887,20 +883,12 @@ void Notepad::regKO()
 void Notepad::logOK(const User& user)
 {
 
-    currentUser=user;
-    emit userLogged(user);
-    qInfo()<<currentUser.getImage().size();
-
-    QPixmap pixImage;
-    if(pixImage.loadFromData(currentUser.getImage(),"PNG")|| pixImage.loadFromData(currentUser.getImage(),"JPG")){
-
-        updateButton->setIcon(QIcon(pixImage));
-    }else{qInfo()<<"Pixmap size"<<pixImage.size();}
-
+    currentUser=std::move(user);
+    emit userLogged(currentUser);
+    QImage imagex;
+    imagex.loadFromData(currentUser.getImage());
     updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
-
-
-
+    updateButton->setIcon(QIcon(QPixmap::fromImage(imagex)));
     logindialog->close();
     openfile->show();
 }
@@ -924,11 +912,12 @@ void Notepad::notLogged()
 
 void Notepad::updateOK(const User& user)
 {
-   User userChanged= user;
-   currentUser = User(userChanged.getName(),userChanged.getSurname(),currentUser.getNickname(),currentUser.getEmail(),userChanged.getPassword(),userChanged.getImage());
-   QPixmap pixImage;
-   pixImage.loadFromData(currentUser.getImage());
-   updateButton->setIcon(pixImage);
+   User userChanged= std::move(user);
+   currentUser = User(currentUser.getNickname(),userChanged.getName(),userChanged.getSurname(),currentUser.getEmail(),userChanged.getPassword(),userChanged.getImage());
+   updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
+   QImage imagex;
+   imagex.loadFromData(currentUser.getImage());
+   updateButton->setIcon(QIcon(QPixmap::fromImage(imagex)));
    emit userIsChanged(currentUser);
 }
 
@@ -942,28 +931,28 @@ void Notepad::errorPwd()
     emit pwdKO("Password not valid.");
 }
 
-void Notepad::pwdChanged(const QString &pwd, const QString &pwdr)
+void Notepad::pwdChanged(const QString &pwd, const QString &pwdNew)
 {
-    User userChange = User(currentUser.getName(),currentUser.getSurname(),currentUser.getNickname(),pwd,pwdr,currentUser.getImage());
+    User userChange = User(currentUser.getNickname(),currentUser.getName(),currentUser.getSurname(),pwd,pwdNew,currentUser.getImage());
     socket.updatePassword(userChange);
 }
 
 void Notepad::nameChanged(const QString &name)
 {
-    User userChange = User(name,currentUser.getSurname(),currentUser.getNickname(),currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
+    User userChange = User(currentUser.getNickname(),name,currentUser.getSurname(),currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
 
     socket.updateName(userChange);
 }
 
 void Notepad::surnameChanged(const QString &surname)
 {
-    User userChange = User(currentUser.getName(),surname,currentUser.getNickname(),currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
+    User userChange = User(currentUser.getNickname(),currentUser.getName(),surname,currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
     socket.updateSurname(userChange);
 }
 
 void Notepad::imageChanged(const QByteArray &image)
 {
-    User userChange = User(currentUser.getImage(),currentUser.getSurname(),currentUser.getNickname(),currentUser.getEmail(),currentUser.getPassword(),image);
+    User userChange = User(currentUser.getNickname(),currentUser.getName(),currentUser.getSurname(),currentUser.getEmail(),currentUser.getPassword(),image);
     socket.updateImage(userChange);
 }
 

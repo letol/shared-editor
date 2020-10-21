@@ -20,6 +20,7 @@ UpdateFormDialog::UpdateFormDialog(QWidget *parent) :
     lineName->setValidator(new QRegularExpressionValidator(rxString, this));
     lineSurname->setValidator(new QRegularExpressionValidator(rxString, this));
 
+
     connect(lineName,&QLineEdit::returnPressed,this,&UpdateFormDialog::changeName);
     connect(lineSurname,&QLineEdit::returnPressed,this,&UpdateFormDialog::changeCognome);
     connect(this,SIGNAL(pwdChange(QString,QString)),parent,SLOT(pwdChanged(QString,QString)));
@@ -41,15 +42,11 @@ UpdateFormDialog::~UpdateFormDialog()
 void UpdateFormDialog::updateOK(const User &user)
 {
    User userChange=user;
+   if(changePwd){
+       emit pwdOK();
+       changePwd=false;
+   }
    ui->error->clear();
-   /* QImage image;
-    image.loadFromData(userChange.getImage());
-    image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
-    image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
-    ui->image->setPixmap(QPixmap::fromImage(image));*/
-
-
-
 }
 
 void UpdateFormDialog::updateKO(const QString &str)
@@ -61,27 +58,25 @@ void UpdateFormDialog::updateKO(const QString &str)
 
 void UpdateFormDialog::pwdError(const QString &str)
 {
-    QMessageBox::warning(this,"Error password", str);
+   emit pwdKO(str);
 }
 
 void UpdateFormDialog::userLogged(const User &userL)
 {
     user=userL;
-    QPixmap pixmap;
-    qInfo()<<"Image size:"<< user.getImage().size();
-
     QImage image;
-    if(image.loadFromData(user.getImage()))
-    {
-        qInfo()<< image.size();
-        image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
-        image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
-        ui->image->setPixmap(QPixmap::fromImage(image));
-        ui->image->show();
-    }
+    image.loadFromData(user.getImage());
+    image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
+    image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
+    ui->image->setPixmap(QPixmap::fromImage(image));
+
+
+
 
     ui->surmane->setText(user.getSurname());
     ui->name->setText(user.getName());
+    ui->nickname->setText(user.getNickname());
+    ui->email->setText(user.getEmail());
 
 
 }
@@ -89,7 +84,7 @@ void UpdateFormDialog::userLogged(const User &userL)
 
 void UpdateFormDialog::on_imageChange_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg)"));
+    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png)"));
 
            if(QString::compare(filename,QString())!=0){
                QImage image;
@@ -98,8 +93,10 @@ void UpdateFormDialog::on_imageChange_clicked()
                    image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
                    image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
                    ui->image->setPixmap(QPixmap::fromImage(image));
-                   QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.sizeInBytes());
-                   emit imageChange(arr);
+                   QByteArray byteArray;
+                   QBuffer buffer(&byteArray);
+                   image.save(&buffer, "PNG");
+                   emit imageChange(byteArray);
                    ui->error->clear();
 
 
@@ -159,8 +156,9 @@ void UpdateFormDialog::changeCognome()
     }
 }
 
-void UpdateFormDialog::pwdData(const QString &pwd, const QString &pwdr)
+void UpdateFormDialog::pwdData(const QString &pwd, const QString &pwdNew)
 {
-    emit pwdChange(pwd,pwdr);
+    emit pwdChange(pwd,pwdNew);
+    changePwd=true;
 
 }

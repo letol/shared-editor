@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QRegExpValidator>
 
+
 RegistrationDialog::RegistrationDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RegistrationDialog)
@@ -42,7 +43,7 @@ RegistrationDialog::~RegistrationDialog()
 
 void RegistrationDialog::on_pushButton_image_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg)"));
+    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png)"));
 
     if(QString::compare(filename,QString())!=0){
         QImage image;
@@ -81,13 +82,13 @@ void RegistrationDialog::on_pushButton_clicked()
     // Preparation of our QPixmap
     const QPixmap* pixmap = ui->lbl_image->pixmap();
     QImage image = pixmap->toImage();
-    QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
+
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray);
+    image.save(&buffer, "PNG");
 
 
-
-    qInfo()<<arr.size();
-
-    User userMessage(nickname,name,surname,email,pwd,arr);
+    User userMessage(nickname,name,surname,email,pwd,byteArray);
 
     emit registratationData(userMessage);
 

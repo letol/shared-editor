@@ -1,4 +1,5 @@
 #include "socketclient.h"
+
 SocketClient::SocketClient(QObject *parent) :
     QObject(parent)
 {
@@ -23,6 +24,12 @@ void SocketClient::setSocket()
     {
        qDebug() << "Error: " <<  socket->errorString();
     }
+}
+
+void SocketClient::connected()
+{
+    qInfo()<<"Connected";
+    //emit connesso()
 }
 
 
@@ -51,54 +58,87 @@ void SocketClient::readyRead()
 
     Header header;
     User userMessage;
+    // Start to read the message
+    socketStream.startTransaction();
+
+
     socketStream >> header;
-
-    QByteArray image;
-
     switch(header.getType())
     {
 
         case MessageType::S_REGISTER_OK:{
+            if (!socketStream.commitTransaction())
+                return;
 
-         emit registrationOK(userData);
-            break;
+             emit registrationOK(userData);
+             break;
         }
         case MessageType::S_REGISTER_KO:{
+            if (!socketStream.commitTransaction())
+                return;
             emit registrationKO();
             break;
         }
         case MessageType::S_ERROR_DB:{
+            if (!socketStream.commitTransaction())
+                return;
             emit errorDB();
             break;
         }
         case MessageType::S_LOGIN_OK:{
 
-            socketStream >> userMessage;
-            qDebug()<< "received: " << userMessage.getImage().size();
+            socketStream>>userMessage;
+                    //User("taba95","Raluca","Tabacaru","t.rg@gmail.com","Password#01","");
+            if (!socketStream.commitTransaction())
+                return;
+            qDebug()<< "Received: " ;
+            qDebug()<< "image size: " << userMessage.getImage().size();
+            qDebug()<< "name: " << userMessage.getName();
+            qDebug()<< "surname: " << userMessage.getSurname();
+            qDebug()<< "email: " << userMessage.getEmail();
+            qDebug()<< "nickname: " << userMessage.getNickname();
+            qDebug()<< "password: " << userMessage.getPassword();
             emit loginOK(userMessage);
             break;
         }
         case MessageType::S_LOGIN_KO:{
+            if (!socketStream.commitTransaction())
+                return;
             emit loginKO();
             break;
         }
         case MessageType::S_INPUT_KO:{
             //Old psw not correct
+            if (!socketStream.commitTransaction())
+                return;
+            qInfo()<<"Error pwd";
             emit errorOldPwd();
             break;
         }
         case MessageType::S_NOT_LOGGED:{
+            if (!socketStream.commitTransaction())
+                return;
+            qInfo()<<"Not logged";
             emit notLogged();
             break;
         }
         case MessageType::S_UPD_KO:{
+            if (!socketStream.commitTransaction())
+                return;
+            qInfo()<<"upd ko";
             emit updateKO();
+
             break;
         }
+
         case MessageType::S_UPD_OK:{
+            if (!socketStream.commitTransaction())
+                return;
+            qInfo()<<"upd ok";
             emit updateOK(userData);
             break;
         }
+
     }
 
 
@@ -117,6 +157,7 @@ void SocketClient::registrationMessage(User userRegistration){
 
 void SocketClient::loginMessage(User userLogin)
 {
+
     qInfo() << "Login";
     Header haederReg(MessageType::C_LOGIN) ;
     QDataStream clientStream(socket);
