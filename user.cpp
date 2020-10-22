@@ -33,6 +33,11 @@ QByteArray User::getImage(){
     return this->image;
 }
 
+void User::setImage(QByteArray arr)
+{
+    this->image=arr;
+}
+
 
 
 QDataStream &User::serialize(QDataStream &stream) const {

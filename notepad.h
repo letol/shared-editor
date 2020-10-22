@@ -57,8 +57,6 @@ public slots:
     void loginData(const User& user);
     void regData(const User& user);
 
-
-
 private slots:
     void save();
     void saveAs();
@@ -119,6 +117,7 @@ private slots:
     void nameChanged(const QString& name);
     void surnameChanged(const QString& surname);
     void imageChanged(const QByteArray& image);
+    void errorServer();
 
 
 

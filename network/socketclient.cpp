@@ -1,5 +1,6 @@
 #include "socketclient.h"
 
+
 SocketClient::SocketClient(QObject *parent) :
     QObject(parent)
 {
@@ -14,6 +15,8 @@ void SocketClient::setSocket()
     connect(socket,SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(socket,SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(socket,SIGNAL(bytesWritten(qint64)),this,SLOT(bytesWritten(qint64)));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                    this, SLOT(error(QAbstractSocket::SocketError)) , Qt::DirectConnection);
 
     qDebug() << "Connecting...";
 
@@ -23,13 +26,20 @@ void SocketClient::setSocket()
     if(!socket->waitForConnected(5000))
     {
        qDebug() << "Error: " <<  socket->errorString();
+       //emit errorServer();
     }
 }
 
 void SocketClient::connected()
 {
-    qInfo()<<"Connected";
-    //emit connesso()
+    if(!socket->waitForConnected(5000)){
+        qInfo()<<"error";
+
+    }
+
+    else {
+        qInfo()<<"Connected";
+    }
 }
 
 
@@ -208,6 +218,11 @@ void SocketClient::updatePassword(User user)
     clientStream.setVersion(QDataStream::Qt_5_12);
     qInfo() << "Send packet update password";
     clientStream << haederReg << user;
+}
+
+void SocketClient::error(QAbstractSocket::SocketError socketError)
+{
+       emit errorServer();
 }
 
 

@@ -43,15 +43,21 @@ RegistrationDialog::~RegistrationDialog()
 
 void RegistrationDialog::on_pushButton_image_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png)"));
+    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg *.jpeg)"));
 
     if(QString::compare(filename,QString())!=0){
         QImage image;
         bool check = image.load(filename);
+        const char* typeImage = std::move(filename.split(".")[1].toUpper().toStdString().c_str());
+
         if(check){
             image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
             image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
             ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray);
+            image.save(&buffer, typeImage);
+            user.setImage(byteArray);
             ui->lbl_error->clear();
 
 
@@ -74,23 +80,11 @@ void RegistrationDialog::on_pushButton_clicked()
 
     QString pwd = ui->lineEdit_password->text();
     pwd.replace(" ","");
-
-
-
-
     QString pwdRepeat = ui->lineEdit_password->text();
-    // Preparation of our QPixmap
-    const QPixmap* pixmap = ui->lbl_image->pixmap();
-    QImage image = pixmap->toImage();
+    QByteArray byteArray = user.getImage();
+    user=User(nickname,name,surname,email,pwd,byteArray);
 
-    QByteArray byteArray;
-    QBuffer buffer(&byteArray);
-    image.save(&buffer, "PNG");
-
-
-    User userMessage(nickname,name,surname,email,pwd,byteArray);
-
-    emit registratationData(userMessage);
+    emit registratationData(user);
 
 }
 

@@ -26,6 +26,8 @@ signals:
     void updateOK(const User& user);
     void updateKO();
     void errorOldPwd();
+    void errorServer();
+
 
 public slots:
     void connected();
@@ -38,6 +40,7 @@ public slots:
     void updateName(User user);
     void updateSurname(User user);
     void updatePassword(User user);
+    void error(QAbstractSocket::SocketError socketError);
 
 private:
     QTcpSocket *socket;

@@ -84,18 +84,19 @@ void UpdateFormDialog::userLogged(const User &userL)
 
 void UpdateFormDialog::on_imageChange_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png)"));
+    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg *.jpeg)"));
 
            if(QString::compare(filename,QString())!=0){
                QImage image;
                bool check = image.load(filename);
+               const char* typeImage = std::move(filename.split(".")[1].toUpper().toStdString().c_str());
                if(check){
                    image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
                    image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
                    ui->image->setPixmap(QPixmap::fromImage(image));
                    QByteArray byteArray;
                    QBuffer buffer(&byteArray);
-                   image.save(&buffer, "PNG");
+                   image.save(&buffer, typeImage);
                    emit imageChange(byteArray);
                    ui->error->clear();
 

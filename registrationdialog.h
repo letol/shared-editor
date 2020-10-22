@@ -44,6 +44,7 @@ private slots:
 
 private:
     Ui::RegistrationDialog *ui;
+    User user;
 
     QMap<QString, bool> valid={{"name", false},
                                {"surname", false},

@@ -192,6 +192,8 @@ Notepad::Notepad(QWidget *parent) :
     connect(&socket,&SocketClient::notLogged,this,&Notepad::notLogged);
     connect(&socket,&SocketClient::updateOK,this,&Notepad::updateOK);
     connect(&socket,&SocketClient::updateKO,this,&Notepad::updeteKO);
+    connect(&socket,SIGNAL(errorServer()),this,SLOT(errorServer()),Qt::DirectConnection);
+    //connect(&socket,&SocketClient::errorServer,this,&Notepad::errorServer);
 
     updateButton = new QToolButton(ui->menuBar);
     updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -965,6 +967,14 @@ void Notepad::regData(const User &user)
 {
 
     socket.registrationMessage(user);
+
+}
+
+void Notepad::errorServer()
+{
+    qInfo()<<"ciao";
+    //logindialog->close();
+    QMessageBox::critical(this,"Error","Error");
 
 }
 
