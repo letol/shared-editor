@@ -48,14 +48,16 @@
 **
 ****************************************************************************/
 
-#include "notepad.h"
+
 #include <QApplication>
+#include "controller.h"
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
-    Notepad notepad;
-    notepad.hide();
+    Controller controler;
+    controler.open();
+
 
 
 

@@ -12,9 +12,6 @@ ConfirmPassword::ConfirmPassword(QWidget *parent) :
     QRegularExpression rx("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
     ui->new_password->setValidator(new QRegularExpressionValidator(rx, this));
     ui->password->setCursor(QCursor());
-    connect(this,SIGNAL(passwordData(QString,QString)),parent,SLOT(pwdData(QString,QString)));
-    connect(parent,SIGNAL(pwdKO(QString)),this,SLOT(errorPwd(QString)));
-    connect(parent,SIGNAL(pwdOK()),this,SLOT(updOK()));
 
 }
 

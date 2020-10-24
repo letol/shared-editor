@@ -40,7 +40,7 @@ public slots:
     void updateName(User user);
     void updateSurname(User user);
     void updatePassword(User user);
-    void error(QAbstractSocket::SocketError socketError);
+    void error();
 
 private:
     QTcpSocket *socket;

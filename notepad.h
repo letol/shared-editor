@@ -8,11 +8,7 @@
 #include "sharededitor.h"
 #include "remoteuser.h"
 #include "texteditoreventfilter.h"
-#include "logindialog.h"
-#include "socketclient.h"
-#include "messageType.h"
-#include "openfiledialog.h"
-#include "updateformdialog.h"
+
 
 
 QT_BEGIN_NAMESPACE
@@ -37,26 +33,15 @@ class Notepad : public QMainWindow
 public:
     explicit Notepad(QWidget *parent = nullptr);
     ~Notepad();
-
+signals:
+    void showUpdateForm();
 // TO BE REMOVED
 protected:
     void timerEvent(QTimerEvent *event) override;
-
-
-signals:
-     void errorLogin(const QString& str);
-     void regClose();
-     void errorReg(const QString& str);
-     void udpKO(const QString& str);
-     void pwdKO(const QString& str);
-     void userIsChanged(const User& user);
-     void userLogged(const User& user);
 public slots:
     void open(const QString& path);
     void newDocument();
-    void loginData(const User& user);
-    void regData(const User& user);
-
+    void updateButtonIcon(const QString& nameSurname,const QImage& image);
 private slots:
     void save();
     void saveAs();
@@ -102,25 +87,7 @@ private slots:
     void textHighlight();
     void updateCursors();
     void onlineUsersTriggered();
-    void showUpdateForm();
-
-    void regOK(const User& user);
-    void regKO();
-    void logOK(const User& user);
-    void logKO();
-    void errorDB();
-    void notLogged();
-    void updateOK(const User& user);
-    void updeteKO();
-    void errorPwd();
-    void pwdChanged(const QString& pwd,const QString& pwdNew);
-    void nameChanged(const QString& name);
-    void surnameChanged(const QString& surname);
-    void imageChanged(const QByteArray& image);
-    void errorServer();
-
-
-
+    void pushUpdateButton();
 
 private:
     Ui::Notepad *ui;
@@ -144,12 +111,9 @@ private:
     QMap<int,RemoteUser> remoteUsers;
     TextEditorEventFilter *textEditorEventFilter;
 
-    LoginDialog *logindialog;
-    OpenFileDialog *openfile;
-    UpdateFormDialog *updateForm;
-    User currentUser;
 
-    SocketClient socket;
+
+
 
 
 };

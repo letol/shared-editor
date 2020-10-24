@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include <QLineEdit>
-#include <confirmpassword.h>
 #include <user.h>
 
 namespace Ui {
@@ -18,16 +17,14 @@ public:
     explicit UpdateFormDialog(QWidget *parent = nullptr);
     ~UpdateFormDialog();
 signals:
-    void pwdChange(const QString& pwd,const QString& pwdNew);
+    void showCP();
     void nameChange(const QString& name);
     void surnameChange(const QString& surname);
     void imageChange(const QByteArray& image);
-    void pwdKO(const QString& str);
-    void pwdOK();
+    void logout();
 public slots:
     void updateOK(const User& user);
     void updateKO(const QString& str);
-    void pwdError(const QString& str);
     void userLogged(const User& userL);
 private slots:
     void on_imageChange_clicked();
@@ -39,16 +36,14 @@ private slots:
     void on_surnameChange_clicked();
     void changeName();
     void changeCognome();
-    void pwdData(const QString& pwd,const QString& pwdNew);
-
+    void on_logout_clicked();
 
 private:
     Ui::UpdateFormDialog *ui;
-    ConfirmPassword *cp;
     User user;
     QLineEdit *lineName;
     QLineEdit *lineSurname;
-    bool changePwd=false;
+
 };
 
 #endif // UPDATEFORMDIALOG_H

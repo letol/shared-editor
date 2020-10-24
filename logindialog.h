@@ -2,7 +2,6 @@
 #define LOGINDIALOG_H
 
 #include <QDialog>
-#include "registrationdialog.h"
 #include "user.h"
 
 
@@ -20,25 +19,22 @@ public:
     ~LoginDialog();
 
 signals:
-    void messageRegDialog(const QString& str);
     void loginData(const User& user);
-    void registrationData(const User& user);
+    void clickSignIn();
+
 
 
 private slots:
     void on_pushButton_login_clicked();
     void on_pushButton_clicked();
-    void receveRegistrationData(const User& user);
-    void regOK();
-    void regKO(const QString& str);
-
     void logKO(const QString& str);
-    void showDialog();
 
+    void on_lineEdit_username_textChanged();
+
+    void on_lineEdit_password_textChanged();
 
 private:
     Ui::LoginDialog *ui;
-    RegistrationDialog *registration;
 
 
 };

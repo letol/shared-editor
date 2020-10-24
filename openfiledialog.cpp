@@ -21,8 +21,7 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
      ui->listView->setRootIndex(idx);
      ui->listView->setViewMode(QListView::IconMode);
 
-     connect(this,SIGNAL(openFile(QString)),parent,SLOT(open(QString)));
-     connect(this,SIGNAL(openNewFile()),parent,SLOT(newDocument()));
+
 
 
 }

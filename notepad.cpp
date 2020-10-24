@@ -125,10 +125,6 @@ Notepad::Notepad(QWidget *parent) :
         }
 {
     ui->setupUi(this);
-    logindialog = new LoginDialog(this);
-    logindialog->setModal(Qt::WindowModal);
-    logindialog->show();
-
     this->setCentralWidget(ui->textEdit);
   
     QToolBar *tb = ui->toolBar;
@@ -179,29 +175,11 @@ Notepad::Notepad(QWidget *parent) :
     ui->textEdit->installEventFilter(textEditorEventFilter);
 
 
-    openfile = new OpenFileDialog(this);
-    openfile->setModal(Qt::WindowModal);
-
-    socket.setSocket();
-    connect(&socket,&SocketClient::registrationOK,this,&Notepad::regOK);
-    connect(&socket,&SocketClient::registrationKO,this,&Notepad::regKO);
-    connect(&socket,&SocketClient::loginOK,this,&Notepad::logOK);
-    connect(&socket,&SocketClient::loginKO,this,&Notepad::logKO);
-    connect(&socket,&SocketClient::errorDB,this,&Notepad::errorDB);
-    connect(&socket,&SocketClient::errorOldPwd,this,&Notepad::errorPwd);
-    connect(&socket,&SocketClient::notLogged,this,&Notepad::notLogged);
-    connect(&socket,&SocketClient::updateOK,this,&Notepad::updateOK);
-    connect(&socket,&SocketClient::updateKO,this,&Notepad::updeteKO);
-    connect(&socket,SIGNAL(errorServer()),this,SLOT(errorServer()),Qt::DirectConnection);
-    //connect(&socket,&SocketClient::errorServer,this,&Notepad::errorServer);
-
     updateButton = new QToolButton(ui->menuBar);
     updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
     updateButton->setPopupMode(QToolButton::InstantPopup);
     ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
-    updateForm = new UpdateFormDialog(this);
-
-    connect(updateButton,&QToolButton::clicked, this, &Notepad::showUpdateForm);
+    connect(updateButton,&QToolButton::clicked, this, &Notepad::pushUpdateButton);
 
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
@@ -269,7 +247,7 @@ Notepad::~Notepad()
 // TO BE REMOVED
 void Notepad::timerEvent(QTimerEvent *event)
 {
-    /*int len = fakeRemoteEditor.to_string().length();
+    int len = fakeRemoteEditor.to_string().length();
     int len2 = fakeRemoteEditor.to_string().length();
     int pos = 0;
     int pos2 = 0;
@@ -292,7 +270,7 @@ void Notepad::timerEvent(QTimerEvent *event)
     fmt2.setFontItalic(true);
     fakeRemoteEditor2.localInsert(fakeRemoteChar2, fmt2, QTextBlockFormat(), pos2);
     server.dispatchMessages();
-    fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;*/
+    fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;
 }
 
 
@@ -303,6 +281,12 @@ void Notepad::newDocument()
     currentFile.clear();
     ui->textEdit->setText(QString());
     this->showMaximized();
+}
+
+void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
+{
+    updateButton->setText(nameSurname);
+    updateButton->setIcon(QIcon(QPixmap::fromImage(image)));
 }
 
 void Notepad::open(const QString& path)
@@ -859,123 +843,13 @@ void Notepad::onlineUsersTriggered(){
     onlineUsersDialog->show();
 }
 
-void Notepad::showUpdateForm()
+void Notepad::pushUpdateButton()
 {
-    updateForm->show();
+    emit showUpdateForm();
 }
 
-void Notepad::regOK(const User& user)
-{
-    currentUser = std::move(user);
-    emit userLogged(currentUser);
-    QImage imagex;
-    imagex.loadFromData(currentUser.getImage());
-    updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
-    updateButton->setIcon(QIcon(QPixmap::fromImage(imagex)));
-    emit regClose();
-    openfile->show();
-}
 
-void Notepad::regKO()
-{
-   emit errorReg("Email or nickname are already used");
 
-}
 
-void Notepad::logOK(const User& user)
-{
-
-    currentUser=std::move(user);
-    emit userLogged(currentUser);
-    QImage imagex;
-    imagex.loadFromData(currentUser.getImage());
-    updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
-    updateButton->setIcon(QIcon(QPixmap::fromImage(imagex)));
-    logindialog->close();
-    openfile->show();
-}
-
-void Notepad::logKO()
-{
-  emit errorLogin("Username and password are not valid");
-}
-
-void Notepad::errorDB()
-{
-    QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
-    this->close();
-}
-
-void Notepad::notLogged()
-{
-    QMessageBox::warning(this,"Error", "Plese login");
-    logindialog->show();
-}
-
-void Notepad::updateOK(const User& user)
-{
-   User userChanged= std::move(user);
-   currentUser = User(currentUser.getNickname(),userChanged.getName(),userChanged.getSurname(),currentUser.getEmail(),userChanged.getPassword(),userChanged.getImage());
-   updateButton->setText(currentUser.getName()+" "+currentUser.getSurname());
-   QImage imagex;
-   imagex.loadFromData(currentUser.getImage());
-   updateButton->setIcon(QIcon(QPixmap::fromImage(imagex)));
-   emit userIsChanged(currentUser);
-}
-
-void Notepad::updeteKO()
-{
-    emit udpKO("Something went wrong. Try later.");
-}
-
-void Notepad::errorPwd()
-{
-    emit pwdKO("Password not valid.");
-}
-
-void Notepad::pwdChanged(const QString &pwd, const QString &pwdNew)
-{
-    User userChange = User(currentUser.getNickname(),currentUser.getName(),currentUser.getSurname(),pwd,pwdNew,currentUser.getImage());
-    socket.updatePassword(userChange);
-}
-
-void Notepad::nameChanged(const QString &name)
-{
-    User userChange = User(currentUser.getNickname(),name,currentUser.getSurname(),currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
-
-    socket.updateName(userChange);
-}
-
-void Notepad::surnameChanged(const QString &surname)
-{
-    User userChange = User(currentUser.getNickname(),currentUser.getName(),surname,currentUser.getEmail(),currentUser.getPassword(),currentUser.getImage());
-    socket.updateSurname(userChange);
-}
-
-void Notepad::imageChanged(const QByteArray &image)
-{
-    User userChange = User(currentUser.getNickname(),currentUser.getName(),currentUser.getSurname(),currentUser.getEmail(),currentUser.getPassword(),image);
-    socket.updateImage(userChange);
-}
-
-void Notepad::loginData(const User &user)
-{
-    socket.loginMessage(user);
-}
-
-void Notepad::regData(const User &user)
-{
-
-    socket.registrationMessage(user);
-
-}
-
-void Notepad::errorServer()
-{
-    qInfo()<<"ciao";
-    //logindialog->close();
-    QMessageBox::critical(this,"Error","Error");
-
-}
 
 

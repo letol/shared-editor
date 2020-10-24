@@ -10,7 +10,6 @@ UpdateFormDialog::UpdateFormDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    cp = new ConfirmPassword(this);
 
     lineName= new QLineEdit(this);
     lineSurname= new QLineEdit(this);
@@ -23,15 +22,8 @@ UpdateFormDialog::UpdateFormDialog(QWidget *parent) :
 
     connect(lineName,&QLineEdit::returnPressed,this,&UpdateFormDialog::changeName);
     connect(lineSurname,&QLineEdit::returnPressed,this,&UpdateFormDialog::changeCognome);
-    connect(this,SIGNAL(pwdChange(QString,QString)),parent,SLOT(pwdChanged(QString,QString)));
-    connect(this,SIGNAL(nameChange(QString)),parent,SLOT(nameChanged(QString)));
-    connect(this,SIGNAL(surnameChange(QString)),parent,SLOT(surnameChanged(QString)));
-    connect(this,SIGNAL(imageChange(QByteArray)),parent,SLOT(imageChanged(QByteArray)));
 
-    connect(parent,SIGNAL(userIsChanged(User)),this,SLOT(updateOK(User)));
-    connect(parent,SIGNAL(udpKO(QString)),this,SLOT(updateKO(QString)));
-    connect(parent,SIGNAL(pwdKO(QString)),this,SLOT(pwdError(QString)));
-    connect(parent,SIGNAL(userLogged(User)),this,SLOT(userLogged(User)));
+
 }
 
 UpdateFormDialog::~UpdateFormDialog()
@@ -42,10 +34,6 @@ UpdateFormDialog::~UpdateFormDialog()
 void UpdateFormDialog::updateOK(const User &user)
 {
    User userChange=user;
-   if(changePwd){
-       emit pwdOK();
-       changePwd=false;
-   }
    ui->error->clear();
 }
 
@@ -54,11 +42,6 @@ void UpdateFormDialog::updateKO(const QString &str)
     ui->error->setText(str);
     ui->name->setText(user.getName());
     ui->surmane->setText(user.getSurname());
-}
-
-void UpdateFormDialog::pwdError(const QString &str)
-{
-   emit pwdKO(str);
 }
 
 void UpdateFormDialog::userLogged(const User &userL)
@@ -113,7 +96,7 @@ void UpdateFormDialog::on_imageChange_clicked()
 
 void UpdateFormDialog::on_passwordChange_clicked()
 {
-    cp->show();
+    emit showCP();
 }
 
 void UpdateFormDialog::on_nameChange_clicked()
@@ -157,9 +140,9 @@ void UpdateFormDialog::changeCognome()
     }
 }
 
-void UpdateFormDialog::pwdData(const QString &pwd, const QString &pwdNew)
-{
-    emit pwdChange(pwd,pwdNew);
-    changePwd=true;
 
+
+void UpdateFormDialog::on_logout_clicked()
+{
+    emit logout();
 }
