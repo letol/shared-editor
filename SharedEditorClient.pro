@@ -7,6 +7,7 @@ TARGET          = SharedEditorClient
 
 HEADERS         = \
     confirmpassword.h \
+    controller.h \
     notepad.h \
     logindialog.h \
     onlineusersdialog.h \
@@ -17,6 +18,7 @@ HEADERS         = \
 
 SOURCES         = \
     confirmpassword.cpp \
+    controller.cpp \
     logindialog.cpp \
     main.cpp \
     notepad.cpp \

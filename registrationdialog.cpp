@@ -213,5 +213,24 @@ void RegistrationDialog::checkValid(QMap<QString,bool> valid){
 void RegistrationDialog::on_login_pushButton_clicked()
 {
     this->hide();
+    this->clean();
     emit openLogin();
+}
+
+void RegistrationDialog::clean()
+{
+    QImage image;
+    image.load(":/images/profile.png");
+    image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+    image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
+    ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+    ui->lbl_error->clear();
+    ui->lbl_error->setText("");
+    ui->lineEdit_name->clear();
+    ui->lineEdit_surname->clear();
+    ui->lineEdit_email->clear();
+    ui->lineEdit_password->clear();
+    ui->lineEdit_pwdrepeat->clear();
+    ui->lineEdit_nickname->clear();
+
 }

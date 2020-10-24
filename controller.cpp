@@ -1,5 +1,4 @@
 #include "controller.h"
-
 #include <QMessageBox>
 
 Controller::Controller(QWidget *parent) :
@@ -30,6 +29,7 @@ Controller::Controller(QWidget *parent) :
     connect(logindialog,SIGNAL(loginData(User)),this,SLOT(loginData(User)));
     connect(this,SIGNAL(errorLogin(QString)),logindialog,SLOT(logKO(QString)));
     connect(logindialog,SIGNAL(clickSignIn()),this,SLOT(openReg()));
+    connect(this,SIGNAL(loginDialogClear()),logindialog,SLOT(clean()));
 
     connect(regDialog,SIGNAL(registratationData(User)),this,SLOT(regData(User)));
     connect(this,SIGNAL(errorReg(QString)),regDialog,SLOT(errorHeadling(QString)));
@@ -48,7 +48,7 @@ Controller::Controller(QWidget *parent) :
     connect(updateForm,SIGNAL(surnameChange(QString)),this,SLOT(surnameChanged(QString)));
     connect(updateForm,SIGNAL(imageChange(QByteArray)),this,SLOT(imageChanged(QByteArray)));
     connect(updateForm,SIGNAL(showCP()),this,SLOT(openCP()));
-    connect(updateForm,SIGNAL(logout()),this,SLOT(logout));
+    connect(updateForm,&UpdateFormDialog::logout,this,&Controller::logout);
 
     connect(confirmpwd,SIGNAL(passwordData(QString,QString)),this,SLOT(pwdChanged(QString,QString)));
     connect(this,&Controller::pwdKO,confirmpwd,&ConfirmPassword::errorPwd);
@@ -98,6 +98,7 @@ void Controller::regOK(const User& user)
     //to updateButton in notepad
     emit updateButton(str,imagex);
 
+
     regDialog->close();
     openfile->show();
 }
@@ -120,7 +121,7 @@ void Controller::logOK(const User& user)
     imagex.loadFromData(currentUser.getImage());
 
     emit updateButton(currentUser.getName()+" "+currentUser.getSurname(),imagex);
-
+    emit loginDialogClear();
     logindialog->close();
     openfile->show();
 }
@@ -229,5 +230,8 @@ void Controller::logout()
     currentUser= User();
     //socket.logoutMessage(currentUser)
     notepad->close();
+    updateForm->close();
+    confirmpwd->close();
+    emit loginDialogClear();
     logindialog->show();
 }

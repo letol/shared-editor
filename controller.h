@@ -27,6 +27,8 @@ signals:
     void userIsChanged(const User& user);
     void userLogged(const User& user);
     void pwdOK();
+    void loginDialogClear();
+
 public slots:
     void open();
 private slots:

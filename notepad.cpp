@@ -220,7 +220,7 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
-    //connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
+    connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)

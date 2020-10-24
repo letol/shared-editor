@@ -28,10 +28,9 @@ private slots:
     void on_pushButton_login_clicked();
     void on_pushButton_clicked();
     void logKO(const QString& str);
-
     void on_lineEdit_username_textChanged();
-
     void on_lineEdit_password_textChanged();
+    void clean();
 
 private:
     Ui::LoginDialog *ui;

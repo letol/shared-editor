@@ -62,3 +62,10 @@ void LoginDialog::on_lineEdit_password_textChanged()
         ui->pushButton_login->setEnabled(false);
 
 }
+
+void LoginDialog::clean()
+{
+    ui->lineEdit_password->clear();
+    ui->lineEdit_username->clear();
+
+}
