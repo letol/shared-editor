@@ -111,10 +111,10 @@ void RegistrationDialog::on_lineEdit_nickname_textChanged()
 {
     if(!ui->lineEdit_nickname->hasAcceptableInput()){
          ui->lbl_error->setText("Nickname must be not empty");
-        valid["nickname"]=false;
+         valid["nickname"]=false;
     }
     else{
-         ui->lbl_error->clear();
+        ui->lbl_error->clear();
         valid["nickname"]=true;
         checkValid(valid);
     }
@@ -225,7 +225,6 @@ void RegistrationDialog::clean()
     image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
     ui->lbl_image->setPixmap(QPixmap::fromImage(image));
     ui->lbl_error->clear();
-    ui->lbl_error->setText("");
     ui->lineEdit_name->clear();
     ui->lineEdit_surname->clear();
     ui->lineEdit_email->clear();
