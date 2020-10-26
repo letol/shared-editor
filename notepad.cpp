@@ -111,10 +111,6 @@ Notepad::Notepad(QWidget *parent) :
     ui(new Ui::Notepad),
     server(),
     sharedEditor(server),
-    fakeRemoteEditor(server), // TO BE REMOVED
-    fakeRemoteChar('a'), // TO BE REMOVED
-    fakeRemoteEditor2(server), // TO BE REMOVED
-    fakeRemoteChar2('a'), // TO BE REMOVED
     colors{
         QColorConstants::Green,
         QColorConstants::Red,
@@ -233,47 +229,12 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionPaste->setEnabled(false);
 #endif
 
-    // TO BE REMOVED
-    addRemoteUser(fakeRemoteEditor.getSiteId(), User("fake 1", "user", "fake_user_1", "address1@email.com", "pass1", ""));
-    addRemoteUser(fakeRemoteEditor2.getSiteId(), User("fake 2", "user", "fake_user_2", "address2@email.com", "pass2", ""));
-    startTimer(5000);
 }
 
 Notepad::~Notepad()
 {
     delete ui;
 }
-
-// TO BE REMOVED
-void Notepad::timerEvent(QTimerEvent *event)
-{
-    int len = fakeRemoteEditor.to_string().length();
-    int len2 = fakeRemoteEditor.to_string().length();
-    int pos = 0;
-    int pos2 = 0;
-    if (len) {
-        pos = rand()%len;
-    }
-    if (len2) {
-        pos2 = rand()%len2;
-    }
-
-    qDebug() << "Remote 1 typed: " << fakeRemoteChar << ", at pos: " << pos;
-    QTextCharFormat fmt;
-    fmt.setFontItalic(true);
-    fakeRemoteEditor.localInsert(fakeRemoteChar, fmt, QTextBlockFormat(), pos);
-    server.dispatchMessages();
-    fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
-
-    qDebug() << "Remote 2 typed: " << fakeRemoteChar2 << ", at pos: " << pos2;
-    QTextCharFormat fmt2;
-    fmt2.setFontItalic(true);
-    fakeRemoteEditor2.localInsert(fakeRemoteChar2, fmt2, QTextBlockFormat(), pos2);
-    server.dispatchMessages();
-    fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;
-}
-
-
 
 void Notepad::newDocument()
 {

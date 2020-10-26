@@ -35,13 +35,12 @@ public:
     ~Notepad();
 signals:
     void showUpdateForm();
-// TO BE REMOVED
-protected:
-    void timerEvent(QTimerEvent *event) override;
+
 public slots:
     void open(const QString& path);
     void newDocument();
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
+
 private slots:
     void save();
     void saveAs();
@@ -103,10 +102,6 @@ private:
     
     NetworkServer server;
     SharedEditor sharedEditor;
-    SharedEditor fakeRemoteEditor; // TO BE REMOVED
-    QChar fakeRemoteChar; // TO BE REMOVED
-    SharedEditor fakeRemoteEditor2; // TO BE REMOVED
-    QChar fakeRemoteChar2; // TO BE REMOVED
     QVector<QColor> colors;
     QMap<int,RemoteUser> remoteUsers;
     TextEditorEventFilter *textEditorEventFilter;

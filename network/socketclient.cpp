@@ -47,7 +47,6 @@ void SocketClient::disconnected()
 // Finished of writing all data in buffer
 void SocketClient::bytesWritten (qint64 bytes)
 {
-    qInfo() << "we wrote: " << bytes;
 }
 
 
@@ -71,6 +70,7 @@ void SocketClient::readyRead()
     {
 
         case MessageType::S_REGISTER_OK:{
+            qDebug() << "Received: S_REGISTER_OK";
             if (!socketStream.commitTransaction())
                 return;
 
@@ -78,19 +78,21 @@ void SocketClient::readyRead()
              break;
         }
         case MessageType::S_REGISTER_KO:{
+            qDebug() << "Received: S_REGISTER_KO";
             if (!socketStream.commitTransaction())
                 return;
             emit registrationKO();
             break;
         }
         case MessageType::S_ERROR_DB:{
+            qDebug() << "Received: S_ERROR_DB";
             if (!socketStream.commitTransaction())
                 return;
             emit errorDB();
             break;
         }
         case MessageType::S_LOGIN_OK:{
-
+            qDebug() << "Received: S_LOGIN_OK";
             socketStream>>userMessage;
             if (!socketStream.commitTransaction())
                 return;
@@ -98,12 +100,14 @@ void SocketClient::readyRead()
             break;
         }
         case MessageType::S_LOGIN_KO:{
+            qDebug() << "Received: S_LOGIN_KO";
             if (!socketStream.commitTransaction())
                 return;
             emit loginKO();
             break;
         }
         case MessageType::S_INPUT_KO:{
+            qDebug() << "Received: S_INPUT_KO";
             //Old psw not correct
             if (!socketStream.commitTransaction())
                 return;
@@ -111,12 +115,14 @@ void SocketClient::readyRead()
             break;
         }
         case MessageType::S_NOT_LOGGED:{
+            qDebug() << "Received: S_NOT_LOGGED";
             if (!socketStream.commitTransaction())
                 return;
             emit notLogged();
             break;
         }
         case MessageType::S_UPD_KO:{
+            qDebug() << "Received: S_UPD_KO";
             if (!socketStream.commitTransaction())
                 return;
             emit updateKO();
@@ -125,15 +131,19 @@ void SocketClient::readyRead()
         }
 
         case MessageType::S_UPD_OK:{
+            qDebug() << "Received: S_UPD_OK";
             if (!socketStream.commitTransaction())
                 return;
             emit updateOK(userData);
             break;
         }
 
+        default:{
+            qDebug() << "Unknown MessageTyps: wait for more data";
+            if (!socketStream.commitTransaction())
+                return;     // wait for more data
+        }
     }
-
-
 }
 
 void SocketClient::registrationMessage(User userRegistration){
@@ -143,6 +153,7 @@ void SocketClient::registrationMessage(User userRegistration){
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << haederReg << userRegistration;
+    qDebug() << "Sent: C_REGISTER";
 }
 
 void SocketClient::loginMessage(User userLogin)
@@ -151,6 +162,7 @@ void SocketClient::loginMessage(User userLogin)
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << haederReg << userLogin;
+    qDebug() << "Sent: C_LOGIN";
 }
 
 void SocketClient::updateImage(User user)
@@ -160,6 +172,7 @@ void SocketClient::updateImage(User user)
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_IMG";
 }
 
 void SocketClient::updateName(User user)
@@ -168,6 +181,7 @@ void SocketClient::updateName(User user)
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_NAME";
 }
 
 void SocketClient::updateSurname(User user)
@@ -176,6 +190,7 @@ void SocketClient::updateSurname(User user)
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_SURN";
 }
 
 void SocketClient::updatePassword(User user)
@@ -184,6 +199,7 @@ void SocketClient::updatePassword(User user)
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_PASS";
 }
 
 void SocketClient::error()

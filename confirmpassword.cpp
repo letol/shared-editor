@@ -28,7 +28,7 @@ void ConfirmPassword::errorPwd(const QString& str)
 
 void ConfirmPassword::updOK()
 {
-    QMessageBox::information(this,"Success","Password was upadte");
+    QMessageBox::information(this,"Success","Password updated");
     this->close();
     this->ui->new_password->clear();
     this->ui->password->clear();
