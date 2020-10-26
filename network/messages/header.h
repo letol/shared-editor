@@ -27,6 +27,8 @@ public:
     MessageType &getType();
 
 
+
+
 };
 
 #endif // HEADER_H

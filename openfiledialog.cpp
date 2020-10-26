@@ -20,12 +20,6 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
      QModelIndex idx = fileModel->index(fileModel->rootPath());
      ui->listView->setRootIndex(idx);
      ui->listView->setViewMode(QListView::IconMode);
-     Notepad *notepad = new Notepad();
-     connect(this,&OpenFileDialog::openFile,notepad,&Notepad::open);
-     connect(this,&OpenFileDialog::openNewFile,notepad,&Notepad::newDocument);
-
-
-
 
 
 

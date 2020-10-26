@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QRegExpValidator>
 
+
 RegistrationDialog::RegistrationDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::RegistrationDialog)
@@ -26,14 +27,6 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
     ui->lineEdit_name->setValidator(new QRegularExpressionValidator(rxString, this));
     ui->lineEdit_surname->setValidator(new QRegularExpressionValidator(rxString, this));
     ui->lineEdit_nickname->setValidator(new QRegularExpressionValidator(rxString, this));
-
-    connect(this,SIGNAL(registratationData(User)),parent,SLOT(receveRegistrationData(User)));
-    connect(parent,SIGNAL(messageRegDialog(QString)),this,SLOT(errorHeadling(QString)));
-    connect(parent,SIGNAL(closeRegDialog()),this,SLOT(close()));
-    connect(this,SIGNAL(openLogin()),parent,SLOT(showDialog()));
-
-
-
 }
 
 RegistrationDialog::~RegistrationDialog()
@@ -43,15 +36,21 @@ RegistrationDialog::~RegistrationDialog()
 
 void RegistrationDialog::on_pushButton_image_clicked()
 {
-    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg)"));
+    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg *.jpeg)"));
 
     if(QString::compare(filename,QString())!=0){
         QImage image;
         bool check = image.load(filename);
+        const char* typeImage = std::move(filename.split(".")[1].toUpper().toStdString().c_str());
+
         if(check){
             image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
             image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
             ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray);
+            image.save(&buffer, typeImage);
+            user.setImage(byteArray);
             ui->lbl_error->clear();
 
 
@@ -74,23 +73,11 @@ void RegistrationDialog::on_pushButton_clicked()
 
     QString pwd = ui->lineEdit_password->text();
     pwd.replace(" ","");
-
-
-
-
     QString pwdRepeat = ui->lineEdit_password->text();
-    // Preparation of our QPixmap
-    const QPixmap* pixmap = ui->lbl_image->pixmap();
-    QImage image = pixmap->toImage();
-    QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
+    QByteArray byteArray = user.getImage();
+    user=User(nickname,name,surname,email,pwd,byteArray);
 
-
-
-    qInfo()<<arr.size();
-
-    User userMessage(nickname,name,surname,email,pwd,arr);
-
-    emit registratationData(userMessage);
+    emit registratationData(user);
 
 }
 
@@ -124,10 +111,10 @@ void RegistrationDialog::on_lineEdit_nickname_textChanged()
 {
     if(!ui->lineEdit_nickname->hasAcceptableInput()){
          ui->lbl_error->setText("Nickname must be not empty");
-        valid["nickname"]=false;
+         valid["nickname"]=false;
     }
     else{
-         ui->lbl_error->clear();
+        ui->lbl_error->clear();
         valid["nickname"]=true;
         checkValid(valid);
     }
@@ -160,18 +147,19 @@ void RegistrationDialog::on_lineEdit_password_textChanged(const QString &arg1)
         ui->lbl_error->clear();
         valid["pwd"]=true;
         checkValid(valid);
+        if(str.compare(ui->lineEdit_pwdrepeat->text())!=0){
+            ui->lbl_error->setText("Passwords must match");
+            valid["pwdR"]=false;
+
+        }
+        else{
+            ui->lbl_error->clear();
+            valid["pwdR"]=true;
+            checkValid(valid);
+         }
     }
 
-    if(str.compare(ui->lineEdit_pwdrepeat->text())!=0){
-        ui->lbl_error->setText("Passwords must match");
-        valid["pwdR"]=false;
 
-    }
-    else{
-        ui->lbl_error->clear();
-        valid["pwdR"]=true;
-        checkValid(valid);
-     }
    /*
 
     " Password must be:\n" +
@@ -206,12 +194,6 @@ void RegistrationDialog::errorHeadling(const QString &str)
     ui->lbl_error->setText(str);
 }
 
-void RegistrationDialog::close()
-{
-
-    this->hide();
-
-}
 
 void RegistrationDialog::checkValid(QMap<QString,bool> valid){
    if(valid["name"]&&valid["surname"]&&valid["nickname"]
@@ -231,5 +213,23 @@ void RegistrationDialog::checkValid(QMap<QString,bool> valid){
 void RegistrationDialog::on_login_pushButton_clicked()
 {
     this->hide();
+    this->clean();
     emit openLogin();
+}
+
+void RegistrationDialog::clean()
+{
+    QImage image;
+    image.load(":/images/profile.png");
+    image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+    image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
+    ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+    ui->lbl_error->clear();
+    ui->lineEdit_name->clear();
+    ui->lineEdit_surname->clear();
+    ui->lineEdit_email->clear();
+    ui->lineEdit_password->clear();
+    ui->lineEdit_pwdrepeat->clear();
+    ui->lineEdit_nickname->clear();
+
 }

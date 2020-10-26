@@ -2,11 +2,13 @@
 #define NOTEPAD_H
 
 #include <QMainWindow>
+#include <QToolButton>
 
 #include "networkserver.h"
 #include "sharededitor.h"
 #include "remoteuser.h"
 #include "texteditoreventfilter.h"
+
 
 
 QT_BEGIN_NAMESPACE
@@ -31,15 +33,14 @@ class Notepad : public QMainWindow
 public:
     explicit Notepad(QWidget *parent = nullptr);
     ~Notepad();
-
-// TO BE REMOVED
-protected:
-    void timerEvent(QTimerEvent *event) override;
+signals:
+    void showUpdateForm();
 
 public slots:
-    //void apri();
     void open(const QString& path);
     void newDocument();
+    void updateButtonIcon(const QString& nameSurname,const QImage& image);
+
 private slots:
     void save();
     void saveAs();
@@ -85,8 +86,7 @@ private slots:
     void textHighlight();
     void updateCursors();
     void onlineUsersTriggered();
-
-
+    void pushUpdateButton();
 
 private:
     Ui::Notepad *ui;
@@ -94,6 +94,7 @@ private:
     QComboBox *comboStyle;
     QFontComboBox *comboFont;
     QComboBox *comboSize;
+    QToolButton* updateButton;
     
     QToolBar *tb;
     QAction *actionTextColor;
@@ -101,13 +102,15 @@ private:
     
     NetworkServer server;
     SharedEditor sharedEditor;
-    SharedEditor fakeRemoteEditor; // TO BE REMOVED
-    QChar fakeRemoteChar; // TO BE REMOVED
-    SharedEditor fakeRemoteEditor2; // TO BE REMOVED
-    QChar fakeRemoteChar2; // TO BE REMOVED
     QVector<QColor> colors;
     QMap<int,RemoteUser> remoteUsers;
     TextEditorEventFilter *textEditorEventFilter;
+
+
+
+
+
+
 };
 
 #endif // NOTEPAD_H

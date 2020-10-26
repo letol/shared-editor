@@ -17,11 +17,17 @@ public:
     void setSocket();
 
 signals:
-    void registrationOK();
+    void registrationOK(const User& user);
     void registrationKO();
-    void loginOK();
+    void loginOK(const User& user);
     void loginKO();
     void errorDB();
+    void notLogged();
+    void updateOK(const User& user);
+    void updateKO();
+    void errorOldPwd();
+    void errorServer();
+
 
 public slots:
     void connected();
@@ -30,9 +36,15 @@ public slots:
     void readyRead();
     void registrationMessage(User userRegistration);
     void loginMessage(User userLogin);
+    void updateImage(User user);
+    void updateName(User user);
+    void updateSurname(User user);
+    void updatePassword(User user);
+    void error();
 
 private:
     QTcpSocket *socket;
+    User userData;
 };
 
 #endif // SOCKETCLIENT_H

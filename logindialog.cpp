@@ -1,20 +1,18 @@
 #include "logindialog.h"
 #include "ui_logindialog.h"
 #include <QMessageBox>
-
+#include <QRegularExpressionValidator>
 LoginDialog::LoginDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::LoginDialog)
 {
 
-    socket.setSocket();
-    ui->setupUi(this);
 
-    connect(&socket,&SocketClient::registrationOK,this,&LoginDialog::regOK);
-    connect(&socket,&SocketClient::registrationKO,this,&LoginDialog::regKO);
-    connect(&socket,&SocketClient::loginOK,this,&LoginDialog::logOK);
-    connect(&socket,&SocketClient::loginKO,this,&LoginDialog::logKO);
-    connect(&socket,&SocketClient::errorDB,this,&LoginDialog::errorDB);
+    ui->setupUi(this);
+    ui->pushButton_login->setEnabled(false);
+    QRegularExpression rxString("^(?!\\s*$).+.",QRegularExpression::CaseInsensitiveOption);
+    ui->lineEdit_password->setValidator(new QRegularExpressionValidator(rxString, this));
+    ui->lineEdit_username->setValidator(new QRegularExpressionValidator(rxString, this));
 
 }
 
@@ -28,63 +26,46 @@ void LoginDialog::on_pushButton_login_clicked()
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_password->text();
     User userlogin(username,password);
-    socket.loginMessage(userlogin);
+    emit loginData(userlogin);
 
 }
 
 void LoginDialog::on_pushButton_clicked()
 {
     this->hide();
-    RegistrationDialog *registration = new RegistrationDialog(this);
-    registration->show();
-}
-
-void LoginDialog::receveRegistrationData(const User &user)
-{
-    socket.registrationMessage(user);
-}
-
-void LoginDialog::regOK()
-{
-
-
-    //Notepad *notepad = new Notepad();
-    //notepad->showMaximized();
-    OpenFileDialog *openfile= new OpenFileDialog(this);
-    openfile->show();
-    emit closeRegDialog();
-
+    emit clickSignIn();
 
 }
 
-void LoginDialog::regKO()
-{
-    emit messageRegDialog("Email or nickname are already used");
-}
 
-void LoginDialog::logOK()
+void LoginDialog::logKO(const QString& str)
 {
-    this->hide();
-    OpenFileDialog *openfile= new OpenFileDialog(this);
-    openfile->show();
-    //Notepad *notepad = new Notepad();
-    //notepad->showMaximized();
+  QMessageBox::warning(this,"Erorr Login", str);
 
 }
 
-void LoginDialog::logKO()
+
+
+void LoginDialog::on_lineEdit_username_textChanged()
 {
-  QMessageBox::warning(this,"Login", "Username and password are not valid");
+    if(ui->lineEdit_password->hasAcceptableInput()&&ui->lineEdit_username->hasAcceptableInput())
+        ui->pushButton_login->setEnabled(true);
+    else
+        ui->pushButton_login->setEnabled(false);
+}
+
+void LoginDialog::on_lineEdit_password_textChanged()
+{
+    if(ui->lineEdit_password->hasAcceptableInput()&&ui->lineEdit_username->hasAcceptableInput())
+        ui->pushButton_login->setEnabled(true);
+    else
+        ui->pushButton_login->setEnabled(false);
 
 }
 
-void LoginDialog::errorDB()
+void LoginDialog::clean()
 {
-    QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
-    this->close();
-}
+    ui->lineEdit_password->clear();
+    ui->lineEdit_username->clear();
 
-void LoginDialog::showDialog()
-{
-    this->show();
 }
