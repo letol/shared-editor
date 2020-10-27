@@ -48,41 +48,6 @@
 **
 ****************************************************************************/
 
-#include <QFile>
-#include <QFileDialog>
-#include <QTextStream>
-#include <QWidgetAction>
-#include <QMessageBox>
-#include <QFont>
-#include <QFontDialog>
-#include <QDebug>
-#include <QTextBlock>
-#include <QPainter>
-#include <QAction>
-#include <QApplication>
-#include <QClipboard>
-#include <QColorDialog>
-#include <QComboBox>
-#include <QPushButton>
-#include <QFontComboBox>
-#include <QTextBlockFormat>
-#include <QFileInfo>
-#include <QFontDatabase>
-#include <QMenu>
-#include <QMenuBar>
-#include <QTextCodec>
-#include <QTextEdit>
-#include <QStatusBar>
-#include <QToolBar>
-#include <QTextCursor>
-#include <QTextDocumentWriter>
-#include <QTextList>
-#include <QCloseEvent>
-#include <QMimeData>
-#include <QMimeDatabase>
-#include <QLabel>
-
-
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
 #if QT_CONFIG(printer)
@@ -98,11 +63,7 @@
 #include "onlineusersdialog.h"
 //#include "ui_onlineUsersDialog.h"
 
-/*#ifdef Q_OS_MAC
-const QString rsrcPath = ":/images/mac";
-#else
-const QString rsrcPath = ":/images/win";
-#endif*/
+
 
 const QString rsrcPath = ":/images";
 
@@ -122,6 +83,9 @@ Notepad::Notepad(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
+    ui->textEdit->showMaximized();
+    ui->centralWidget->showMaximized();
+
   
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
@@ -177,6 +141,12 @@ Notepad::Notepad(QWidget *parent) :
     ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
     connect(updateButton,&QToolButton::clicked, this, &Notepad::pushUpdateButton);
 
+    uri = new QLineEdit(ui->mainToolBar);
+    ui->mainToolBar->addWidget(uri);
+    uri->setFixedWidth(300);
+    uri->setPlaceholderText("Plese input the desired URI");
+    connect(uri,&QLineEdit::returnPressed,this,&Notepad::getFileURI);
+
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
     connect(ui->actionPrint, &QAction::triggered, this, &Notepad::print);
@@ -217,6 +187,7 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
+
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -312,6 +283,7 @@ void Notepad::print()
 void Notepad::exit()
 {
     QCoreApplication::quit();
+    //todo logout
 }
 
 void Notepad::copy()
@@ -807,6 +779,14 @@ void Notepad::onlineUsersTriggered(){
 void Notepad::pushUpdateButton()
 {
     emit showUpdateForm();
+}
+
+void Notepad::getFileURI()
+{
+    QString indirizzo = uri->text();
+    //prendi solo uiid e manda al server
+    emit sendUri(indirizzo);
+
 }
 
 

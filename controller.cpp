@@ -23,6 +23,8 @@ Controller::Controller(QWidget *parent) :
     connect(&socket,&SocketClient::notLogged,this,&Controller::notLogged);
     connect(&socket,&SocketClient::updateOK,this,&Controller::updateOK);
     connect(&socket,&SocketClient::updateKO,this,&Controller::updeteKO);
+    connect(&socket,&SocketClient::uriOK,this,&Controller::uriOK);
+    connect(&socket,&SocketClient::errorUri,this,&Controller::errorUri);
 
 
 
@@ -37,6 +39,7 @@ Controller::Controller(QWidget *parent) :
 
     connect(notepad,&Notepad::showUpdateForm, this, &Controller::showUpdateForm);
     connect(this,&Controller::updateButton,notepad,&Notepad::updateButtonIcon);
+    connect(notepad,&Notepad::sendUri,this,&Controller::getUri);
     connect(openfile,SIGNAL(openFile(QString)),notepad,SLOT(open(QString)));
     connect(openfile,SIGNAL(openNewFile()),notepad,SLOT(newDocument()));
 
@@ -70,6 +73,7 @@ void Controller::open()
     }else{
         openfile->show();
     }
+
 
 }
 
@@ -234,4 +238,20 @@ void Controller::logout()
     confirmpwd->close();
     emit loginDialogClear();
     logindialog->show();
+}
+
+void Controller::getUri(const QString &uri)
+{
+    //socket.sendUri(uri);
+    qInfo()<<uri;
+}
+
+void Controller::errorUri()
+{
+    QMessageBox::critical(this,"Error open file","Sorry, File not found");
+}
+
+void Controller::uriOK()
+{
+    //openFile();
 }

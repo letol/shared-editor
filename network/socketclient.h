@@ -27,6 +27,8 @@ signals:
     void updateKO();
     void errorOldPwd();
     void errorServer();
+    void errorUri();
+    void uriOK();
 
 
 public slots:
