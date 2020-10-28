@@ -20,8 +20,14 @@
    <string>Notepad</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+   <property name="maximumSize">
+    <size>
+     <width>693</width>
+     <height>200</height>
+    </size>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
      <widget class="QTextEdit" name="textEdit"/>
     </item>
    </layout>

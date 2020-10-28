@@ -279,7 +279,7 @@ void Notepad::print()
 
 void Notepad::exit()
 {
-    //QCoreApplication::quit();
+
     emit logout();
 }
 
