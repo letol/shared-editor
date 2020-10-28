@@ -40,6 +40,7 @@ Controller::Controller(QWidget *parent) :
     connect(notepad,&Notepad::showUpdateForm, this, &Controller::showUpdateForm);
     connect(this,&Controller::updateButton,notepad,&Notepad::updateButtonIcon);
     connect(notepad,&Notepad::sendUri,this,&Controller::getUri);
+    connect(notepad,&Notepad::logout,this,&Controller::logout);
     connect(openfile,SIGNAL(openFile(QString)),notepad,SLOT(open(QString)));
     connect(openfile,SIGNAL(openNewFile()),notepad,SLOT(newDocument()));
 
@@ -232,12 +233,14 @@ void Controller::logout()
 {
     userIsLogged=false;
     currentUser= User();
-    //socket.logoutMessage(currentUser)
+    socket.closeSocket();
+    socket.setSocket();
     notepad->close();
     updateForm->close();
     confirmpwd->close();
     emit loginDialogClear();
     logindialog->show();
+
 }
 
 void Controller::getUri(const QString &uri)

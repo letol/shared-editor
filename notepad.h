@@ -70,6 +70,7 @@ public:
 signals:
     void showUpdateForm();
     void sendUri(const QString& uri);
+    void logout();
 
 public slots:
     void open(const QString& path);

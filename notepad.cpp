@@ -83,8 +83,6 @@ Notepad::Notepad(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
-    ui->textEdit->showMaximized();
-    ui->centralWidget->showMaximized();
 
   
     QToolBar *tb = ui->toolBar;
@@ -188,7 +186,6 @@ Notepad::Notepad(QWidget *parent) :
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
 
-
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
     ui->actionPrint->setEnabled(false);
@@ -282,8 +279,8 @@ void Notepad::print()
 
 void Notepad::exit()
 {
-    QCoreApplication::quit();
-    //todo logout
+    //QCoreApplication::quit();
+    emit logout();
 }
 
 void Notepad::copy()

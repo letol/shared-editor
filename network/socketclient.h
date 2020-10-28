@@ -15,6 +15,7 @@ class SocketClient : public QObject
 public:
     explicit SocketClient(QObject *parent = 0);
     void setSocket();
+    void closeSocket();
 
 signals:
     void registrationOK(const User& user);
@@ -43,6 +44,7 @@ public slots:
     void updateSurname(User user);
     void updatePassword(User user);
     void error();
+
 
 private:
     QTcpSocket *socket;

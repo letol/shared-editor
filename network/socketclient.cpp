@@ -24,6 +24,12 @@ void SocketClient::setSocket()
 
 }
 
+void SocketClient::closeSocket()
+{
+    socket->close();
+
+}
+
 void SocketClient::connected()
 {
     if(!socket->waitForConnected(5000)){
