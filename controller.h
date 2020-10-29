@@ -18,6 +18,8 @@ class Controller : public QWidget
 public:
     explicit Controller(QWidget *parent = nullptr);
     ~Controller();
+    void enableEditingMessages();
+
 signals:
     void updateButton(const QString& nameSurname,const QImage& image);
     void errorLogin(const QString& str);
@@ -28,6 +30,7 @@ signals:
     void userLogged(const User& user);
     void pwdOK();
     void loginDialogClear();
+    void remoteCursorPositionChanged(QUuid siteId, int newPos);
 
 public slots:
     void open();
@@ -53,7 +56,20 @@ private slots:
     void openLogin();
     void openCP();
     void logout();
+    void newDocument(const QVector<Symbol>& symbols);
+    void newDocumentOK(const DocumentMessage& newDocReply);
+    void newDocumentKO();
+    void fileClosed();
+    void documentListOK(QVector<DocumentMessage>& docList);
+    void documentListKO();
+    void openDocument(const QUuid documentId);
+    void openDocumentOK(const DocumentMessage& docReply);
+    void openDocumentKO();
+    void sendCursorPosition(int pos);
+    void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
+
 private:
+    QUuid siteId;
     Notepad* notepad;
     SocketClient socket;
     LoginDialog *logindialog;
@@ -62,8 +78,11 @@ private:
     UpdateFormDialog *updateForm;
     ConfirmPassword* confirmpwd;
     User currentUser;
+    DocumentMessage currentDocument;
     bool changePwd=false;
     bool userIsLogged=false;
+
+    QUrl documentIdToUri(QUuid documentId);
 };
 
 #endif // CONTROLLER_H

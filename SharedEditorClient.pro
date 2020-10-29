@@ -40,7 +40,6 @@ FORMS += \
     registrationdialog.ui \
     updateformdialog.ui
 
-include(mock/mock.pri)
 include(shared_editor/shared_editor.pri)
 
 include(network/network.pri)

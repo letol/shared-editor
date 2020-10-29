@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include <QToolButton>
 
-#include "networkserver.h"
 #include "sharededitor.h"
 #include "remoteuser.h"
 #include "texteditoreventfilter.h"
@@ -31,19 +30,24 @@ class Notepad : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Notepad(QWidget *parent = nullptr);
+    explicit Notepad(QUuid siteId, QWidget *parent = nullptr);
     ~Notepad();
+    SharedEditor* getSharedEditor();
+
 signals:
     void showUpdateForm();
+    void newDocument(const QVector<Symbol>& symbols);
+    void fileClosed();
+    void newCursorPosition(int pos);
 
 public slots:
-    void open(const QString& path);
-    void newDocument();
+    void openExistingDocument(const QVector<Symbol>& symbols, QString name);
+    void openNewDocument();
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
+    void remoteCursorPositionChanged(QUuid siteId, int newPos);
 
 private slots:
-    void save();
-    void saveAs();
+    void changeFile();
     void print();
     void exit();
     void copy();
@@ -58,11 +62,11 @@ private slots:
     void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
-    void remoteCharInsert(int siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
-    void remoteCharDelete(int siteId, int index);
-    void addRemoteUser(int siteId, User userInfo);
-    void removeRemoteUser(int siteId);
-    void remoteCursorPositionChanged(int siteId, int newPos);
+    void remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
+    void remoteCharDelete(QUuid siteId, int index);
+    void addRemoteUser(QUuid siteId, User userInfo);
+    void removeRemoteUser(QUuid siteId);
+    void localCursorPositionChanged();
     void on_actionExport_PDF_triggered();
     void on_actionAt_left_triggered();
     void on_actionCentered_triggered();
@@ -90,7 +94,6 @@ private slots:
 
 private:
     Ui::Notepad *ui;
-    QString currentFile;
     QComboBox *comboStyle;
     QFontComboBox *comboFont;
     QComboBox *comboSize;
@@ -100,16 +103,11 @@ private:
     QAction *actionTextColor;
     QAction *actionHighlight;
     
-    NetworkServer server;
     SharedEditor sharedEditor;
     QVector<QColor> colors;
-    QMap<int,RemoteUser> remoteUsers;
+    QMap<QUuid,RemoteUser> remoteSites;
+    QMap<QString,QColor> remoteUserColors;
     TextEditorEventFilter *textEditorEventFilter;
-
-
-
-
-
 
 };
 
