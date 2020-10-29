@@ -82,7 +82,7 @@ Notepad::Notepad(QWidget *parent) :
         }
 {
     ui->setupUi(this);
-    this->setCentralWidget(ui->textEdit);
+    this->setCentralWidget(ui->centralWidget);
 
   
     QToolBar *tb = ui->toolBar;
@@ -138,12 +138,6 @@ Notepad::Notepad(QWidget *parent) :
     updateButton->setPopupMode(QToolButton::InstantPopup);
     ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
     connect(updateButton,&QToolButton::clicked, this, &Notepad::pushUpdateButton);
-
-    uri = new QLineEdit(ui->mainToolBar);
-    ui->mainToolBar->addWidget(uri);
-    uri->setFixedWidth(300);
-    uri->setPlaceholderText("Plese input the desired URI");
-    connect(uri,&QLineEdit::returnPressed,this,&Notepad::getFileURI);
 
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
@@ -204,10 +198,11 @@ Notepad::~Notepad()
     delete ui;
 }
 
-void Notepad::newDocument()
+void Notepad::newDocument(const QString& name)
 {
 
     currentFile.clear();
+    currentFile=name;
     ui->textEdit->setText(QString());
     this->showMaximized();
 }
@@ -778,13 +773,7 @@ void Notepad::pushUpdateButton()
     emit showUpdateForm();
 }
 
-void Notepad::getFileURI()
-{
-    QString indirizzo = uri->text();
-    //prendi solo uiid e manda al server
-    emit sendUri(indirizzo);
 
-}
 
 
 

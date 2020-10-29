@@ -39,7 +39,6 @@ Controller::Controller(QWidget *parent) :
 
     connect(notepad,&Notepad::showUpdateForm, this, &Controller::showUpdateForm);
     connect(this,&Controller::updateButton,notepad,&Notepad::updateButtonIcon);
-    connect(notepad,&Notepad::sendUri,this,&Controller::getUri);
     connect(notepad,&Notepad::logout,this,&Controller::logout);
     connect(openfile,SIGNAL(openFile(QString)),notepad,SLOT(open(QString)));
     connect(openfile,SIGNAL(openNewFile()),notepad,SLOT(newDocument()));
@@ -69,12 +68,11 @@ Controller::~Controller()
 
 void Controller::open()
 {
-    if(!userIsLogged){
+   if(!userIsLogged){
         logindialog->show();
     }else{
         openfile->show();
     }
-
 
 }
 

@@ -69,12 +69,11 @@ public:
     ~Notepad();
 signals:
     void showUpdateForm();
-    void sendUri(const QString& uri);
     void logout();
 
 public slots:
     void open(const QString& path);
-    void newDocument();
+    void newDocument(const QString& name);
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
 
 private slots:
@@ -123,7 +122,6 @@ private slots:
     void updateCursors();
     void onlineUsersTriggered();
     void pushUpdateButton();
-    void getFileURI();
 
 private:
     Ui::Notepad *ui;
@@ -132,7 +130,7 @@ private:
     QFontComboBox *comboFont;
     QComboBox *comboSize;
     QToolButton* updateButton;
-    QLineEdit* uri;
+
     
     QToolBar *tb;
     QAction *actionTextColor;
