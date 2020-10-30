@@ -214,7 +214,7 @@ void Notepad::openNewDocument(const QString& name)
     ui->textEdit->setText(QString());
     sharedEditor.reset();
     emit newDocument(sharedEditor.getSymbols(), name);
-    this->showMaximized();
+    this->show();
 }
 
 void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
@@ -230,6 +230,7 @@ void Notepad::openExistingDocument(const QVector<Symbol>& symbols, QString name)
     foreach(Symbol sym, symbols) {
         sharedEditor.remoteInsert(sym);
     }
+    this->show();
 }
 
 void Notepad::changeFile()

@@ -48,14 +48,17 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
 void OpenFileDialog::on_listView_doubleClicked(const QModelIndex &index)
 {
     DocumentMessage selected = files[index.row()];
-    emit openFile(selected.getDocumentId());
+    QUrl uri;
+    uri.setScheme("shared-editor");
+    uri.setHost(selected.getDocumentId().toString(QUuid::WithoutBraces));
+    emit openFile(uri);
     this->hide();
 }
 
-void OpenFileDialog::on_pushButton_clicked()
+void OpenFileDialog::on_newFilePushButton_clicked()
 {
-   this->hide();
-   emit openNewFile(ui->nameFile->text());
+    this->hide();
+    emit openNewFile(ui->nameFile->text());
 }
 
 void OpenFileDialog::on_nameFile_textChanged()
@@ -71,11 +74,11 @@ void OpenFileDialog::on_uri_textChanged()
     if(ui->uri->hasAcceptableInput())
         ui->uriPushButton->setEnabled(true);
     else
-       ui->uriPushButton->setEnabled(false);
+        ui->uriPushButton->setEnabled(false);
 }
 
 void OpenFileDialog::on_uriPushButton_clicked()
 {
-    //send uri to scocket
-    //ui->uri->text()
+    emit openFile(ui->uri->text());
+    this->hide();
 }

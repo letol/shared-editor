@@ -68,14 +68,12 @@ private slots:
     void fileClosed();
     void documentListOK(QVector<DocumentMessage>& docList);
     void documentListKO();
-    void openDocument(const QUuid documentId);
+    void openDocument(const QUrl uri);
     void openDocumentOK(const DocumentMessage& docReply);
     void openDocumentKO();
     void sendCursorPosition(int pos);
     void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
     void getUri(const QString& uri);
-    void errorUri();
-    void uriOK();
 
 private:
     QUuid siteId;
@@ -90,7 +88,6 @@ private:
     DocumentMessage currentDocument;
     bool changePwd=false;
     bool userIsLogged=false;
-    QUrl documentIdToUri(QUuid documentId);
 
 };
 
