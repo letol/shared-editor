@@ -36,8 +36,6 @@ private slots:
 
     void on_tableView_doubleClicked(const QModelIndex &index);
 
-    void copyUri();
-
 private:
     Ui::OpenFileDialog *ui;
     QStandardItemModel *fileModel;

@@ -61,7 +61,7 @@
 #include "notepad.h"
 #include "ui_notepad.h"
 #include "onlineusersdialog.h"
-//#include "ui_onlineUsersDialog.h"
+
 
 
 
@@ -217,13 +217,16 @@ void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
     updateButton->setIcon(QIcon(QPixmap::fromImage(image)));
 }
 
-void Notepad::openExistingDocument(const QVector<Symbol>& symbols, QString name)
+void Notepad::openExistingDocument(const QVector<Symbol>& symbols, QString name,QUuid  uri)
 {
     setWindowTitle(name);
+    this->uri=uri;
     sharedEditor.reset();
     foreach(Symbol sym, symbols) {
         sharedEditor.remoteInsert(sym);
     }
+
+
 }
 
 void Notepad::changeFile()
@@ -759,10 +762,7 @@ void Notepad::pushUpdateButton()
     emit showUpdateForm();
 }
 
-
-
-
-
-
-
-
+void Notepad::on_actionGet_URI_triggered()
+{
+   QMessageBox::information(this,"URI","Copy and share with your collaborators\n"+this->uri.toString());
+}

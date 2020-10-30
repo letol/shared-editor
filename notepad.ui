@@ -82,6 +82,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionExport_PDF"/>
+    <addaction name="actionGet_URI"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
@@ -492,6 +493,16 @@
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionGet_URI">
+   <property name="icon">
+    <iconset>
+     <normalon>:/images/share.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Get URI</string>
    </property>
   </action>
  </widget>

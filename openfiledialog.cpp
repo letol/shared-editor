@@ -41,33 +41,22 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
 {
     files = docList;
     qDebug() << "File list:";
-    /*for (int row = 0; row < docList.size(); ++row) {
+    for (int row = 0; row < docList.size(); ++row) {
         QStandardItem *nameItem = new QStandardItem(docList[row].getName());
-        QStandardItem *documentIdItem = new QStandardItem(docList[row].getDocumentId().toString());
-        QStandardItem *ownerEmailItem = new QStandardItem(docList[row].getOwnerEmail());
-        QStandardItem *dateItem = new QStandardItem(docList[row].getDate());
-
-
-
-        qDebug() << docList[row].getDocumentId();
-    }*/
-    for (int row = 0; row < 5; ++row) {
-
-
-        QStandardItem *nameItem = new QStandardItem("Prova");
         nameItem->setEditable(false);
         nameItem->setTextAlignment(Qt::AlignCenter);
-        QStandardItem *dateItem = new QStandardItem("30/10/20");
+       // QStandardItem *documentIdItem = new QStandardItem(docList[row].getDocumentId().toString());
+
+        QStandardItem *dateItem = new QStandardItem(docList[row].getDate());
         dateItem->setEditable(false);
         dateItem->setTextAlignment(Qt::AlignCenter);
         fileModel->appendRow({nameItem,dateItem});
 
 
 
-
-
-
+        qDebug() << docList[row].getDocumentId();
     }
+
 }
 
 
@@ -101,13 +90,8 @@ void OpenFileDialog::on_uriPushButton_clicked()
 
 void OpenFileDialog::on_tableView_doubleClicked(const QModelIndex &index)
 {
-    //DocumentMessage selected = files[index.row()];
-    //emit openFile(selected.getDocumentId());
-    //this->hide();
-    qInfo()<<index;
+    DocumentMessage selected = files[index.row()];
+    emit openFile(selected.getDocumentId());
+    this->hide();
 }
 
-void OpenFileDialog::copyUri()
-{
-    //copia
-}
