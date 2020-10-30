@@ -20,12 +20,18 @@ public:
 
 signals:
     void openFile(const QString& path);
-    void openNewFile();
+    void openNewFile(const QString& name);
 private slots:
 
     void on_listView_doubleClicked(const QModelIndex &index);
 
     void on_pushButton_clicked();
+
+    void on_nameFile_textChanged();
+
+    void on_uri_textChanged();
+
+    void on_uriPushButton_clicked();
 
 private:
     Ui::OpenFileDialog *ui;

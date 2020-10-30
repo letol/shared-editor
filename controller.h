@@ -29,6 +29,7 @@ signals:
     void pwdOK();
     void loginDialogClear();
 
+
 public slots:
     void open();
 private slots:
@@ -53,6 +54,9 @@ private slots:
     void openLogin();
     void openCP();
     void logout();
+    void getUri(const QString& uri);
+    void errorUri();
+    void uriOK();
 private:
     Notepad* notepad;
     SocketClient socket;

@@ -3,6 +3,40 @@
 
 #include <QMainWindow>
 #include <QToolButton>
+#include <QLineEdit>
+#include <QFile>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QWidgetAction>
+#include <QMessageBox>
+#include <QFont>
+#include <QFontDialog>
+#include <QDebug>
+#include <QTextBlock>
+#include <QPainter>
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QColorDialog>
+#include <QComboBox>
+#include <QPushButton>
+#include <QFontComboBox>
+#include <QTextBlockFormat>
+#include <QFileInfo>
+#include <QFontDatabase>
+#include <QMenu>
+#include <QMenuBar>
+#include <QTextCodec>
+#include <QTextEdit>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QTextCursor>
+#include <QTextDocumentWriter>
+#include <QTextList>
+#include <QCloseEvent>
+#include <QMimeData>
+#include <QMimeDatabase>
+#include <QLabel>
 
 #include "networkserver.h"
 #include "sharededitor.h"
@@ -35,10 +69,11 @@ public:
     ~Notepad();
 signals:
     void showUpdateForm();
+    void logout();
 
 public slots:
     void open(const QString& path);
-    void newDocument();
+    void newDocument(const QString& name);
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
 
 private slots:
@@ -95,6 +130,7 @@ private:
     QFontComboBox *comboFont;
     QComboBox *comboSize;
     QToolButton* updateButton;
+
     
     QToolBar *tb;
     QAction *actionTextColor;

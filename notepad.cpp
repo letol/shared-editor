@@ -48,41 +48,6 @@
 **
 ****************************************************************************/
 
-#include <QFile>
-#include <QFileDialog>
-#include <QTextStream>
-#include <QWidgetAction>
-#include <QMessageBox>
-#include <QFont>
-#include <QFontDialog>
-#include <QDebug>
-#include <QTextBlock>
-#include <QPainter>
-#include <QAction>
-#include <QApplication>
-#include <QClipboard>
-#include <QColorDialog>
-#include <QComboBox>
-#include <QPushButton>
-#include <QFontComboBox>
-#include <QTextBlockFormat>
-#include <QFileInfo>
-#include <QFontDatabase>
-#include <QMenu>
-#include <QMenuBar>
-#include <QTextCodec>
-#include <QTextEdit>
-#include <QStatusBar>
-#include <QToolBar>
-#include <QTextCursor>
-#include <QTextDocumentWriter>
-#include <QTextList>
-#include <QCloseEvent>
-#include <QMimeData>
-#include <QMimeDatabase>
-#include <QLabel>
-
-
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
 #if QT_CONFIG(printer)
@@ -98,11 +63,7 @@
 #include "onlineusersdialog.h"
 //#include "ui_onlineUsersDialog.h"
 
-/*#ifdef Q_OS_MAC
-const QString rsrcPath = ":/images/mac";
-#else
-const QString rsrcPath = ":/images/win";
-#endif*/
+
 
 const QString rsrcPath = ":/images";
 
@@ -121,7 +82,8 @@ Notepad::Notepad(QWidget *parent) :
         }
 {
     ui->setupUi(this);
-    this->setCentralWidget(ui->textEdit);
+    this->setCentralWidget(ui->centralWidget);
+
   
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
@@ -236,10 +198,11 @@ Notepad::~Notepad()
     delete ui;
 }
 
-void Notepad::newDocument()
+void Notepad::newDocument(const QString& name)
 {
 
     currentFile.clear();
+    currentFile=name;
     ui->textEdit->setText(QString());
     this->showMaximized();
 }
@@ -311,7 +274,8 @@ void Notepad::print()
 
 void Notepad::exit()
 {
-    QCoreApplication::quit();
+
+    emit logout();
 }
 
 void Notepad::copy()
@@ -808,6 +772,8 @@ void Notepad::pushUpdateButton()
 {
     emit showUpdateForm();
 }
+
+
 
 
 
