@@ -25,9 +25,6 @@ private:
     QList<RemoteUser> onlineUsers;
 
 
-private slots:
-    void userLogged(const User& user);
-
 
 };
 

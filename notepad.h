@@ -126,7 +126,6 @@ private slots:
     void textHighlight();
     void updateCursors();
     void onlineUsersTriggered();
-    void setLocalUser(const User &user);
     void pushUpdateButton();
 
 public:
