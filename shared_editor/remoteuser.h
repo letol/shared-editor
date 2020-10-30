@@ -11,8 +11,8 @@
 class RemoteUser
 {
 public:
-    explicit RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *colors, User userInfo);
-    int getSiteId();
+    explicit RemoteUser(QTextEdit *textEditor, QUuid siteId, QColor color, User userInfo);
+    QUuid getSiteId();
     QColor getColor();
     QTextCursor* getCursor();
     void printCursor();
@@ -20,7 +20,7 @@ public:
 
 private:
     QTextEdit *textEditor;
-    int siteId;
+    QUuid siteId;
     QColor color;
     QTextCursor cursor;
     QFrame *cursorFrame;

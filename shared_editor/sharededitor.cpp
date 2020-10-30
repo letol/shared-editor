@@ -1,24 +1,39 @@
-//
-// Created by leonardo on 07/05/19.
-//
-
 #include "sharededitor.h"
 
-SharedEditor::SharedEditor(NetworkServer &server) : _server(server) {
-    this->_siteId = _server.connect(this);
+SharedEditor::SharedEditor(QUuid siteId) {
+    this->_siteId = siteId;
+    this->_userEmail = "_client";
     Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
     auto it = _symbols.begin();
     _symbols.insert(it, newSym);
 }
 
-int SharedEditor::getSiteId() {
+QUuid SharedEditor::getSiteId() {
     return _siteId;
 }
 
-int SharedEditor::getSymbolSiteId(int index) {
+QString SharedEditor::getUserEmail() {
+    return _userEmail;
+}
+
+void SharedEditor::setUserEmail(QString userEmail) {
+    _userEmail = userEmail;
+}
+
+QVector<Symbol>& SharedEditor::getSymbols() {
+    return _symbols;
+}
+
+QUuid SharedEditor::getSymbolSiteId(int index) {
     auto it = _symbols.begin();
     it+=index;
     return it->getSiteId();
+}
+
+QString SharedEditor::getSymbolOwner(int index) {
+    auto it = _symbols.begin();
+    it+=index;
+    return it->getOwnerEmail();
 }
 
 QTextCharFormat SharedEditor::getSymbolFormat(int index) {
@@ -33,7 +48,7 @@ void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlo
     it+=index;
     _symbols.insert(it, newSym);
     EditingMessage msg(newSym, MSG_INSERT, this->_siteId);
-    _server.send(msg);
+    emit localChange(msg);
 }
 
 Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
@@ -48,7 +63,7 @@ Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTe
             for (int i = 0; i < size - 1; ++i) {
                 startFractIndex.push_back(0);
             }
-            Symbol sym1('$', QTextCharFormat(), QTextBlockFormat(), this->_siteId, 0, startFractIndex);
+            Symbol sym1('$', QTextCharFormat(), QTextBlockFormat(), this->_siteId, this->_userEmail, 0, startFractIndex);
             generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
         }
     } else if (_symbols.size() == index) {
@@ -60,7 +75,7 @@ Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTe
         generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
     }
 
-    return Symbol(value, charFormat, blockFormat, this->_siteId, this->_counter++, newFractIndex);
+    return Symbol(value, charFormat, blockFormat, this->_siteId, this->_userEmail, this->_counter++, newFractIndex);
 }
 
 void
@@ -102,44 +117,8 @@ void SharedEditor::localErase(int index) {
     auto it = _symbols.begin();
     it+=index;
     _symbols.erase(it);
-    _server.send(msg);
+    emit localChange(msg);
 }
-
-/*
-auto SharedEditor::findInsertIndex(const Symbol &sym) {
-    auto it = _symbols.begin();
-    auto newIndex = it;
-    bool flag = true;
-    do {
-        bool innerFlag = true;
-        int pos=0;
-        do {
-            int currentDigit = it->getFractIndexDigit(pos);
-            int newDigit = sym.getFractIndexDigit(pos);
-
-            if (currentDigit == -1) {
-                newIndex = ++it;
-                innerFlag = false;
-
-            } else if (newDigit == -1) {
-                // impossibile
-
-            } else if (currentDigit == newDigit) {
-                pos++;
-
-            } else if (currentDigit < newDigit) {
-                newIndex = ++it;
-                innerFlag = false;
-
-            } else if (currentDigit > newDigit) {
-                innerFlag = false;
-                flag = false;
-            }
-        } while (innerFlag);
-    } while (flag);
-    return newIndex;
-}
- */
 
 auto SharedEditor::findInsertIndex(const Symbol &sym) {
     auto it = _symbols.begin();
@@ -192,4 +171,12 @@ void SharedEditor::process(const EditingMessage &m) {
 
 int SharedEditor::symbolCount() {
     return _symbols.size();
+}
+
+void SharedEditor::reset() {
+    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
+    _symbols.clear();
+    _counter = 1;
+    auto it = _symbols.begin();
+    _symbols.insert(it, newSym);
 }

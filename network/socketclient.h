@@ -8,6 +8,10 @@
 #include "header.h"
 #include "messageType.h"
 #include "user.h"
+#include "messages/documentmessage.h"
+#include "messages/editingmessage.h"
+#include "messages/openmessage.h"
+#include "messages/cursorpositionmessage.h"
 
 class SocketClient : public QObject
 {
@@ -28,9 +32,16 @@ signals:
     void updateKO();
     void errorOldPwd();
     void errorServer();
+    void newDocumentKO();
+    void newDocumentOK(const DocumentMessage& newDocReply);
+    void remoteEditDocument(const EditingMessage& editMsg);
+    void documentListKO();
+    void documentListOK(QVector<DocumentMessage>& docList);
+    void openDocumentOK(const DocumentMessage& docReply);
+    void openDocumentKO();
+    void remoteCursorPosition(const CursorPositionMessage& curPosMsg);
     void errorUri();
     void uriOK();
-
 
 public slots:
     void connected();
@@ -43,7 +54,12 @@ public slots:
     void updateName(User user);
     void updateSurname(User user);
     void updatePassword(User user);
+    void newDocument(const DocumentMessage& newDocMsg);
     void error();
+    void localEditDocument(const EditingMessage& editMsg);
+    void askForDocumentList(const QString userEmail);
+    void openDocument(const OpenMessage openMsg);
+    void localCursorPosition(const CursorPositionMessage curPosMsg);
 
 
 private:

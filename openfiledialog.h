@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QFileSystemModel>
+#include <QStandardItem>
+#include "documentmessage.h"
 
 
 namespace Ui {
@@ -16,11 +18,12 @@ class OpenFileDialog : public QDialog
 public:
     explicit OpenFileDialog(QWidget *parent = nullptr);
     ~OpenFileDialog();
-
+    void setFileList(QVector<DocumentMessage>& docList);
 
 signals:
-    void openFile(const QString& path);
+    void openFile(const QUuid documentId);
     void openNewFile(const QString& name);
+
 private slots:
 
     void on_listView_doubleClicked(const QModelIndex &index);
@@ -35,9 +38,8 @@ private slots:
 
 private:
     Ui::OpenFileDialog *ui;
-    QFileSystemModel *fileModel;
-
-
+    QStandardItemModel *fileModel;
+    QVector<DocumentMessage> files;
 
 };
 

@@ -1,12 +1,13 @@
 #ifndef SHAREDEDITOR_H
 #define SHAREDEDITOR_H
 
+#include <QVector>
 #include <QObject>
 #include <QChar>
 #include <QString>
+#include <QUuid>
 
 #include "editingmessage.h"
-#include "networkserver.h"
 #include "symbol.h"
 
 class SharedEditor : public QObject
@@ -15,26 +16,34 @@ class SharedEditor : public QObject
 
 public:
     SharedEditor() = delete;
-    explicit SharedEditor(NetworkServer &server);
-    int getSiteId();
-    int getSymbolSiteId(int index);
+    SharedEditor(QUuid siteId);
+    QUuid getSiteId();
+    QString getUserEmail();
+    void setUserEmail(QString userEmail);
+    QVector<Symbol>& getSymbols();
+    QUuid getSymbolSiteId(int index);
+    QString getSymbolOwner(int index);
     QTextCharFormat getSymbolFormat(int index);
     void localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void localErase(int index);
-    void process(const EditingMessage& m);
     void remoteInsert(Symbol sym);
     void remoteDelete(Symbol sym);
     QString to_string();
     int symbolCount();
+    void reset();
+
+public slots:
+    void process(const EditingMessage& m);
 
 signals:
-    void remoteCharInserted(int remoteSiteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
-    void remoteCharDeleted(int remoteSiteId, int index);
+    void localChange(const EditingMessage& m);
+    void remoteCharInserted(QUuid remoteSiteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
+    void remoteCharDeleted(QUuid remoteSiteId, int index);
 
 private:
-    NetworkServer& _server;
-    int _siteId{};
-    std::vector<Symbol> _symbols;
+    QUuid _siteId{};
+    QString _userEmail;
+    QVector<Symbol> _symbols;
     int _counter=1;
 
     Symbol generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);

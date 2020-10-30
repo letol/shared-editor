@@ -2,13 +2,13 @@
 
 #include "remoteuser.h"
 
-RemoteUser::RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *colors, User userInfo) :
+RemoteUser::RemoteUser(QTextEdit *textEditor, QUuid siteId, QColor color, User userInfo) :
     textEditor(textEditor),
     siteId(siteId),
+    color(color),
     cursor(QTextCursor(textEditor->document())),
     userInfo(userInfo)
 {
-    color = colors->at(siteId % colors->size());
     QPalette pal = QPalette();
     pal.setColor(QPalette::Window, QColorConstants::White);
     pal.setColor(QPalette::WindowText, color);
@@ -36,7 +36,7 @@ RemoteUser::RemoteUser(QTextEdit *textEditor, int siteId, QVector<QColor> *color
     label->setMouseTracking(true);
 }
 
-int RemoteUser::getSiteId()
+QUuid RemoteUser::getSiteId()
 {
     return siteId;
 }
