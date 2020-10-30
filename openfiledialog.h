@@ -36,9 +36,12 @@ private slots:
 
     void on_uriPushButton_clicked();
 
+    void on_tableView_doubleClicked(const QModelIndex &index);
+
 private:
     Ui::OpenFileDialog *ui;
     QStandardItemModel *fileModel;
+    QPushButton* uriButton;
     QVector<DocumentMessage> files;
 
 };

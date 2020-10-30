@@ -88,6 +88,9 @@ void Controller::open()
         openfile->show();
     }
 
+
+
+
 }
 
 void Controller::moveOnlineUsers(QMap<QUuid, User> onlineUsers)
@@ -308,6 +311,7 @@ void Controller::fileClosed()
 void Controller::documentListOK(QVector<DocumentMessage>& docList)
 {
     openfile->setFileList(docList);
+
 }
 
 void Controller::documentListKO()
@@ -326,7 +330,7 @@ void Controller::openDocumentOK(const DocumentMessage& docReply)
 {
     currentDocument = std::move(docReply);
     enableEditingMessages();
-    notepad->openExistingDocument(currentDocument.getSymbols(), currentDocument.getName());
+    notepad->openExistingDocument(currentDocument.getSymbols(), currentDocument.getName(),currentDocument.getDocumentId());
 }
 
 void Controller::openDocumentKO()

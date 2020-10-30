@@ -13,40 +13,6 @@
   <property name="windowTitle">
    <string>Open File</string>
   </property>
-  <widget class="QListView" name="listView">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>260</y>
-     <width>871</width>
-     <height>431</height>
-    </rect>
-   </property>
-   <property name="iconSize">
-    <size>
-     <width>200</width>
-     <height>200</height>
-    </size>
-   </property>
-   <property name="textElideMode">
-    <enum>Qt::ElideMiddle</enum>
-   </property>
-   <property name="resizeMode">
-    <enum>QListView::Adjust</enum>
-   </property>
-   <property name="gridSize">
-    <size>
-     <width>200</width>
-     <height>200</height>
-    </size>
-   </property>
-   <property name="uniformItemSizes">
-    <bool>true</bool>
-   </property>
-   <property name="selectionRectVisible">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QPushButton" name="newFilePushButton">
    <property name="geometry">
     <rect>
@@ -110,6 +76,16 @@
    </property>
    <property name="placeholderText">
     <string>Plese input the URI to open the file</string>
+   </property>
+  </widget>
+  <widget class="QTableView" name="tableView">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>261</y>
+     <width>791</width>
+     <height>411</height>
+    </rect>
    </property>
   </widget>
  </widget>

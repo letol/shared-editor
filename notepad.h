@@ -77,7 +77,7 @@ signals:
     void logout();
 
 public slots:
-    void openExistingDocument(const QVector<Symbol>& symbols, QString name);
+    void openExistingDocument(const QVector<Symbol>& symbols, QString name,QUuid uri);
     void openNewDocument(const QString& name);
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
@@ -128,10 +128,11 @@ private slots:
     void updateCursors();
     void onlineUsersTriggered();
     void pushUpdateButton();
+    void on_actionGet_URI_triggered();
 
 public:
-
     QMap<QUuid,RemoteUser> remoteUsers;
+    
 private:
     Ui::Notepad *ui;
     QComboBox *comboStyle;
@@ -150,6 +151,7 @@ private:
     QMap<QUuid,RemoteUser> remoteSites;
     QMap<QString,QColor> remoteUserColors;
     TextEditorEventFilter *textEditorEventFilter;
+    QUuid  uri;
 
 };
 
