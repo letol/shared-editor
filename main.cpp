@@ -48,17 +48,18 @@
 **
 ****************************************************************************/
 
-#include "logindialog.h"
-#include "openfiledialog.h"
+
 #include <QApplication>
+#include "controller.h"
 
 int main(int argc, char *argv[])
 {
     QApplication EditorApp(argc, argv);
-    //OpenFileDialog f;
-    //f.show();
-    LoginDialog loginDialog;
-    loginDialog.show();
+    Controller controler;
+    controler.open();
+
+
+
 
     return EditorApp.exec();
 }

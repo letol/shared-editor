@@ -1,4 +1,6 @@
 #include "socketclient.h"
+
+
 SocketClient::SocketClient(QObject *parent) :
     QObject(parent)
 {
@@ -13,31 +15,25 @@ void SocketClient::setSocket()
     connect(socket,SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(socket,SIGNAL(readyRead()), this, SLOT(readyRead()));
     connect(socket,SIGNAL(bytesWritten(qint64)),this,SLOT(bytesWritten(qint64)));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)),this, SLOT(error()));
 
     qDebug() << "Connecting...";
 
     // Server IP -> We will insert it in command line before launch the program
     socket->connectToHost("127.0.0.1",1800);
 
-    if(!socket->waitForConnected(5000))
-    {
-       qDebug() << "Error: " <<  socket->errorString();
-    }
 }
 
-// connected to server
-// esempio di come mandare un pacchetto.
 void SocketClient::connected()
 {
-    /*qDebug() << "Connected!";
-    Header header(MessageType::C_LOGIN);
-    // Message messageLogin(QString("pippo"), QString("plutio"));
+    if(!socket->waitForConnected(5000)){
+        qDebug() << "Error: " <<  socket->errorString();
 
-   // socket->write("HEAD / HTTP/1.0\r\n\r\n\r\n");
-    QDataStream clientStream(socket);
-    clientStream.setVersion(QDataStream::Qt_5_12);
-    qDebug() << "Send packet";
-    clientStream << header;*/
+    }
+
+    else {
+        qInfo()<<"Connected";
+    }
 }
 
 
@@ -51,7 +47,6 @@ void SocketClient::disconnected()
 // Finished of writing all data in buffer
 void SocketClient::bytesWritten (qint64 bytes)
 {
-    qInfo() << "we wrote: " << bytes;
 }
 
 
@@ -65,57 +60,151 @@ void SocketClient::readyRead()
     socketStream.setVersion(QDataStream::Qt_5_12);
 
     Header header;
+    User userMessage;
+    // Start to read the message
+    socketStream.startTransaction();
+
 
     socketStream >> header;
-
     switch(header.getType())
     {
 
         case MessageType::S_REGISTER_OK:{
+            qDebug() << "Received: S_REGISTER_OK";
+            if (!socketStream.commitTransaction())
+                return;
 
-         emit registrationOK();
-            break;
+             emit registrationOK(userData);
+             break;
         }
         case MessageType::S_REGISTER_KO:{
+            qDebug() << "Received: S_REGISTER_KO";
+            if (!socketStream.commitTransaction())
+                return;
             emit registrationKO();
             break;
         }
         case MessageType::S_ERROR_DB:{
+            qDebug() << "Received: S_ERROR_DB";
+            if (!socketStream.commitTransaction())
+                return;
             emit errorDB();
             break;
         }
         case MessageType::S_LOGIN_OK:{
-            emit loginOK();
+            qDebug() << "Received: S_LOGIN_OK";
+            socketStream>>userMessage;
+            if (!socketStream.commitTransaction())
+                return;
+            emit loginOK(userMessage);
             break;
         }
         case MessageType::S_LOGIN_KO:{
-
+            qDebug() << "Received: S_LOGIN_KO";
+            if (!socketStream.commitTransaction())
+                return;
             emit loginKO();
             break;
         }
+        case MessageType::S_INPUT_KO:{
+            qDebug() << "Received: S_INPUT_KO";
+            //Old psw not correct
+            if (!socketStream.commitTransaction())
+                return;
+            emit errorOldPwd();
+            break;
+        }
+        case MessageType::S_NOT_LOGGED:{
+            qDebug() << "Received: S_NOT_LOGGED";
+            if (!socketStream.commitTransaction())
+                return;
+            emit notLogged();
+            break;
+        }
+        case MessageType::S_UPD_KO:{
+            qDebug() << "Received: S_UPD_KO";
+            if (!socketStream.commitTransaction())
+                return;
+            emit updateKO();
+
+            break;
+        }
+
+        case MessageType::S_UPD_OK:{
+            qDebug() << "Received: S_UPD_OK";
+            if (!socketStream.commitTransaction())
+                return;
+            emit updateOK(userData);
+            break;
+        }
+
+        default:{
+            qDebug() << "Unknown MessageTyps: wait for more data";
+            if (!socketStream.commitTransaction())
+                return;     // wait for more data
+        }
     }
-
-
 }
 
 void SocketClient::registrationMessage(User userRegistration){
 
-    qInfo() << "Registratione";
+
     Header haederReg(MessageType::C_REGISTER) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
-    qInfo() << "Send packet registration";
     clientStream << haederReg << userRegistration;
+    qDebug() << "Sent: C_REGISTER";
 }
 
 void SocketClient::loginMessage(User userLogin)
 {
-    qInfo() << "Login";
     Header haederReg(MessageType::C_LOGIN) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
-    qInfo() << "Send packet login";
     clientStream << haederReg << userLogin;
+    qDebug() << "Sent: C_LOGIN";
 }
 
-//Password#01
+void SocketClient::updateImage(User user)
+{
+    userData = user;
+    Header haederReg(MessageType::C_UPD_IMG) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_IMG";
+}
+
+void SocketClient::updateName(User user)
+{   
+    Header haederReg(MessageType::C_UPD_NAME) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_NAME";
+}
+
+void SocketClient::updateSurname(User user)
+{
+    Header haederReg(MessageType::C_UPD_SURN) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_SURN";
+}
+
+void SocketClient::updatePassword(User user)
+{
+    Header haederReg(MessageType::C_UPD_PASS) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << haederReg << user;
+    qDebug() << "Sent: C_UPD_PASS";
+}
+
+void SocketClient::error()
+{
+       emit errorServer();
+}
+
+

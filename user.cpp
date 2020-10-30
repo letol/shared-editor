@@ -27,11 +27,18 @@ QString User::getPassword(){
     return this->password;
 }
 QString User::getSurname(){
-    return surname;
+    return this->surname;
 }
-QByteArray User::getImage() const{
+QByteArray User::getImage(){
     return this->image;
 }
+
+void User::setImage(QByteArray arr)
+{
+    this->image=arr;
+}
+
+
 
 QDataStream &User::serialize(QDataStream &stream) const {
   stream << nickname << password << email << name << surname << image;

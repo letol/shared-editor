@@ -51,6 +51,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QTextStream>
+#include <QWidgetAction>
 #include <QMessageBox>
 #include <QFont>
 #include <QFontDialog>
@@ -62,6 +63,7 @@
 #include <QClipboard>
 #include <QColorDialog>
 #include <QComboBox>
+#include <QPushButton>
 #include <QFontComboBox>
 #include <QTextBlockFormat>
 #include <QFileInfo>
@@ -79,6 +81,7 @@
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QLabel>
+
 
 #if defined(QT_PRINTSUPPORT_LIB)
 #include <QtPrintSupport/qtprintsupportglobal.h>
@@ -108,10 +111,6 @@ Notepad::Notepad(QWidget *parent) :
     ui(new Ui::Notepad),
     server(),
     sharedEditor(server),
-    fakeRemoteEditor(server), // TO BE REMOVED
-    fakeRemoteChar('a'), // TO BE REMOVED
-    fakeRemoteEditor2(server), // TO BE REMOVED
-    fakeRemoteChar2('a'), // TO BE REMOVED
     colors{
         QColorConstants::Green,
         QColorConstants::Red,
@@ -123,7 +122,7 @@ Notepad::Notepad(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
-  
+
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
 
@@ -171,8 +170,18 @@ Notepad::Notepad(QWidget *parent) :
     textEditorEventFilter = new TextEditorEventFilter(this);
     ui->textEdit->installEventFilter(textEditorEventFilter);
 
-   // connect(ui->actionNew, &QAction::triggered, this, &Notepad::newDocument);
-    //connect(ui->actionOpen, &QAction::triggered, this, &Notepad::open);
+    ui->mainToolBar->addAction(ui->actionOnlineUsers);
+    QImage usersImage;
+    usersImage.load(":/images/profile.png");
+    ui->actionOnlineUsers->setIcon(QIcon(QPixmap::fromImage(usersImage)));
+
+
+    updateButton = new QToolButton(ui->menuBar);
+    updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    updateButton->setPopupMode(QToolButton::InstantPopup);
+    ui->menuBar->setCornerWidget(updateButton, Qt::TopRightCorner);
+    connect(updateButton,&QToolButton::clicked, this, &Notepad::pushUpdateButton);
+
     connect(ui->actionSave, &QAction::triggered, this, &Notepad::save);
     connect(ui->actionSave_as, &QAction::triggered, this, &Notepad::saveAs);
     connect(ui->actionPrint, &QAction::triggered, this, &Notepad::print);
@@ -212,8 +221,10 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
-    connect(parent, SIGNAL(loggedUser(const User&)), this, SLOT(setLocalUser(const User&)));
-    connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
+
+   connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
+
+
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -226,10 +237,6 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionPaste->setEnabled(false);
 #endif
 
-    // TO BE REMOVED
-    addRemoteUser(fakeRemoteEditor.getSiteId(), User("fake 1", "user", "fake_user_1", "address1@email.com", "pass1", ""));
-    addRemoteUser(fakeRemoteEditor2.getSiteId(), User("fake 2", "user", "fake_user_2", "address2@email.com", "pass2", ""));
-    startTimer(5000);
 }
 
 Notepad::~Notepad()
@@ -237,43 +244,18 @@ Notepad::~Notepad()
     delete ui;
 }
 
-// TO BE REMOVED
-void Notepad::timerEvent(QTimerEvent *event)
-{
-    int len = fakeRemoteEditor.to_string().length();
-    int len2 = fakeRemoteEditor.to_string().length();
-    int pos = 0;
-    int pos2 = 0;
-    if (len) {
-        pos = rand()%len;
-    }
-    if (len2) {
-        pos2 = rand()%len2;
-    }
-
-    qDebug() << "Remote 1 typed: " << fakeRemoteChar << ", at pos: " << pos;
-    QTextCharFormat fmt;
-    fmt.setFontItalic(true);
-    fakeRemoteEditor.localInsert(fakeRemoteChar, fmt, QTextBlockFormat(), pos);
-    server.dispatchMessages();
-    fakeRemoteChar = fakeRemoteChar.toLatin1()+1;
-
-    qDebug() << "Remote 2 typed: " << fakeRemoteChar2 << ", at pos: " << pos2;
-    QTextCharFormat fmt2;
-    fmt2.setFontItalic(true);
-    fakeRemoteEditor2.localInsert(fakeRemoteChar2, fmt2, QTextBlockFormat(), pos2);
-    server.dispatchMessages();
-    fakeRemoteChar2 = fakeRemoteChar2.toLatin1()+1;
-}
-
-
-
 void Notepad::newDocument()
 {
 
     currentFile.clear();
     ui->textEdit->setText(QString());
     this->showMaximized();
+}
+
+void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
+{
+    updateButton->setText(nameSurname);
+    updateButton->setIcon(QIcon(QPixmap::fromImage(image)));
 }
 
 void Notepad::open(const QString& path)
@@ -793,6 +775,8 @@ void Notepad::setHighlightOwners(bool highlightOwners)
     ui->textEdit->document()->blockSignals(oldState);
 }
 
+
+
 void Notepad::addRemoteUser(int siteId, User userInfo)
 {
     if (!remoteUsers.contains(siteId)) {
@@ -826,15 +810,15 @@ void Notepad::updateCursors()
 }
 
 void Notepad::onlineUsersTriggered(){
-    OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(this);
-    onlineUsersDialog->show();
+
+  OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(remoteUsers.values(), this);
+   onlineUsersDialog->show();
+   //emit showOnlineUsersForm();
 
 }
 
-
-void Notepad::setLocalUser(const User &user){
-    localUser = user;
-    ui->actionOnlineUsers->setIcon(QPixmap(user.getImage()));
+void Notepad::pushUpdateButton()
+{
+    emit showUpdateForm();
 }
-
 

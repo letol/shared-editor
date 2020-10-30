@@ -15,8 +15,7 @@ class OnlineUsersDialog : public QDialog
 
 public:
 
-     explicit OnlineUsersDialog(QWidget *parent = nullptr);
-    explicit OnlineUsersDialog(QList<RemoteUser> &onlineUsers, QWidget *parent = nullptr);
+    explicit OnlineUsersDialog(QList<RemoteUser> onlineUsers, QWidget *parent = nullptr);
     ~OnlineUsersDialog();
 
 
@@ -27,6 +26,7 @@ private:
 
 
 private slots:
+    void userLogged(const User& user);
 
 
 };
