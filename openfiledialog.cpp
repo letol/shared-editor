@@ -95,3 +95,4 @@ void OpenFileDialog::on_tableView_doubleClicked(const QModelIndex &index)
     this->hide();
 }
 
+
