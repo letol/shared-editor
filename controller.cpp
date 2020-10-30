@@ -29,6 +29,9 @@ Controller::Controller(QWidget *parent) :
     connect(&socket,&SocketClient::documentListKO,this,&Controller::documentListKO);
     connect(&socket,&SocketClient::openDocumentOK,this,&Controller::openDocumentOK);
     connect(&socket,&SocketClient::openDocumentKO,this,&Controller::openDocumentKO);
+    connect(&socket,&SocketClient::uriOK,this,&Controller::uriOK);
+    connect(&socket,&SocketClient::errorUri,this,&Controller::errorUri);
+
 
     connect(logindialog,SIGNAL(loginData(User)),this,SLOT(loginData(User)));
     connect(this,SIGNAL(errorLogin(QString)),logindialog,SLOT(logKO(QString)));
@@ -45,6 +48,7 @@ Controller::Controller(QWidget *parent) :
     connect(openfile,&OpenFileDialog::openNewFile,notepad,&Notepad::openNewDocument);
     connect(notepad, &Notepad::newDocument, this, &Controller::newDocument);
     connect(notepad, &Notepad::fileClosed, this, &Controller::fileClosed);
+    connect(notepad,&Notepad::logout,this,&Controller::logout);
 
     connect(this,SIGNAL(userLogged(User)),updateForm,SLOT(userLogged(User)));
     connect(this,SIGNAL(userIsChanged(User)),updateForm,SLOT(updateOK(User)));
@@ -78,7 +82,7 @@ void Controller::enableEditingMessages()
 
 void Controller::open()
 {
-    if(!userIsLogged){
+   if(!userIsLogged){
         logindialog->show();
     }else{
         socket.askForDocumentList(currentUser.getEmail());
@@ -245,17 +249,35 @@ void Controller::logout()
 {
     userIsLogged=false;
     currentUser= User();
-    //socket.logoutMessage(currentUser)
+    socket.closeSocket();
+    socket.setSocket();
     notepad->close();
     updateForm->close();
     confirmpwd->close();
     emit loginDialogClear();
     logindialog->show();
+
 }
 
-void Controller::newDocument(const QVector<Symbol>& symbols)
+void Controller::getUri(const QString &uri)
 {
-    DocumentMessage newDocMsg{currentUser.getEmail(), currentUser.getName(), symbols};
+    //socket.sendUri(uri);
+    qInfo()<<uri;
+}
+
+void Controller::errorUri()
+{
+    QMessageBox::critical(this,"Error open file","Sorry, File not found");
+}
+
+void Controller::uriOK()
+{
+    //openFile();
+}
+
+void Controller::newDocument(const QVector<Symbol>& symbols, const QString& name)
+{
+    DocumentMessage newDocMsg{currentUser.getEmail(), name, symbols};
     socket.newDocument(newDocMsg);
 }
 

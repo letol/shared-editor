@@ -3,6 +3,40 @@
 
 #include <QMainWindow>
 #include <QToolButton>
+#include <QLineEdit>
+#include <QFile>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QWidgetAction>
+#include <QMessageBox>
+#include <QFont>
+#include <QFontDialog>
+#include <QDebug>
+#include <QTextBlock>
+#include <QPainter>
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QColorDialog>
+#include <QComboBox>
+#include <QPushButton>
+#include <QFontComboBox>
+#include <QTextBlockFormat>
+#include <QFileInfo>
+#include <QFontDatabase>
+#include <QMenu>
+#include <QMenuBar>
+#include <QTextCodec>
+#include <QTextEdit>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QTextCursor>
+#include <QTextDocumentWriter>
+#include <QTextList>
+#include <QCloseEvent>
+#include <QMimeData>
+#include <QMimeDatabase>
+#include <QLabel>
 
 #include "sharededitor.h"
 #include "remoteuser.h"
@@ -36,13 +70,15 @@ public:
 
 signals:
     void showUpdateForm();
-    void newDocument(const QVector<Symbol>& symbols);
+    void newDocument(const QVector<Symbol>& symbols, const QString& name);
     void fileClosed();
     void newCursorPosition(int pos);
+    void logout();
+
 
 public slots:
     void openExistingDocument(const QVector<Symbol>& symbols, QString name);
-    void openNewDocument();
+    void openNewDocument(const QString& name);
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
 
@@ -98,6 +134,7 @@ private:
     QFontComboBox *comboFont;
     QComboBox *comboSize;
     QToolButton* updateButton;
+
     
     QToolBar *tb;
     QAction *actionTextColor;

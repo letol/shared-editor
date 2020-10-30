@@ -19,6 +19,7 @@ class SocketClient : public QObject
 public:
     explicit SocketClient(QObject *parent = 0);
     void setSocket();
+    void closeSocket();
 
 signals:
     void registrationOK(const User& user);
@@ -39,6 +40,8 @@ signals:
     void openDocumentOK(const DocumentMessage& docReply);
     void openDocumentKO();
     void remoteCursorPosition(const CursorPositionMessage& curPosMsg);
+    void errorUri();
+    void uriOK();
 
 public slots:
     void connected();
@@ -57,6 +60,7 @@ public slots:
     void askForDocumentList(const QString userEmail);
     void openDocument(const OpenMessage openMsg);
     void localCursorPosition(const CursorPositionMessage curPosMsg);
+
 
 private:
     QTcpSocket *socket;

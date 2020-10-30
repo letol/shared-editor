@@ -1,6 +1,7 @@
 #include "openfiledialog.h"
 #include "ui_openfiledialog.h"
 #include <QDebug>
+#include <QRegularExpressionValidator>
 
 OpenFileDialog::OpenFileDialog(QWidget *parent) :
     QDialog(parent),
@@ -10,6 +11,13 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
     fileModel = new QStandardItemModel(0, 4, this);
     ui->listView->setModel(fileModel);
     //ui->listView->setViewMode(QListView::IconMode);
+
+    QRegularExpression rxString("^(?!\\s*$).+.",QRegularExpression::CaseInsensitiveOption);
+    ui->nameFile->setValidator(new QRegularExpressionValidator(rxString, this));
+    ui->uri->setValidator(new QRegularExpressionValidator(rxString, this));
+    ui->newFilePushButton->setEnabled(false);
+    ui->uriPushButton->setEnabled(false);
+
 
 }
 
@@ -47,5 +55,27 @@ void OpenFileDialog::on_listView_doubleClicked(const QModelIndex &index)
 void OpenFileDialog::on_pushButton_clicked()
 {
    this->hide();
-   emit openNewFile();
+   emit openNewFile(ui->nameFile->text());
+}
+
+void OpenFileDialog::on_nameFile_textChanged()
+{
+    if(ui->nameFile->hasAcceptableInput())
+        ui->newFilePushButton->setEnabled(true);
+    else
+        ui->newFilePushButton->setEnabled(false);
+}
+
+void OpenFileDialog::on_uri_textChanged()
+{
+    if(ui->uri->hasAcceptableInput())
+        ui->uriPushButton->setEnabled(true);
+    else
+       ui->uriPushButton->setEnabled(false);
+}
+
+void OpenFileDialog::on_uriPushButton_clicked()
+{
+    //send uri to scocket
+    //ui->uri->text()
 }

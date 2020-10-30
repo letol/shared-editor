@@ -32,6 +32,7 @@ signals:
     void loginDialogClear();
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
 
+
 public slots:
     void open();
 private slots:
@@ -56,7 +57,7 @@ private slots:
     void openLogin();
     void openCP();
     void logout();
-    void newDocument(const QVector<Symbol>& symbols);
+    void newDocument(const QVector<Symbol>& symbols, const QString& name);
     void newDocumentOK(const DocumentMessage& newDocReply);
     void newDocumentKO();
     void fileClosed();
@@ -67,6 +68,9 @@ private slots:
     void openDocumentKO();
     void sendCursorPosition(int pos);
     void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
+    void getUri(const QString& uri);
+    void errorUri();
+    void uriOK();
 
 private:
     QUuid siteId;
