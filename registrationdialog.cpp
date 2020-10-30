@@ -26,14 +26,6 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
     ui->lineEdit_name->setValidator(new QRegularExpressionValidator(rxString, this));
     ui->lineEdit_surname->setValidator(new QRegularExpressionValidator(rxString, this));
     ui->lineEdit_nickname->setValidator(new QRegularExpressionValidator(rxString, this));
-
-    connect(this,SIGNAL(registratationData(User)),parent,SLOT(receveRegistrationData(User)));
-    connect(parent,SIGNAL(messageRegDialog(QString)),this,SLOT(errorHeadling(QString)));
-    connect(parent,SIGNAL(closeRegDialog()),this,SLOT(close()));
-    connect(this,SIGNAL(openLogin()),parent,SLOT(showDialog()));
-
-
-
 }
 
 RegistrationDialog::~RegistrationDialog()

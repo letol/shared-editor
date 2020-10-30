@@ -26,8 +26,6 @@ signals:
 
 private slots:
 
-    void on_listView_doubleClicked(const QModelIndex &index);
-
     void on_newFilePushButton_clicked();
 
     void on_nameFile_textChanged();
