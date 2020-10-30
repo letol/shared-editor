@@ -42,6 +42,8 @@ signals:
     void remoteCursorPosition(const CursorPositionMessage& curPosMsg);
     void errorUri();
     void uriOK();
+    void addOnlineUser (QMap<QUuid, User> users);
+    void removeOnlineUser (QUuid uuid);
 
 public slots:
     void connected();

@@ -32,7 +32,8 @@ Controller::Controller(QWidget *parent) :
     connect(&socket,&SocketClient::openDocumentKO,this,&Controller::openDocumentKO);
     connect(&socket,&SocketClient::uriOK,this,&Controller::uriOK);
     connect(&socket,&SocketClient::errorUri,this,&Controller::errorUri);
-
+    connect(&socket,&SocketClient::addOnlineUser,this,&Controller::moveOnlineUsers);
+    connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
 
     connect(logindialog,SIGNAL(loginData(User)),this,SLOT(loginData(User)));
     connect(this,SIGNAL(errorLogin(QString)),logindialog,SLOT(logKO(QString)));
@@ -50,7 +51,7 @@ Controller::Controller(QWidget *parent) :
     connect(notepad, &Notepad::newDocument, this, &Controller::newDocument);
     connect(notepad, &Notepad::fileClosed, this, &Controller::fileClosed);
     connect(notepad,&Notepad::logout,this,&Controller::logout);
-
+    connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
     connect(this,SIGNAL(userLogged(User)),updateForm,SLOT(userLogged(User)));
     connect(this,SIGNAL(userIsChanged(User)),updateForm,SLOT(updateOK(User)));
     connect(this,SIGNAL(udpKO(QString)),updateForm,SLOT(updateKO(QString)));
@@ -89,6 +90,19 @@ void Controller::open()
         socket.askForDocumentList(currentUser.getEmail());
         openfile->show();
     }
+
+}
+
+void Controller::moveOnlineUsers(QMap<QUuid, User> onlineUsers)
+{
+   onlineUsers.remove(siteId);
+   emit pushOnlineUsers(onlineUsers);
+}
+
+void Controller::moveUserDisconnected(QUuid uuid)
+{
+    notepad->removeRemoteUser(uuid);
+
 
 }
 

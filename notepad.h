@@ -81,6 +81,8 @@ public slots:
     void openNewDocument(const QString& name);
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
+    void getOnlineUsers(QMap<QUuid, User> users);
+    void removeRemoteUser(QUuid siteId);
 
 private slots:
     void changeFile();
@@ -101,7 +103,6 @@ private slots:
     void remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDelete(QUuid siteId, int index);
     void addRemoteUser(QUuid siteId, User userInfo);
-    void removeRemoteUser(QUuid siteId);
     void localCursorPositionChanged();
     void on_actionExport_PDF_triggered();
     void on_actionAt_left_triggered();
@@ -130,7 +131,7 @@ private slots:
 
 public:
 
-     QMap<int,RemoteUser> remoteUsers; //da sposatare
+    QMap<QUuid,RemoteUser> remoteUsers;
 private:
     Ui::Notepad *ui;
     QComboBox *comboStyle;

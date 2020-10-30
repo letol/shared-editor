@@ -32,11 +32,14 @@ signals:
     void pwdOK();
     void loginDialogClear();
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
+    void pushOnlineUsers(QMap<QUuid, User> onlineUsers);
 
 
 
 public slots:
     void open();
+    void moveOnlineUsers(QMap<QUuid, User> onlineUsers);
+    void moveUserDisconnected(QUuid uuid);
 private slots:
     void showUpdateForm();
     void regOK(const User& user);

@@ -229,6 +229,21 @@ void SocketClient::readyRead()
             break;
         }
 
+    case MessageType::S_ONL_USRS: {
+        qDebug() << "Received: list of online users";
+        QMap<QUuid, User> onlineUsers;
+        socketStream >> onlineUsers;
+        emit addOnlineUser(onlineUsers);
+        break;
+    }
+
+    case MessageType::S_RMV_USR: {
+        qDebug() << "Received: list of online users";
+        QUuid uuid;
+        socketStream >> uuid;
+        emit removeOnlineUser(uuid);
+        break;
+    }
         default:{
             qDebug() << "Unknown MessageType: wait for more data";
             if (!socketStream.commitTransaction())

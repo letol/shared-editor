@@ -749,6 +749,17 @@ void Notepad::remoteCursorPositionChanged(QUuid siteId, int newPos)
     }
 }
 
+void Notepad::getOnlineUsers(QMap<QUuid, User> users)
+{
+    foreach(QUuid uid, users.keys())
+    {
+        addRemoteUser(uid,users.value(uid));
+    }
+
+}
+
+
+
 void Notepad::updateCursors()
 {
     for (RemoteUser u : remoteSites) {

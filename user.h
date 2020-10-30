@@ -32,5 +32,6 @@ public:
     QDataStream &serialize(QDataStream &stream) const override;
     QDataStream &unserialize(QDataStream &stream) override;
 };
+Q_DECLARE_METATYPE(User)
 
 #endif // USER_H
