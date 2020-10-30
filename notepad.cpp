@@ -81,8 +81,8 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
         }
 {
     ui->setupUi(this);
-    this->setCentralWidget(ui->centralWidget);
 
+    this->setCentralWidget(ui->centralWidget);
   
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
@@ -130,6 +130,11 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
 
     textEditorEventFilter = new TextEditorEventFilter(this);
     ui->textEdit->installEventFilter(textEditorEventFilter);
+
+    ui->mainToolBar->addAction(ui->actionOnlineUsers);
+    QImage usersImage;
+    usersImage.load(":/images/profile.png");
+    ui->actionOnlineUsers->setIcon(QIcon(QPixmap::fromImage(usersImage)));
 
 
     updateButton = new QToolButton(ui->menuBar);
@@ -179,6 +184,7 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
     connect(ui->textEdit,&QTextEdit::cursorPositionChanged,this,&Notepad::localCursorPositionChanged);
 
+
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
     ui->actionPrint->setEnabled(false);
@@ -208,7 +214,7 @@ void Notepad::openNewDocument(const QString& name)
     ui->textEdit->setText(QString());
     sharedEditor.reset();
     emit newDocument(sharedEditor.getSymbols(), name);
-    this->showMaximized();
+    this->show();
 }
 
 void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
@@ -225,8 +231,7 @@ void Notepad::openExistingDocument(const QVector<Symbol>& symbols, QString name,
     foreach(Symbol sym, symbols) {
         sharedEditor.remoteInsert(sym);
     }
-
-
+    this->show();
 }
 
 void Notepad::changeFile()
@@ -705,6 +710,7 @@ void Notepad::setHighlightOwners(bool highlightOwners)
     ui->textEdit->document()->blockSignals(oldState);
 }
 
+
 void Notepad::addRemoteUser(QUuid siteId, User userInfo)
 {
     if (!remoteSites.contains(siteId)) {
@@ -745,6 +751,17 @@ void Notepad::remoteCursorPositionChanged(QUuid siteId, int newPos)
     }
 }
 
+void Notepad::getOnlineUsers(QMap<QUuid, User> users)
+{
+    foreach(QUuid uid, users.keys())
+    {
+        addRemoteUser(uid,users.value(uid));
+    }
+
+}
+
+
+
 void Notepad::updateCursors()
 {
     for (RemoteUser u : remoteSites) {
@@ -753,8 +770,11 @@ void Notepad::updateCursors()
 }
 
 void Notepad::onlineUsersTriggered(){
-    OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(this);
-    onlineUsersDialog->show();
+
+  OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(remoteUsers.values(), this);
+   onlineUsersDialog->show();
+   //emit showOnlineUsersForm();
+
 }
 
 void Notepad::pushUpdateButton()

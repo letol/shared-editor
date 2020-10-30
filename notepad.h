@@ -70,17 +70,19 @@ public:
 
 signals:
     void showUpdateForm();
+    //void showOnlineUsersForm();
     void newDocument(const QVector<Symbol>& symbols, const QString& name);
     void fileClosed();
     void newCursorPosition(int pos);
     void logout();
-
 
 public slots:
     void openExistingDocument(const QVector<Symbol>& symbols, QString name,QUuid uri);
     void openNewDocument(const QString& name);
     void updateButtonIcon(const QString& nameSurname,const QImage& image);
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
+    void getOnlineUsers(QMap<QUuid, User> users);
+    void removeRemoteUser(QUuid siteId);
 
 private slots:
     void changeFile();
@@ -101,7 +103,6 @@ private slots:
     void remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDelete(QUuid siteId, int index);
     void addRemoteUser(QUuid siteId, User userInfo);
-    void removeRemoteUser(QUuid siteId);
     void localCursorPositionChanged();
     void on_actionExport_PDF_triggered();
     void on_actionAt_left_triggered();
@@ -127,9 +128,11 @@ private slots:
     void updateCursors();
     void onlineUsersTriggered();
     void pushUpdateButton();
-
     void on_actionGet_URI_triggered();
 
+public:
+    QMap<QUuid,RemoteUser> remoteUsers;
+    
 private:
     Ui::Notepad *ui;
     QComboBox *comboStyle;
@@ -144,6 +147,7 @@ private:
     
     SharedEditor sharedEditor;
     QVector<QColor> colors;
+
     QMap<QUuid,RemoteUser> remoteSites;
     QMap<QString,QColor> remoteUserColors;
     TextEditorEventFilter *textEditorEventFilter;

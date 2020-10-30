@@ -9,6 +9,7 @@
 #include "updateformdialog.h"
 #include "confirmpassword.h"
 #include "socketclient.h"
+#include "onlineusersdialog.h"
 
 
 class Controller : public QWidget
@@ -31,10 +32,14 @@ signals:
     void pwdOK();
     void loginDialogClear();
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
+    void pushOnlineUsers(QMap<QUuid, User> onlineUsers);
+
 
 
 public slots:
     void open();
+    void moveOnlineUsers(QMap<QUuid, User> onlineUsers);
+    void moveUserDisconnected(QUuid uuid);
 private slots:
     void showUpdateForm();
     void regOK(const User& user);
@@ -63,14 +68,12 @@ private slots:
     void fileClosed();
     void documentListOK(QVector<DocumentMessage>& docList);
     void documentListKO();
-    void openDocument(const QUuid documentId);
+    void openDocument(const QUrl uri);
     void openDocumentOK(const DocumentMessage& docReply);
     void openDocumentKO();
     void sendCursorPosition(int pos);
     void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
     void getUri(const QString& uri);
-    void errorUri();
-    void uriOK();
 
 private:
     QUuid siteId;
@@ -86,7 +89,6 @@ private:
     bool changePwd=false;
     bool userIsLogged=false;
 
-    QUrl documentIdToUri(QUuid documentId);
 };
 
 #endif // CONTROLLER_H

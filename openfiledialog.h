@@ -4,8 +4,8 @@
 #include <QDialog>
 #include <QFileSystemModel>
 #include <QStandardItem>
+#include <QUrl>
 #include "documentmessage.h"
-
 
 namespace Ui {
 class OpenFileDialog;
@@ -21,12 +21,14 @@ public:
     void setFileList(QVector<DocumentMessage>& docList);
 
 signals:
-    void openFile(const QUuid documentId);
+    void openFile(const QUrl uri);
     void openNewFile(const QString& name);
 
 private slots:
 
-    void on_pushButton_clicked();
+    void on_listView_doubleClicked(const QModelIndex &index);
+
+    void on_newFilePushButton_clicked();
 
     void on_nameFile_textChanged();
 

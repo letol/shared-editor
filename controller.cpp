@@ -6,6 +6,7 @@ Controller::Controller(QWidget *parent) :
 {
     siteId = QUuid::createUuid();
     socket.setSocket();
+
     notepad = new Notepad(siteId, this);
     logindialog = new LoginDialog(this);
     regDialog = new RegistrationDialog(this);
@@ -29,9 +30,8 @@ Controller::Controller(QWidget *parent) :
     connect(&socket,&SocketClient::documentListKO,this,&Controller::documentListKO);
     connect(&socket,&SocketClient::openDocumentOK,this,&Controller::openDocumentOK);
     connect(&socket,&SocketClient::openDocumentKO,this,&Controller::openDocumentKO);
-    connect(&socket,&SocketClient::uriOK,this,&Controller::uriOK);
-    connect(&socket,&SocketClient::errorUri,this,&Controller::errorUri);
-
+    connect(&socket,&SocketClient::addOnlineUser,this,&Controller::moveOnlineUsers);
+    connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
 
     connect(logindialog,SIGNAL(loginData(User)),this,SLOT(loginData(User)));
     connect(this,SIGNAL(errorLogin(QString)),logindialog,SLOT(logKO(QString)));
@@ -49,7 +49,7 @@ Controller::Controller(QWidget *parent) :
     connect(notepad, &Notepad::newDocument, this, &Controller::newDocument);
     connect(notepad, &Notepad::fileClosed, this, &Controller::fileClosed);
     connect(notepad,&Notepad::logout,this,&Controller::logout);
-
+    connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
     connect(this,SIGNAL(userLogged(User)),updateForm,SLOT(userLogged(User)));
     connect(this,SIGNAL(userIsChanged(User)),updateForm,SLOT(updateOK(User)));
     connect(this,SIGNAL(udpKO(QString)),updateForm,SLOT(updateKO(QString)));
@@ -68,7 +68,6 @@ Controller::Controller(QWidget *parent) :
 
 Controller::~Controller()
 {
-    delete this;
 }
 
 void Controller::enableEditingMessages()
@@ -90,6 +89,19 @@ void Controller::open()
     }
 
 
+
+
+}
+
+void Controller::moveOnlineUsers(QMap<QUuid, User> onlineUsers)
+{
+   onlineUsers.remove(siteId);
+   emit pushOnlineUsers(onlineUsers);
+}
+
+void Controller::moveUserDisconnected(QUuid uuid)
+{
+    notepad->removeRemoteUser(uuid);
 
 
 }
@@ -268,16 +280,6 @@ void Controller::getUri(const QString &uri)
     qInfo()<<uri;
 }
 
-void Controller::errorUri()
-{
-    QMessageBox::critical(this,"Error open file","Sorry, File not found");
-}
-
-void Controller::uriOK()
-{
-    //openFile();
-}
-
 void Controller::newDocument(const QVector<Symbol>& symbols, const QString& name)
 {
     DocumentMessage newDocMsg{currentUser.getEmail(), name, symbols};
@@ -302,8 +304,8 @@ void Controller::fileClosed()
     updateForm->close();
     confirmpwd->close();
     currentDocument = DocumentMessage();
+    socket.askForDocumentList(currentUser.getEmail());
     openfile->show();
-    //TODO: add socket connect/disconnect as for logout
 }
 
 void Controller::documentListOK(QVector<DocumentMessage>& docList)
@@ -317,9 +319,10 @@ void Controller::documentListKO()
     QMessageBox::warning(this,"Error", "Impossible to load document list.");
 }
 
-void Controller::openDocument(const QUuid documentId)
+void Controller::openDocument(const QUrl uri)
 {
-    OpenMessage openMsg(siteId, documentIdToUri(documentId));
+    qDebug() << "Opening document" << uri.toString();
+    OpenMessage openMsg(siteId, uri);
     socket.openDocument(openMsg);
 }
 
@@ -328,7 +331,6 @@ void Controller::openDocumentOK(const DocumentMessage& docReply)
     currentDocument = std::move(docReply);
     enableEditingMessages();
     notepad->openExistingDocument(currentDocument.getSymbols(), currentDocument.getName(),currentDocument.getDocumentId());
-    notepad->show();
 }
 
 void Controller::openDocumentKO()
@@ -347,11 +349,4 @@ void Controller::receiveCursorPosition(const CursorPositionMessage& curPosMsg)
 {
     CursorPositionMessage m = std::move(curPosMsg);
     emit remoteCursorPositionChanged(m.getSiteId(), m.getPos());
-}
-
-QUrl Controller::documentIdToUri(QUuid documentId) {
-    QUrl uri;
-    uri.setScheme("shared-editor");
-    uri.setPath(documentId.toString(QUuid::WithoutBraces));
-    return uri;
 }
