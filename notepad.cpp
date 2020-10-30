@@ -81,8 +81,8 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
         }
 {
     ui->setupUi(this);
-    this->setCentralWidget(ui->centralWidget);
 
+    this->setCentralWidget(ui->centralWidget);
   
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
@@ -131,6 +131,11 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
     textEditorEventFilter = new TextEditorEventFilter(this);
     ui->textEdit->installEventFilter(textEditorEventFilter);
 
+    ui->mainToolBar->addAction(ui->actionOnlineUsers);
+    QImage usersImage;
+    usersImage.load(":/images/profile.png");
+    ui->actionOnlineUsers->setIcon(QIcon(QPixmap::fromImage(usersImage)));
+
 
     updateButton = new QToolButton(ui->menuBar);
     updateButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
@@ -178,6 +183,7 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
     connect(ui->textEdit,&QTextEdit::cursorPositionChanged,this,&Notepad::localCursorPositionChanged);
+
 
 // Disable menu actions for unavailable features
 #if !defined(QT_PRINTSUPPORT_LIB) || !QT_CONFIG(printer)
@@ -702,6 +708,7 @@ void Notepad::setHighlightOwners(bool highlightOwners)
     ui->textEdit->document()->blockSignals(oldState);
 }
 
+
 void Notepad::addRemoteUser(QUuid siteId, User userInfo)
 {
     if (!remoteSites.contains(siteId)) {
@@ -750,19 +757,16 @@ void Notepad::updateCursors()
 }
 
 void Notepad::onlineUsersTriggered(){
-    OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(this);
-    onlineUsersDialog->show();
+
+  OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(remoteUsers.values(), this);
+   onlineUsersDialog->show();
+   //emit showOnlineUsersForm();
+
 }
 
 void Notepad::pushUpdateButton()
 {
     emit showUpdateForm();
 }
-
-
-
-
-
-
 
 

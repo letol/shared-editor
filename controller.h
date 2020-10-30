@@ -9,6 +9,7 @@
 #include "updateformdialog.h"
 #include "confirmpassword.h"
 #include "socketclient.h"
+#include "onlineusersdialog.h"
 
 
 class Controller : public QWidget
@@ -31,6 +32,7 @@ signals:
     void pwdOK();
     void loginDialogClear();
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
+
 
 
 public slots:
@@ -85,8 +87,8 @@ private:
     DocumentMessage currentDocument;
     bool changePwd=false;
     bool userIsLogged=false;
-
     QUrl documentIdToUri(QUuid documentId);
+
 };
 
 #endif // CONTROLLER_H

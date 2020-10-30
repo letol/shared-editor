@@ -44,8 +44,6 @@ void LoginDialog::logKO(const QString& str)
 
 }
 
-
-
 void LoginDialog::on_lineEdit_username_textChanged()
 {
     if(ui->lineEdit_password->hasAcceptableInput()&&ui->lineEdit_username->hasAcceptableInput())

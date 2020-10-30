@@ -6,6 +6,7 @@ Controller::Controller(QWidget *parent) :
 {
     siteId = QUuid::createUuid();
     socket.setSocket();
+
     notepad = new Notepad(siteId, this);
     logindialog = new LoginDialog(this);
     regDialog = new RegistrationDialog(this);

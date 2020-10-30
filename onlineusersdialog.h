@@ -14,13 +14,20 @@ class OnlineUsersDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit OnlineUsersDialog(QWidget *parent = nullptr);
+
+    explicit OnlineUsersDialog(QList<RemoteUser> onlineUsers, QWidget *parent = nullptr);
     ~OnlineUsersDialog();
 
-    void getCountofUsers(QMap<int,RemoteUser> OnlineUsers);
+
 
 private:
     Ui::OnlineUsersDialog *ui;
+    QList<RemoteUser> onlineUsers;
+
+
+private slots:
+    void userLogged(const User& user);
+
 
 };
 

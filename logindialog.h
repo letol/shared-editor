@@ -19,10 +19,11 @@ public:
     ~LoginDialog();
 
 signals:
+    void messageRegDialog(const QString& str);
+    void closeRegDialog();
+    void loggedUser(const User &user);
     void loginData(const User& user);
     void clickSignIn();
-
-
 
 private slots:
     void on_pushButton_login_clicked();
@@ -34,8 +35,6 @@ private slots:
 
 private:
     Ui::LoginDialog *ui;
-
-
 };
 
 #endif // LOGINDIALOG_H

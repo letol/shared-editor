@@ -70,11 +70,11 @@ public:
 
 signals:
     void showUpdateForm();
+    //void showOnlineUsersForm();
     void newDocument(const QVector<Symbol>& symbols, const QString& name);
     void fileClosed();
     void newCursorPosition(int pos);
     void logout();
-
 
 public slots:
     void openExistingDocument(const QVector<Symbol>& symbols, QString name);
@@ -126,8 +126,12 @@ private slots:
     void textHighlight();
     void updateCursors();
     void onlineUsersTriggered();
+    void setLocalUser(const User &user);
     void pushUpdateButton();
 
+public:
+
+     QMap<int,RemoteUser> remoteUsers; //da sposatare
 private:
     Ui::Notepad *ui;
     QComboBox *comboStyle;
@@ -142,6 +146,7 @@ private:
     
     SharedEditor sharedEditor;
     QVector<QColor> colors;
+
     QMap<QUuid,RemoteUser> remoteSites;
     QMap<QString,QColor> remoteUserColors;
     TextEditorEventFilter *textEditorEventFilter;
