@@ -89,6 +89,9 @@ void Controller::open()
         openfile->show();
     }
 
+
+
+
 }
 
 void Controller::errorConnection()

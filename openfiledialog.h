@@ -26,8 +26,6 @@ signals:
 
 private slots:
 
-    void on_listView_doubleClicked(const QModelIndex &index);
-
     void on_pushButton_clicked();
 
     void on_nameFile_textChanged();
@@ -36,9 +34,14 @@ private slots:
 
     void on_uriPushButton_clicked();
 
+    void on_tableView_doubleClicked(const QModelIndex &index);
+
+    void copyUri();
+
 private:
     Ui::OpenFileDialog *ui;
     QStandardItemModel *fileModel;
+    QPushButton* uriButton;
     QVector<DocumentMessage> files;
 
 };
