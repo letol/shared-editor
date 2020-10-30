@@ -24,6 +24,12 @@ void SocketClient::setSocket()
 
 }
 
+void SocketClient::closeSocket()
+{
+    socket->close();
+
+}
+
 void SocketClient::connected()
 {
     if(!socket->waitForConnected(5000)){
@@ -138,8 +144,93 @@ void SocketClient::readyRead()
             break;
         }
 
+        case MessageType::S_NEW_KO: {
+            qDebug() << "Received: S_NEW_KO";
+            if (!socketStream.commitTransaction())
+                return;
+            emit newDocumentKO();
+            break;
+        }
+
+        case MessageType::S_NEW_OK: {
+            qDebug() << "Received: S_NEW_OK";
+            DocumentMessage docMsg;
+            socketStream >> docMsg;
+            if (!socketStream.commitTransaction())
+                return;
+            emit newDocumentOK(docMsg);
+            break;
+        }
+
+        case MessageType::B_EDIT: {
+            qDebug() << "Received: B_EDIT";
+            EditingMessage editMsg;
+            socketStream >> editMsg;
+            if (!socketStream.commitTransaction())
+                return;
+            emit remoteEditDocument(editMsg);
+            break;
+        }
+
+        case MessageType::S_DOCLS_KO: {
+            qDebug() << "Received: S_DOCLS_KO";
+            if (!socketStream.commitTransaction())
+                return;
+            emit documentListKO();
+            break;
+        }
+
+        case MessageType::S_DOCLS_OK: {
+            qDebug() << "Received: S_DOCLS_OK";
+            int size;
+            socketStream >> size;
+            qDebug() << "List size:" << size;
+
+            QVector<DocumentMessage> docList;
+            for (int i=0; i<size; i++) {
+                DocumentMessage d;
+                socketStream >> d;
+                docList.append(d);
+                qDebug() << "Received document:" << d.getDocumentId();
+            }
+
+            if (!socketStream.commitTransaction())
+                return;
+
+            emit documentListOK(docList);
+            break;
+        }
+
+        case MessageType::S_OPEN_KO: {
+            qDebug() << "Received: S_OPEN_KO";
+            if (!socketStream.commitTransaction())
+                return;
+            emit openDocumentKO();
+            break;
+        }
+
+        case MessageType::S_OPEN_OK: {
+            qDebug() << "Received: S_OPEN_OK";
+            DocumentMessage docMsg;
+            socketStream >> docMsg;
+            if (!socketStream.commitTransaction())
+                return;
+            emit openDocumentOK(docMsg);
+            break;
+        }
+
+        case MessageType::B_CURSOR_POS: {
+            qDebug() << "Received: B_CURSOR_POS";
+            CursorPositionMessage curPosMsg;
+            socketStream >> curPosMsg;
+            if (!socketStream.commitTransaction())
+                return;
+            emit remoteCursorPosition(curPosMsg);
+            break;
+        }
+
         default:{
-            qDebug() << "Unknown MessageTyps: wait for more data";
+            qDebug() << "Unknown MessageType: wait for more data";
             if (!socketStream.commitTransaction())
                 return;     // wait for more data
         }
@@ -202,9 +293,47 @@ void SocketClient::updatePassword(User user)
     qDebug() << "Sent: C_UPD_PASS";
 }
 
+void SocketClient::newDocument(const DocumentMessage& newDocMsg) {
+    Header headerReg(MessageType::C_NEW) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << headerReg << newDocMsg;
+    qDebug() << "Sent: C_NEW";
+}
+
 void SocketClient::error()
 {
        emit errorServer();
 }
 
+void SocketClient::localEditDocument(const EditingMessage& editMsg) {
+    Header headerReg(MessageType::B_EDIT) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << headerReg << editMsg;
+    qDebug() << "Sent: B_EDIT";
+}
 
+void SocketClient::askForDocumentList(const QString userEmail) {
+    Header headerReg(MessageType::C_DOCLS) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << headerReg << userEmail;
+    qDebug() << "Sent: C_DOCLS";
+}
+
+void SocketClient::openDocument(const OpenMessage openMsg) {
+    Header headerReg(MessageType::C_OPEN) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << headerReg << openMsg;
+    qDebug() << "Sent: C_OPEN";
+}
+
+void SocketClient::localCursorPosition(const CursorPositionMessage curPosMsg) {
+    Header headerReg(MessageType::B_CURSOR_POS) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << headerReg << curPosMsg;
+    qDebug() << "Sent: B_CURSOR_POS";
+}

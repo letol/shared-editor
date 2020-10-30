@@ -11,15 +11,16 @@ class EditingMessage : public Serialization {
 private:
     Symbol sym;
     int op;
-    int senderSiteId;
+    QUuid senderSiteId;
 
 public:
-    EditingMessage(Symbol &sym, int op, int senderSiteId) :
+    EditingMessage() = default;
+    EditingMessage(Symbol &sym, int op, QUuid senderSiteId) :
         sym(sym),
         op(op),
         senderSiteId(senderSiteId) {};
 
-    int getSenderSiteId();
+    QUuid getSenderSiteId();
     int getOperation() const;
     Symbol getSymbol() const;
 
