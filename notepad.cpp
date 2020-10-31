@@ -230,6 +230,7 @@ void Notepad::openExistingDocument(const QVector<Symbol>& symbols, QString name,
     this->uri=uri;
     sharedEditor.reset();
     foreach(Symbol sym, symbols) {
+        qDebug()<<sym.getValue();
         sharedEditor.remoteInsert(sym);
     }
     this->show();

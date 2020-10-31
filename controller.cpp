@@ -334,6 +334,7 @@ void Controller::openDocument(const QUrl uri)
 void Controller::openDocumentOK(const DocumentMessage& docReply)
 {
     currentDocument = std::move(docReply);
+    qDebug()<<currentDocument.getOwnerEmail() << " " << currentDocument.getDocumentId()<<" "<< currentDocument.getSymbols().length();
     enableEditingMessages();
     notepad->openExistingDocument(currentDocument.getSymbols(), currentDocument.getName(),currentDocument.getDocumentId());
 }
