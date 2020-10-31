@@ -58,6 +58,12 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
     }
 }
 
+void OpenFileDialog::clean()
+{
+    ui->nameFile->clear();
+    ui->uri->clear();
+}
+
 void OpenFileDialog::on_newFilePushButton_clicked()
 {
     this->hide();
@@ -82,7 +88,9 @@ void OpenFileDialog::on_uri_textChanged()
 
 void OpenFileDialog::on_uriPushButton_clicked()
 {
-    emit openFile(ui->uri->text());
+    QString idFile = ui->uri->text().remove("shared-editor://");
+    qInfo()<<"{"+idFile+"}";
+    emit openFile("{"+idFile+"}");
     this->hide();
 }
 

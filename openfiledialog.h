@@ -19,6 +19,7 @@ public:
     explicit OpenFileDialog(QWidget *parent = nullptr);
     ~OpenFileDialog();
     void setFileList(QVector<DocumentMessage>& docList);
+    void clean();
 
 signals:
     void openFile(const QUrl uri);

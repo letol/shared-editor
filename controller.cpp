@@ -309,6 +309,7 @@ void Controller::fileClosed()
     confirmpwd->close();
     currentDocument = DocumentMessage();
     socket.askForDocumentList(currentUser.getEmail());
+    openfile->clean();
     openfile->show();
 }
 

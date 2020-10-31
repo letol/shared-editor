@@ -83,7 +83,8 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
     ui->setupUi(this);
 
     this->setCentralWidget(ui->centralWidget);
-  
+
+    this->setStyleSheet("QMessageBox { messagebox-text-interaction-flags: 5; }");
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
 
@@ -784,5 +785,7 @@ void Notepad::pushUpdateButton()
 
 void Notepad::on_actionGet_URI_triggered()
 {
-   QMessageBox::information(this,"URI","Copy and share with your collaborators\n"+this->uri.toString());
+   QString uriMessage = this->uri.toString().remove("{");
+   uriMessage.remove("}");
+   QMessageBox::information(this,"URI","Copy and share with your collaborators\nshared-editor://"+uriMessage);
 }
