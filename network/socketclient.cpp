@@ -367,3 +367,12 @@ void SocketClient::localCursorPosition(const CursorPositionMessage curPosMsg) {
     clientStream << headerReg << curPosMsg;
     qDebug() << "Sent: B_CURSOR_POS";
 }
+
+void SocketClient::deleteMessage(DocumentMessage docMessage)
+{
+    //Header headerReg(MessageType::C_NEW) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    //clientStream << headerReg << docMsg;
+    //qDebug() << "Sent: C_NEW";
+}

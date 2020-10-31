@@ -27,6 +27,7 @@ public:
 signals:
     void openFile(const QUrl uri);
     void openNewFile(const QString& name);
+    void deleteFile(const DocumentMessage& docMessage);
 
 private slots:
 
@@ -49,6 +50,7 @@ private:
     QStandardItemModel *fileModel;
     QPushButton* uriButton;
     QVector<DocumentMessage> files;
+    DocumentMessage selectedFile;
 
 };
 

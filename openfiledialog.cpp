@@ -70,7 +70,7 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
 void OpenFileDialog::mouseMoveEvent(QMouseEvent *e)
 {
     if(e->buttons() == Qt::LeftButton)
-        qDebug() << "Only left button";
+        ui->tableView->selectionModel()->clearSelection();
 }
 
 void OpenFileDialog::clean()
@@ -123,16 +123,18 @@ void OpenFileDialog::on_tableView_doubleClicked(const QModelIndex &index)
 void OpenFileDialog::on_removePushButton_clicked()
 {
     ui->tableView->selectionModel()->clearSelection();
+    emit deleteFile(selectedFile);
 }
 
 void OpenFileDialog::selectedRow(const QItemSelection & selected, const QItemSelection & deselected)
 {
     if(selected.isEmpty()){
         ui->removePushButton->setEnabled(false);
+
     }else{
         ui->removePushButton->setEnabled(true);
-        DocumentMessage selectedFile = files[selected.indexes()[0].row()];
-        qInfo()<<selectedFile.getDocumentId();
+        selectedFile = files[selected.indexes()[0].row()];
+
     }
 
 

@@ -73,6 +73,7 @@ private slots:
     void openDocumentKO();
     void sendCursorPosition(int pos);
     void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
+    void deleteFile(const DocumentMessage& docMesssage);
 
 private:
     QUuid siteId;
