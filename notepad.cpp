@@ -787,5 +787,5 @@ void Notepad::on_actionGet_URI_triggered()
 {
    QString uriMessage = this->uri.toString().remove("{");
    uriMessage.remove("}");
-   QMessageBox::information(this,"URI","Copy and share with your collaborators\nshared-editor://"+uriMessage);
+   QMessageBox::information(this,"URI","Copy and share with your collaborators:\nshared-editor://"+uriMessage);
 }
