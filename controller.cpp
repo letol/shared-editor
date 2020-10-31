@@ -7,12 +7,14 @@ Controller::Controller(QWidget *parent) :
     siteId = QUuid::createUuid();
     socket.setSocket();
 
-    notepad = new Notepad(siteId, this);
-    logindialog = new LoginDialog(this);
-    regDialog = new RegistrationDialog(this);
-    openfile = new OpenFileDialog(this);
-    updateForm = new UpdateFormDialog(this);
-    confirmpwd = new ConfirmPassword(this);
+    notepad = new Notepad(siteId);
+    logindialog = new LoginDialog();
+    regDialog = new RegistrationDialog();
+    openfile = new OpenFileDialog();
+    updateForm = new UpdateFormDialog();
+    qInfo()<<updateForm->isModal();
+
+    confirmpwd = new ConfirmPassword();
     //socket connection
     connect(&socket,SIGNAL(errorServer()),this,SLOT(errorConnection()));
     connect(&socket,&SocketClient::registrationOK,this,&Controller::regOK);
