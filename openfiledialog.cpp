@@ -41,7 +41,10 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
 {
     files = docList;
     qDebug() << "File list:";
-    fileModel->clear();
+    //clear table
+    fileModel->setRowCount(0);
+
+
     for (int row = 0; row < docList.size(); ++row) {
         QStandardItem *nameItem = new QStandardItem(docList[row].getName());
         nameItem->setEditable(false);
