@@ -53,7 +53,9 @@ void SocketClient::disconnected()
 // Finished of writing all data in buffer
 void SocketClient::bytesWritten (qint64 bytes)
 {
+    qDebug() << "writed "<<bytes;
 }
+
 
 
 
@@ -342,7 +344,7 @@ void SocketClient::openDocument(const OpenMessage openMsg) {
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << headerReg << openMsg;
-    qDebug() << "Sent: C_OPEN";
+    qDebug() << "Sent: C_OPEN" << openMsg.getUri();
 }
 
 void SocketClient::localCursorPosition(const CursorPositionMessage curPosMsg) {
