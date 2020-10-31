@@ -69,6 +69,12 @@ Controller::Controller(QWidget *parent) :
 
 Controller::~Controller()
 {
+    notepad->destroyed();
+    openfile->destroyed();
+    logindialog->destroyed();
+    regDialog->destroyed();
+    updateForm->destroyed();
+    confirmpwd->destroyed();
 }
 
 void Controller::enableEditingMessages()
