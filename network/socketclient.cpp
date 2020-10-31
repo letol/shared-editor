@@ -70,8 +70,9 @@ void SocketClient::readyRead()
     Header header;
     User userMessage;
     // Start to read the message
-    socketStream.startTransaction();
 
+    retry:
+    socketStream.startTransaction();
 
     socketStream >> header;
     switch(header.getType())
@@ -232,9 +233,13 @@ void SocketClient::readyRead()
         }
 
     case MessageType::S_ONL_USRS: {
-        qDebug() << "Received: list of online users";
         QMap<QUuid, User> onlineUsers;
         socketStream >> onlineUsers;
+        if (!socketStream.commitTransaction())
+            return;
+        qDebug() << "Received: list of online users"<<onlineUsers.values().length();
+
+        //qDebug() << "Received: list of online users"<<onlineUsers.values();
         emit addOnlineUser(onlineUsers);
         break;
     }
@@ -243,6 +248,8 @@ void SocketClient::readyRead()
         qDebug() << "Received: list of online users";
         QUuid uuid;
         socketStream >> uuid;
+        if (!socketStream.commitTransaction())
+            return;
         emit removeOnlineUser(uuid);
         break;
     }
@@ -252,6 +259,8 @@ void SocketClient::readyRead()
                 return;     // wait for more data
         }
     }
+    if(socket->bytesAvailable()>0)
+        goto retry;
 }
 
 void SocketClient::registrationMessage(User userRegistration){

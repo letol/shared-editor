@@ -715,6 +715,7 @@ void Notepad::setHighlightOwners(bool highlightOwners)
 
 void Notepad::addRemoteUser(QUuid siteId, User userInfo)
 {
+    qDebug() << userInfo.getEmail() << userInfo.getName();
     if (!remoteSites.contains(siteId)) {
         QColor userColor;
 

@@ -32,7 +32,6 @@ Controller::Controller(QWidget *parent) :
     connect(&socket,&SocketClient::openDocumentOK,this,&Controller::openDocumentOK);
     connect(&socket,&SocketClient::openDocumentKO,this,&Controller::openDocumentKO);
     connect(&socket,&SocketClient::addOnlineUser,this,&Controller::moveOnlineUsers);
-    connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
 
     connect(logindialog,SIGNAL(loginData(User)),this,SLOT(loginData(User)));
     connect(this,SIGNAL(errorLogin(QString)),logindialog,SLOT(logKO(QString)));
@@ -50,7 +49,6 @@ Controller::Controller(QWidget *parent) :
     connect(notepad, &Notepad::newDocument, this, &Controller::newDocument);
     connect(notepad, &Notepad::fileClosed, this, &Controller::fileClosed);
     connect(notepad,&Notepad::logout,this,&Controller::logout);
-    connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
     connect(this,SIGNAL(userLogged(User)),updateForm,SLOT(userLogged(User)));
     connect(this,SIGNAL(userIsChanged(User)),updateForm,SLOT(updateOK(User)));
     connect(this,SIGNAL(udpKO(QString)),updateForm,SLOT(updateKO(QString)));
@@ -84,6 +82,9 @@ void Controller::enableEditingMessages()
     connect(notepad,&Notepad::newCursorPosition,this,&Controller::sendCursorPosition);
     connect(&socket,&SocketClient::remoteCursorPosition,this,&Controller::receiveCursorPosition);
     connect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
+    connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
+    connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
+
 }
 
 void Controller::open()
@@ -102,8 +103,8 @@ void Controller::open()
 
 void Controller::moveOnlineUsers(QMap<QUuid, User> onlineUsers)
 {
-   onlineUsers.remove(siteId);
-   emit pushOnlineUsers(onlineUsers);
+   //onlineUsers.remove(siteId);
+   notepad->getOnlineUsers(onlineUsers);
 }
 
 void Controller::moveUserDisconnected(QUuid uuid)
