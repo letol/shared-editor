@@ -34,5 +34,6 @@
         <file>images/profile.png</file>
         <file>images/edit.png</file>
         <file>images/share.png</file>
+        <file>images/users-png.png</file>
     </qresource>
 </RCC>

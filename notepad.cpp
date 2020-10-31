@@ -134,7 +134,7 @@ Notepad::Notepad(QUuid siteId, QWidget *parent) :
 
     ui->mainToolBar->addAction(ui->actionOnlineUsers);
     QImage usersImage;
-    usersImage.load(":/images/profile.png");
+    usersImage.load(":/images/users-png.png");
     ui->actionOnlineUsers->setIcon(QIcon(QPixmap::fromImage(usersImage)));
 
 
