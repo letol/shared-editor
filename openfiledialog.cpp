@@ -88,9 +88,7 @@ void OpenFileDialog::on_uri_textChanged()
 
 void OpenFileDialog::on_uriPushButton_clicked()
 {
-    QString idFile = ui->uri->text().remove("shared-editor://");
-    qInfo()<<"{"+idFile+"}";
-    emit openFile("{"+idFile+"}");
+    emit openFile(ui->uri->text());
     this->hide();
 }
 
