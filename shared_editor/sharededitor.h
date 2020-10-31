@@ -31,13 +31,14 @@ public:
     QString to_string();
     int symbolCount();
     void reset();
+    void init();
 
 public slots:
     void process(const EditingMessage& m);
 
 signals:
     void localChange(const EditingMessage& m);
-    void remoteCharInserted(QUuid remoteSiteId, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
+    void remoteCharInserted(QUuid remoteSiteId, QString owner, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
     void remoteCharDeleted(QUuid remoteSiteId, int index);
 
 private:

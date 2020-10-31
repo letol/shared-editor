@@ -79,11 +79,14 @@ Controller::~Controller()
 
 void Controller::enableEditingMessages()
 {
-    connect(notepad->getSharedEditor(),&SharedEditor::localChange,&socket,&SocketClient::localEditDocument);
-    connect(&socket,&SocketClient::remoteEditDocument,notepad->getSharedEditor(),&SharedEditor::process);
-    connect(notepad,&Notepad::newCursorPosition,this,&Controller::sendCursorPosition);
-    connect(&socket,&SocketClient::remoteCursorPosition,this,&Controller::receiveCursorPosition);
-    connect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
+    if(!editMsgEnabled) {
+        editMsgEnabled = true;
+        connect(notepad->getSharedEditor(),&SharedEditor::localChange,&socket,&SocketClient::localEditDocument);
+        connect(&socket,&SocketClient::remoteEditDocument,notepad->getSharedEditor(),&SharedEditor::process);
+        connect(notepad,&Notepad::newCursorPosition,this,&Controller::sendCursorPosition);
+        connect(&socket,&SocketClient::remoteCursorPosition,this,&Controller::receiveCursorPosition);
+        connect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
+    }
 }
 
 void Controller::open()

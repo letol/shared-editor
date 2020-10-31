@@ -87,6 +87,7 @@ private:
     DocumentMessage currentDocument;
     bool changePwd=false;
     bool userIsLogged=false;
+    bool editMsgEnabled=false;
 
 };
 
