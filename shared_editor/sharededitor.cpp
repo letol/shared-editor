@@ -3,9 +3,6 @@
 SharedEditor::SharedEditor(QUuid siteId) {
     this->_siteId = siteId;
     this->_userEmail = "_client";
-    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
-    auto it = _symbols.begin();
-    _symbols.insert(it, newSym);
 }
 
 QUuid SharedEditor::getSiteId() {
@@ -151,7 +148,7 @@ QString SharedEditor::to_string() {
 
 void SharedEditor::remoteInsert(Symbol sym) {
     auto index = findInsertIndex(sym);
-    remoteCharInserted(sym.getSiteId(), sym.getValue(), sym.getCharFormat(), sym.getBlockFormat(), index - _symbols.begin());
+    remoteCharInserted(sym.getSiteId(), sym.getOwnerEmail(), sym.getValue(), sym.getCharFormat(), sym.getBlockFormat(), index - _symbols.begin());
     _symbols.insert(index, sym);
 }
 
@@ -174,9 +171,12 @@ int SharedEditor::symbolCount() {
 }
 
 void SharedEditor::reset() {
-    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
-    _symbols.clear();
     _counter = 1;
+    _symbols.clear();
+}
+
+void SharedEditor::init() {
+    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
     auto it = _symbols.begin();
     _symbols.insert(it, newSym);
 }

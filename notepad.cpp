@@ -211,11 +211,9 @@ SharedEditor* Notepad::getSharedEditor()
 
 void Notepad::openNewDocument(const QString& name)
 {
-    setWindowTitle(name);
-    ui->textEdit->setText(QString());
     sharedEditor.reset();
+    sharedEditor.init();
     emit newDocument(sharedEditor.getSymbols(), name);
-    this->show();
 }
 
 void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
@@ -224,8 +222,12 @@ void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
     updateButton->setIcon(QIcon(QPixmap::fromImage(image)));
 }
 
-void Notepad::openExistingDocument(const QVector<Symbol>& symbols, QString name,QUuid  uri)
+void Notepad::openExistingDocument(QVector<Symbol>& symbols, QString name, QUuid uri)
 {
+    bool oldState = ui->textEdit->document()->blockSignals(true);
+    ui->textEdit->clear();
+    ui->textEdit->document()->blockSignals(oldState);
+
     setWindowTitle(name);
     this->uri=uri;
     sharedEditor.reset();
@@ -624,12 +626,13 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
     //qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
-void Notepad::remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat format, QTextBlockFormat blockFormat, int index)
+void Notepad::remoteCharInsert(QUuid siteId, QString owner, QChar value, QTextCharFormat format, QTextBlockFormat blockFormat, int index)
 {
     //TODO: review signal blocking correctness
     bool oldState = ui->textEdit->document()->blockSignals(true);
     auto it = remoteSites.find(siteId);
     if (it != remoteSites.end()) {
+        // Character inserted by online user
         QTextCursor *c = it.value().getCursor();
         c->setPosition(index);
 
@@ -647,6 +650,23 @@ void Notepad::remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat format
         }
 
         it.value().printCursor();
+    } else {
+        // Character inserted by offline user
+        QTextCursor c(ui->textEdit->document());
+        c.setPosition(index);
+
+        if (ui->actionHighlight_owners->isChecked()) {
+            QTextCharFormat highlightOwnersFormat = format;
+            QColor remoteUserColor = remoteUserColors.find(owner).value();
+            highlightOwnersFormat.setBackground(remoteUserColor.lighter());
+            c.insertText(value, highlightOwnersFormat);
+        } else {
+            c.insertText(value, format);
+        }
+
+        if (c.blockFormat() != blockFormat) {
+            c.setBlockFormat(blockFormat);
+        }
     }
     ui->textEdit->document()->blockSignals(oldState);
    // qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();

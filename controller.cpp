@@ -77,14 +77,16 @@ Controller::~Controller()
 
 void Controller::enableEditingMessages()
 {
-    connect(notepad->getSharedEditor(),&SharedEditor::localChange,&socket,&SocketClient::localEditDocument);
-    connect(&socket,&SocketClient::remoteEditDocument,notepad->getSharedEditor(),&SharedEditor::process);
-    connect(notepad,&Notepad::newCursorPosition,this,&Controller::sendCursorPosition);
-    connect(&socket,&SocketClient::remoteCursorPosition,this,&Controller::receiveCursorPosition);
-    connect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
-    connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
-    connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
-
+    if(!editMsgEnabled) {
+        editMsgEnabled = true;
+        connect(notepad->getSharedEditor(),&SharedEditor::localChange,&socket,&SocketClient::localEditDocument);
+        connect(&socket,&SocketClient::remoteEditDocument,notepad->getSharedEditor(),&SharedEditor::process);
+        connect(notepad,&Notepad::newCursorPosition,this,&Controller::sendCursorPosition);
+        connect(&socket,&SocketClient::remoteCursorPosition,this,&Controller::receiveCursorPosition);
+        connect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
+        connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
+        connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
+    }
 }
 
 void Controller::open()
