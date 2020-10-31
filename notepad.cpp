@@ -595,7 +595,8 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
     //qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
 
-    for (int i = position; i < position+charsRemoved && i < sharedEditor.symbolCount(); i++) {
+    int symbolsSize = sharedEditor.symbolCount();
+    for (int i = position; i < position+charsRemoved && i < symbolsSize; i++) {
         sharedEditor.localErase(position);
     }
 
