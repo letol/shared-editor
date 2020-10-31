@@ -41,12 +41,11 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
 {
     files = docList;
     qDebug() << "File list:";
+    fileModel->clear();
     for (int row = 0; row < docList.size(); ++row) {
         QStandardItem *nameItem = new QStandardItem(docList[row].getName());
         nameItem->setEditable(false);
         nameItem->setTextAlignment(Qt::AlignCenter);
-       // QStandardItem *documentIdItem = new QStandardItem(docList[row].getDocumentId().toString());
-
         QStandardItem *dateItem = new QStandardItem(docList[row].getDate());
         dateItem->setEditable(false);
         dateItem->setTextAlignment(Qt::AlignCenter);

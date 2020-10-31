@@ -73,7 +73,6 @@ private slots:
     void openDocumentKO();
     void sendCursorPosition(int pos);
     void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
-    void getUri(const QString& uri);
 
 private:
     QUuid siteId;

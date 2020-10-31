@@ -111,6 +111,12 @@ void Controller::errorConnection()
 {
 
     QMessageBox::critical(this,"Error","Something went wrong!Please try again later.");
+    notepad->close();
+    openfile->close();
+    logindialog->close();
+    regDialog->close();
+    updateForm->close();
+    confirmpwd->close();
     this->close();
 }
 
@@ -175,12 +181,23 @@ void Controller::logKO()
 void Controller::errorDB()
 {
     QMessageBox::warning(this,"Error", "Something went wrong!Please try again later.");
+    notepad->close();
+    openfile->close();
+    logindialog->close();
+    regDialog->close();
+    updateForm->close();
+    confirmpwd->close();
     this->close();
 }
 
 void Controller::notLogged()
 {
     QMessageBox::warning(this,"Error", "Plese login");
+    notepad->close();
+    openfile->close();
+    regDialog->close();
+    updateForm->close();
+    confirmpwd->close();
     logindialog->show();
 }
 
@@ -278,11 +295,6 @@ void Controller::logout()
 
 }
 
-void Controller::getUri(const QString &uri)
-{
-    //socket.sendUri(uri);
-    qInfo()<<uri;
-}
 
 void Controller::newDocument(const QVector<Symbol>& symbols, const QString& name)
 {
