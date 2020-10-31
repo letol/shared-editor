@@ -232,6 +232,7 @@ void Notepad::openExistingDocument(QVector<Symbol>& symbols, QString name, QUuid
     this->uri=uri;
     sharedEditor.reset();
     foreach(Symbol sym, symbols) {
+        qDebug()<<sym.getValue();
         sharedEditor.remoteInsert(sym);
     }
     this->show();
@@ -734,6 +735,7 @@ void Notepad::setHighlightOwners(bool highlightOwners)
 
 void Notepad::addRemoteUser(QUuid siteId, User userInfo)
 {
+    qDebug() << userInfo.getEmail() << userInfo.getName();
     if (!remoteSites.contains(siteId)) {
         QColor userColor;
 
