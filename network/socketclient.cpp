@@ -73,6 +73,8 @@ void SocketClient::readyRead()
     retry:
     socketStream.startTransaction();
 
+
+
     socketStream >> header;
     switch(header.getType())
     {

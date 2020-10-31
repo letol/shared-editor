@@ -5,6 +5,8 @@
 #include <QFileSystemModel>
 #include <QStandardItem>
 #include <QUrl>
+#include <QItemSelection>
+#include <QMouseEvent>
 #include "documentmessage.h"
 
 namespace Ui {
@@ -19,6 +21,7 @@ public:
     explicit OpenFileDialog(QWidget *parent = nullptr);
     ~OpenFileDialog();
     void setFileList(QVector<DocumentMessage>& docList);
+    void mouseMoveEvent(QMouseEvent *e);
     void clean();
 
 signals:
@@ -36,6 +39,10 @@ private slots:
     void on_uriPushButton_clicked();
 
     void on_tableView_doubleClicked(const QModelIndex &index);
+
+    void on_removePushButton_clicked();
+
+    void selectedRow(const QItemSelection & selected, const QItemSelection & deselected);
 
 private:
     Ui::OpenFileDialog *ui;

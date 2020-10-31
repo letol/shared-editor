@@ -88,6 +88,19 @@
     </rect>
    </property>
   </widget>
+  <widget class="QPushButton" name="removePushButton">
+   <property name="geometry">
+    <rect>
+     <x>630</x>
+     <y>190</y>
+     <width>191</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Remove</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

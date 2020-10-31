@@ -19,6 +19,12 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
     ui->tableView->setColumnWidth(0,ui->tableView->width()/2);
     ui->tableView->setColumnWidth(1,ui->tableView->width()/2);
 
+    connect(
+      ui->tableView->selectionModel(),
+      SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection &)),
+      SLOT(selectedRow(const QItemSelection &, const QItemSelection &))
+     );
+
 
 
     QRegularExpression rxString("^(?!\\s*$).+.",QRegularExpression::CaseInsensitiveOption);
@@ -26,6 +32,7 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
     ui->uri->setValidator(new QRegularExpressionValidator(rxString, this));
     ui->newFilePushButton->setEnabled(false);
     ui->uriPushButton->setEnabled(false);
+    ui->removePushButton->setEnabled(false);
 
 
 
@@ -60,8 +67,14 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
     }
 }
 
-void OpenFileDialog::clean()
+void OpenFileDialog::mouseMoveEvent(QMouseEvent *e)
 {
+    if(e->buttons() == Qt::LeftButton)
+        qDebug() << "Only left button";
+}
+
+void OpenFileDialog::clean()
+{   ui->tableView->selectionModel()->clearSelection();
     ui->nameFile->clear();
     ui->uri->clear();
 }
@@ -101,7 +114,27 @@ void OpenFileDialog::on_tableView_doubleClicked(const QModelIndex &index)
     uri.setScheme("shared-editor");
     uri.setHost(selected.getDocumentId().toString(QUuid::WithoutBraces));
     emit openFile(uri);
+    ui->tableView->selectionModel()->clearSelection();
     this->hide();
 }
 
+
+
+void OpenFileDialog::on_removePushButton_clicked()
+{
+    ui->tableView->selectionModel()->clearSelection();
+}
+
+void OpenFileDialog::selectedRow(const QItemSelection & selected, const QItemSelection & deselected)
+{
+    if(selected.isEmpty()){
+        ui->removePushButton->setEnabled(false);
+    }else{
+        ui->removePushButton->setEnabled(true);
+        DocumentMessage selectedFile = files[selected.indexes()[0].row()];
+        qInfo()<<selectedFile.getDocumentId();
+    }
+
+
+}
 
