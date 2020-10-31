@@ -74,6 +74,8 @@ private slots:
     void sendCursorPosition(int pos);
     void receiveCursorPosition(const CursorPositionMessage& curPosMsg);
     void deleteFile(const DocumentMessage& docMesssage);
+    void deleteOK();
+    void deleteKO();
 
 private:
     QUuid siteId;

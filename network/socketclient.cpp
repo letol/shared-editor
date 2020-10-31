@@ -254,6 +254,18 @@ void SocketClient::readyRead()
             emit removeOnlineUser(uuid);
             break;
         }
+        case MessageType::S_DOC_DLT_OK:{
+            if (!socketStream.commitTransaction())
+                return;
+            emit deleteOK();
+            break;
+        }
+        case MessageType::S_DOC_DLT_KO:{
+            if (!socketStream.commitTransaction())
+                return;
+            emit deleteKO();
+            break;
+        }
       
         default:{
             qDebug() << "Unknown MessageType: wait for more data";
@@ -370,9 +382,9 @@ void SocketClient::localCursorPosition(const CursorPositionMessage curPosMsg) {
 
 void SocketClient::deleteMessage(DocumentMessage docMessage)
 {
-    //Header headerReg(MessageType::C_NEW) ;
+    Header headerReg(MessageType::C_DOC_DLT) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
-    //clientStream << headerReg << docMsg;
-    //qDebug() << "Sent: C_NEW";
+    clientStream << headerReg << docMessage;
+    qDebug() << "Sent: C_DOC_DLT";
 }

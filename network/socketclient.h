@@ -44,6 +44,8 @@ signals:
     void uriOK();
     void addOnlineUser (QMap<QUuid, User> users);
     void removeOnlineUser (QUuid uuid);
+    void deleteOK();
+    void deleteKO();
 
 public slots:
     void connected();

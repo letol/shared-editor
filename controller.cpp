@@ -383,3 +383,14 @@ void Controller::deleteFile(const DocumentMessage& docMesssage)
 {
     socket.deleteMessage(docMesssage);
 }
+
+void Controller::deleteOK()
+{
+    QMessageBox::information(this,"Successful","File removed correct");
+    socket.askForDocumentList(currentUser.getEmail());
+}
+
+void Controller::deleteKO()
+{
+    QMessageBox::critical(this,"Error","Impossible to remove file");
+}
