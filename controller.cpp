@@ -12,7 +12,6 @@ Controller::Controller(QWidget *parent) :
     regDialog = new RegistrationDialog();
     openfile = new OpenFileDialog();
     updateForm = new UpdateFormDialog();
-    qInfo()<<updateForm->isModal();
 
     confirmpwd = new ConfirmPassword();
     //socket connection
@@ -130,6 +129,8 @@ void Controller::regOK(const User& user)
     QImage imagex;
     imagex.loadFromData(currentUser.getImage());
     QString str =currentUser.getName()+" "+currentUser.getSurname();
+    qInfo()<<currentUser.getImage().size();
+    qInfo()<<imagex.size();
     //to updateButton in notepad
     emit updateButton(str,imagex);
 
@@ -155,6 +156,7 @@ void Controller::logOK(const User& user)
     emit userLogged(currentUser);
     userIsLogged=true;
     QImage imagex;
+    qInfo()<<currentUser.getImage().size();
     imagex.loadFromData(currentUser.getImage());
 
     emit updateButton(currentUser.getName()+" "+currentUser.getSurname(),imagex);

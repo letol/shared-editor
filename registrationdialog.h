@@ -42,9 +42,11 @@ private slots:
     void on_lineEdit_pwdrepeat_textChanged(const QString &arg1);
 
     void on_login_pushButton_clicked();
+    void clean();
 
 private:
     Ui::RegistrationDialog *ui;
+    User user;
 
     QMap<QString, bool> valid={{"name", false},
                                {"surname", false},

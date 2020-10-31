@@ -15,6 +15,10 @@ RegistrationDialog::RegistrationDialog(QWidget *parent) :
     image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
     image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
     ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+    QByteArray byteArray;
+    QBuffer buffer(&byteArray);
+    image.save(&buffer, "png");
+    user.setImage(byteArray);
     ui->pushButton->setEnabled(false);
     QRegularExpression rx("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$");
     ui->lineEdit_password->setValidator(new QRegularExpressionValidator(rx, this));
@@ -40,10 +44,15 @@ void RegistrationDialog::on_pushButton_image_clicked()
     if(QString::compare(filename,QString())!=0){
         QImage image;
         bool check = image.load(filename);
+        const char* typeImage = std::move(filename.split(".")[1].toUpper().toStdString().c_str());
         if(check){
             image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
             image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
             ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+            QByteArray byteArray;
+            QBuffer buffer(&byteArray);
+            image.save(&buffer, typeImage);
+            user.setImage(byteArray);
             ui->lbl_error->clear();
 
 
@@ -71,14 +80,9 @@ void RegistrationDialog::on_pushButton_clicked()
 
 
     QString pwdRepeat = ui->lineEdit_password->text();
-    // Preparation of our QPixmap
-    const QPixmap* pixmap = ui->lbl_image->pixmap();
-    QImage image = pixmap->toImage();
-    QByteArray arr = QByteArray::fromRawData((const char*)image.bits(), image.byteCount());
 
+    QByteArray arr = user.getImage();
 
-
-    qInfo()<<arr.size();
 
     User userMessage(nickname,name,surname,email,pwd,arr);
 
@@ -89,7 +93,7 @@ void RegistrationDialog::on_pushButton_clicked()
 
 void RegistrationDialog::on_lineEdit_name_textChanged()
 {  if(!ui->lineEdit_name->hasAcceptableInput()){
-        ui->lbl_error->setText("Name must be not empty");
+        ui->lbl_error->setText("Name must has more than one character");
         valid["name"]=false;
     }
     else{
@@ -102,7 +106,7 @@ void RegistrationDialog::on_lineEdit_name_textChanged()
 void RegistrationDialog::on_lineEdit_surname_textChanged()
 {
     if(!ui->lineEdit_surname->hasAcceptableInput()){
-        ui->lbl_error->setText("Surname must be not empty");
+        ui->lbl_error->setText("Surname must has more than one character");
         valid["surname"]=false;
     }
     else{
@@ -115,7 +119,7 @@ void RegistrationDialog::on_lineEdit_surname_textChanged()
 void RegistrationDialog::on_lineEdit_nickname_textChanged()
 {
     if(!ui->lineEdit_nickname->hasAcceptableInput()){
-         ui->lbl_error->setText("Nickname must be not empty");
+         ui->lbl_error->setText("Nickname must has more than one character");
         valid["nickname"]=false;
     }
     else{
@@ -152,18 +156,20 @@ void RegistrationDialog::on_lineEdit_password_textChanged(const QString &arg1)
         ui->lbl_error->clear();
         valid["pwd"]=true;
         checkValid(valid);
+
+        if(str.compare(ui->lineEdit_pwdrepeat->text())!=0){
+            ui->lbl_error->setText("Passwords must match");
+            valid["pwdR"]=false;
+
+        }
+        else{
+            ui->lbl_error->clear();
+            valid["pwdR"]=true;
+            checkValid(valid);
+         }
     }
 
-    if(str.compare(ui->lineEdit_pwdrepeat->text())!=0){
-        ui->lbl_error->setText("Passwords must match");
-        valid["pwdR"]=false;
 
-    }
-    else{
-        ui->lbl_error->clear();
-        valid["pwdR"]=true;
-        checkValid(valid);
-     }
    /*
 
     " Password must be:\n" +
@@ -223,5 +229,23 @@ void RegistrationDialog::checkValid(QMap<QString,bool> valid){
 void RegistrationDialog::on_login_pushButton_clicked()
 {
     this->hide();
+    this->clean();
     emit openLogin();
+}
+
+void RegistrationDialog::clean()
+{
+    QImage image;
+       image.load(":/images/profile.png");
+       image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+       image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
+       ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+       ui->lbl_error->clear();
+       ui->lineEdit_name->clear();
+       ui->lineEdit_surname->clear();
+       ui->lineEdit_email->clear();
+       ui->lineEdit_password->clear();
+       ui->lineEdit_pwdrepeat->clear();
+       ui->lineEdit_nickname->clear();
+
 }

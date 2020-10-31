@@ -256,7 +256,7 @@ void SocketClient::readyRead()
 
 void SocketClient::registrationMessage(User userRegistration){
 
-
+    userData = userRegistration;
     Header haederReg(MessageType::C_REGISTER) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);

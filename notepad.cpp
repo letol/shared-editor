@@ -589,7 +589,7 @@ void Notepad::textHighlight()
 
 void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
-    qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
+    //qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
 
     for (int i = position; i < position+charsRemoved && i < sharedEditor.symbolCount(); i++) {
         sharedEditor.localErase(position);
@@ -617,9 +617,9 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
     }
     ui->textEdit->document()->blockSignals(oldState);
 
-    qDebug() << "sharedEditor:" << sharedEditor.to_string();
-    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
-    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+   // qDebug() << "sharedEditor:" << sharedEditor.to_string();
+    //qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    //qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
 void Notepad::remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat format, QTextBlockFormat blockFormat, int index)
@@ -647,8 +647,8 @@ void Notepad::remoteCharInsert(QUuid siteId, QChar value, QTextCharFormat format
         it.value().printCursor();
     }
     ui->textEdit->document()->blockSignals(oldState);
-    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
-    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+   // qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+   // qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
 void Notepad::remoteCharDelete(QUuid siteId, int index)
@@ -663,8 +663,8 @@ void Notepad::remoteCharDelete(QUuid siteId, int index)
         c->deleteChar();
     }
     ui->textEdit->document()->blockSignals(oldState);
-    qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
-    qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+   // qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
+    //qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
 void Notepad::setHighlightOwners(bool highlightOwners)
