@@ -14,11 +14,11 @@ QVector<int> Symbol::getFractIndex() const {
     return fractIndex;
 }
 
-QUuid Symbol::getSiteId() {
+QUuid& Symbol::getSiteId() {
     return siteId;
 }
 
-QString Symbol::getOwnerEmail() {
+QString& Symbol::getOwnerEmail() {
     return ownerEmail;
 }
 
@@ -30,11 +30,11 @@ QChar Symbol::getValue() {
     return value;
 }
 
-QTextCharFormat Symbol::getCharFormat() {
+QTextCharFormat& Symbol::getCharFormat() {
     return charFormat;
 }
 
-QTextBlockFormat Symbol::getBlockFormat() {
+QTextBlockFormat& Symbol::getBlockFormat() {
     return blockFormat;
 }
 

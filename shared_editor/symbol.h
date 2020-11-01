@@ -19,7 +19,7 @@ private:
     QVector<int> fractIndex;
 public:
     Symbol() = default;
-    Symbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, QUuid siteId, QString ownerEmail,int counter, QVector<int> &fractIndex) :
+    Symbol(QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, QUuid &siteId, QString &ownerEmail,int counter, QVector<int> &fractIndex) :
         value(value),
         charFormat(charFormat),
         blockFormat(blockFormat),
@@ -30,12 +30,12 @@ public:
 
     int getFractIndexDigit(int pos) const;
     QVector<int> getFractIndex() const;
-    QUuid getSiteId();
-    QString getOwnerEmail();
+    QUuid& getSiteId();
+    QString& getOwnerEmail();
     size_t fractIndexSize();
     QChar getValue();
-    QTextCharFormat getCharFormat();
-    QTextBlockFormat getBlockFormat();
+    QTextCharFormat& getCharFormat();
+    QTextBlockFormat& getBlockFormat();
 
     QDataStream &serialize(QDataStream &stream) const override;
     QDataStream &unserialize(QDataStream &stream) override;

@@ -64,7 +64,7 @@ class Notepad : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit Notepad(QUuid siteId, QWidget *parent = nullptr);
+    explicit Notepad(QWidget *parent = nullptr);
     ~Notepad();
     SharedEditor* getSharedEditor();
 
@@ -100,8 +100,8 @@ private slots:
     void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
-    void remoteCharInsert(QUuid siteId, QString owner, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
-    void remoteCharDelete(QUuid siteId, int index);
+    void remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
+    void remoteCharDelete(QUuid &siteId, int index);
     void addRemoteUser(QUuid siteId, User userInfo);
     void localCursorPositionChanged();
     void on_actionExport_PDF_triggered();

@@ -51,7 +51,7 @@ public slots:
     void bytesWritten (qint64 bytes);
     void readyRead();
     void registrationMessage(User userRegistration);
-    void loginMessage(User userLogin);
+    void loginMessage(User userLogin, QUuid &newSiteId);
     void updateImage(User user);
     void updateName(User user);
     void updateSurname(User user);

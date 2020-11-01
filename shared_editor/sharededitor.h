@@ -15,16 +15,16 @@ class SharedEditor : public QObject
     Q_OBJECT
 
 public:
-    SharedEditor() = delete;
-    SharedEditor(QUuid siteId);
+    SharedEditor();
     QUuid getSiteId();
+    void setSiteId(QUuid &siteId);
     QString getUserEmail();
     void setUserEmail(QString userEmail);
     QVector<Symbol>& getSymbols();
     QUuid getSymbolSiteId(int index);
     QString getSymbolOwner(int index);
     QTextCharFormat getSymbolFormat(int index);
-    void localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
+    void localInsert(QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
     void localErase(int index);
     void remoteInsert(Symbol sym);
     void remoteDelete(Symbol sym);
@@ -38,8 +38,8 @@ public slots:
 
 signals:
     void localChange(const EditingMessage& m);
-    void remoteCharInserted(QUuid remoteSiteId, QString owner, QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
-    void remoteCharDeleted(QUuid remoteSiteId, int index);
+    void remoteCharInserted(QUuid &remoteSiteId, QString &owner, QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
+    void remoteCharDeleted(QUuid &remoteSiteId, int index);
 
 private:
     QUuid _siteId{};
@@ -47,7 +47,7 @@ private:
     QVector<Symbol> _symbols;
     int _counter=1;
 
-    Symbol generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index);
+    Symbol generateSymbol(QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
     void generateIndexBetween(Symbol &sym1, int pos1, Symbol &sym2, int pos2, QVector<int> &newFractIndex);
     auto findInsertIndex(const Symbol &sym);
     auto findIndexByPos(const Symbol &sym);
