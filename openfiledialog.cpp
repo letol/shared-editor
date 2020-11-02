@@ -18,6 +18,7 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
     ui->tableView->setModel(fileModel);
     ui->tableView->setColumnWidth(0,ui->tableView->width()/2);
     ui->tableView->setColumnWidth(1,ui->tableView->width()/2);
+    ui->tableView->setSelectionMode(QAbstractItemView::SingleSelection);
 
     connect(
       ui->tableView->selectionModel(),
@@ -33,6 +34,8 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
     ui->newFilePushButton->setEnabled(false);
     ui->uriPushButton->setEnabled(false);
     ui->removePushButton->setEnabled(false);
+    QApplication::instance()->installEventFilter(this);
+    setMouseTracking(true);
 
 
 
@@ -67,17 +70,21 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
     }
 }
 
-void OpenFileDialog::mouseMoveEvent(QMouseEvent *e)
+void OpenFileDialog::mouseReleaseEvent ( QMouseEvent * event )
 {
-    if(e->buttons() == Qt::LeftButton)
+    QModelIndex idx = fileModel->index(event->pos().x(),event->pos().y());
+    if (!idx.isValid())
+    {   //deselect
         ui->tableView->selectionModel()->clearSelection();
-}
+    }
 
+}
 void OpenFileDialog::clean()
 {   ui->tableView->selectionModel()->clearSelection();
     ui->nameFile->clear();
     ui->uri->clear();
 }
+
 
 void OpenFileDialog::on_newFilePushButton_clicked()
 {

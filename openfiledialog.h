@@ -21,13 +21,15 @@ public:
     explicit OpenFileDialog(QWidget *parent = nullptr);
     ~OpenFileDialog();
     void setFileList(QVector<DocumentMessage>& docList);
-    void mouseMoveEvent(QMouseEvent *e);
+
     void clean();
 
 signals:
     void openFile(const QUrl uri);
     void openNewFile(const QString& name);
     void deleteFile(const DocumentMessage& docMessage);
+protected:
+   void mouseReleaseEvent(QMouseEvent * event) override;
 
 private slots:
 
@@ -44,6 +46,7 @@ private slots:
     void on_removePushButton_clicked();
 
     void selectedRow(const QItemSelection & selected, const QItemSelection & deselected);
+
 
 private:
     Ui::OpenFileDialog *ui;
