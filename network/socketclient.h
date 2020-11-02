@@ -44,6 +44,8 @@ signals:
     void uriOK();
     void addOnlineUser (QMap<QUuid, User> users);
     void removeOnlineUser (QUuid uuid);
+    void deleteOK();
+    void deleteKO();
 
 public slots:
     void connected();
@@ -62,6 +64,7 @@ public slots:
     void askForDocumentList(const QString userEmail);
     void openDocument(const OpenMessage openMsg);
     void localCursorPosition(const CursorPositionMessage curPosMsg);
+    void deleteMessage(DocumentMessage docMessage);
 
 
 private:

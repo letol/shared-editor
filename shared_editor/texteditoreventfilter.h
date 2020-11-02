@@ -13,7 +13,6 @@ public:
 
 signals:
     void sizeChanged();
-
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 };

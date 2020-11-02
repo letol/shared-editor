@@ -1,4 +1,5 @@
 #include "texteditoreventfilter.h"
+#include <QDebug>
 
 bool TextEditorEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
@@ -8,4 +9,5 @@ bool TextEditorEventFilter::eventFilter(QObject *obj, QEvent *event)
     } else {
         return QObject::eventFilter(obj, event);
     }
+
 }

@@ -73,6 +73,8 @@ void SocketClient::readyRead()
     retry:
     socketStream.startTransaction();
 
+
+
     socketStream >> header;
     switch(header.getType())
     {
@@ -252,6 +254,18 @@ void SocketClient::readyRead()
             emit removeOnlineUser(uuid);
             break;
         }
+        case MessageType::S_DOC_DLT_OK:{
+            if (!socketStream.commitTransaction())
+                return;
+            emit deleteOK();
+            break;
+        }
+        case MessageType::S_DOC_DLT_KO:{
+            if (!socketStream.commitTransaction())
+                return;
+            emit deleteKO();
+            break;
+        }
       
         default:{
             qDebug() << "Unknown MessageType: wait for more data";
@@ -364,4 +378,13 @@ void SocketClient::localCursorPosition(const CursorPositionMessage curPosMsg) {
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << headerReg << curPosMsg;
     qDebug() << "Sent: B_CURSOR_POS";
+}
+
+void SocketClient::deleteMessage(DocumentMessage docMessage)
+{
+    Header headerReg(MessageType::C_DOC_DLT) ;
+    QDataStream clientStream(socket);
+    clientStream.setVersion(QDataStream::Qt_5_12);
+    clientStream << headerReg << docMessage;
+    qDebug() << "Sent: C_DOC_DLT";
 }

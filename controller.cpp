@@ -44,6 +44,7 @@ Controller::Controller(QWidget *parent) :
     connect(notepad,&Notepad::showUpdateForm, this, &Controller::showUpdateForm);
     connect(this,&Controller::updateButton,notepad,&Notepad::updateButtonIcon);
     connect(openfile,&OpenFileDialog::openFile,this, &Controller::openDocument);
+    connect(openfile,&OpenFileDialog::deleteFile,this, &Controller::deleteFile);
     connect(openfile,&OpenFileDialog::openNewFile,notepad,&Notepad::openNewDocument);
     connect(notepad, &Notepad::newDocument, this, &Controller::newDocument);
     connect(notepad, &Notepad::fileClosed, this, &Controller::fileClosed);
@@ -377,4 +378,20 @@ void Controller::receiveCursorPosition(const CursorPositionMessage& curPosMsg)
 {
     CursorPositionMessage m = std::move(curPosMsg);
     emit remoteCursorPositionChanged(m.getSiteId(), m.getPos());
+}
+
+void Controller::deleteFile(const DocumentMessage& docMesssage)
+{
+    socket.deleteMessage(docMesssage);
+}
+
+void Controller::deleteOK()
+{
+    QMessageBox::information(this,"Successful","File removed correct");
+    socket.askForDocumentList(currentUser.getEmail());
+}
+
+void Controller::deleteKO()
+{
+    QMessageBox::critical(this,"Error","Impossible to remove file");
 }
