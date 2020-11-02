@@ -67,10 +67,9 @@
 
 const QString rsrcPath = ":/images";
 
-Notepad::Notepad(QUuid siteId, QWidget *parent) :
+Notepad::Notepad(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Notepad),
-    sharedEditor(siteId),
     colors{
         QColorConstants::Green,
         QColorConstants::Red,
@@ -212,7 +211,6 @@ SharedEditor* Notepad::getSharedEditor()
 void Notepad::openNewDocument(const QString& name)
 {
     sharedEditor.reset();
-    sharedEditor.init();
     emit newDocument(sharedEditor.getSymbols(), name);
 }
 
@@ -595,7 +593,8 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
     //qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
 
-    for (int i = position; i < position+charsRemoved && i < sharedEditor.symbolCount(); i++) {
+    int symbolsSize = sharedEditor.symbolCount();
+    for (int i = position; i < position+charsRemoved && i < symbolsSize; i++) {
         sharedEditor.localErase(position);
     }
 
@@ -606,7 +605,8 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
         c.setPosition(i);
         c.setPosition(i+1, QTextCursor::KeepAnchor);
         QTextCharFormat fmt = c.charFormat();
-        sharedEditor.localInsert(ch, fmt, c.blockFormat(), i);
+        QTextBlockFormat bfmt = c.blockFormat();
+        sharedEditor.localInsert(ch, fmt, bfmt, i);
     }
 
     //TODO: review signal blocking correctness
@@ -626,7 +626,7 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
     //qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
-void Notepad::remoteCharInsert(QUuid siteId, QString owner, QChar value, QTextCharFormat format, QTextBlockFormat blockFormat, int index)
+void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QTextCharFormat &format, QTextBlockFormat &blockFormat, int index)
 {
     //TODO: review signal blocking correctness
     bool oldState = ui->textEdit->document()->blockSignals(true);
@@ -636,17 +636,21 @@ void Notepad::remoteCharInsert(QUuid siteId, QString owner, QChar value, QTextCh
         QTextCursor *c = it.value().getCursor();
         c->setPosition(index);
 
+        QTextCharFormat fmt = format;
+
         if (ui->actionHighlight_owners->isChecked()) {
-            QTextCharFormat highlightOwnersFormat = format;
             QColor remoteUserColor = remoteSites.find(siteId).value().getColor();
-            highlightOwnersFormat.setBackground(remoteUserColor.lighter());
-            c->insertText(value, highlightOwnersFormat);
-        } else {
-            c->insertText(value, format);
+            fmt.setBackground(remoteUserColor.lighter());
         }
 
-        if (c->blockFormat() != blockFormat) {
-            c->setBlockFormat(blockFormat);
+        if (value == QChar::ParagraphSeparator) {
+            c->insertBlock();
+        } else {
+            c->insertText(value, fmt);
+
+            if (c->blockFormat() != blockFormat) {
+                c->setBlockFormat(blockFormat);
+            }
         }
 
         it.value().printCursor();
@@ -655,17 +659,21 @@ void Notepad::remoteCharInsert(QUuid siteId, QString owner, QChar value, QTextCh
         QTextCursor c(ui->textEdit->document());
         c.setPosition(index);
 
+        QTextCharFormat fmt = format;
+
         if (ui->actionHighlight_owners->isChecked()) {
-            QTextCharFormat highlightOwnersFormat = format;
             QColor remoteUserColor = remoteUserColors.find(owner).value();
-            highlightOwnersFormat.setBackground(remoteUserColor.lighter());
-            c.insertText(value, highlightOwnersFormat);
-        } else {
-            c.insertText(value, format);
+            fmt.setBackground(remoteUserColor.lighter());
         }
 
-        if (c.blockFormat() != blockFormat) {
-            c.setBlockFormat(blockFormat);
+        if (value == QChar::ParagraphSeparator) {
+            c.insertBlock();
+        } else {
+            c.insertText(value, fmt);
+
+            if (c.blockFormat() != blockFormat) {
+                c.setBlockFormat(blockFormat);
+            }
         }
     }
     ui->textEdit->document()->blockSignals(oldState);
@@ -673,7 +681,7 @@ void Notepad::remoteCharInsert(QUuid siteId, QString owner, QChar value, QTextCh
    // qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
 
-void Notepad::remoteCharDelete(QUuid siteId, int index)
+void Notepad::remoteCharDelete(QUuid &siteId, int index)
 {
     //TODO: review signal blocking correctness
     bool oldState = ui->textEdit->document()->blockSignals(true);

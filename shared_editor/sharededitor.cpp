@@ -1,12 +1,15 @@
 #include "sharededitor.h"
 
-SharedEditor::SharedEditor(QUuid siteId) {
-    this->_siteId = siteId;
+SharedEditor::SharedEditor() {
     this->_userEmail = "_client";
 }
 
 QUuid SharedEditor::getSiteId() {
     return _siteId;
+}
+
+void SharedEditor::setSiteId(QUuid &siteId) {
+    _siteId = siteId;
 }
 
 QString SharedEditor::getUserEmail() {
@@ -39,7 +42,7 @@ QTextCharFormat SharedEditor::getSymbolFormat(int index) {
     return it->getCharFormat();
 }
 
-void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
+void SharedEditor::localInsert(QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index) {
     Symbol newSym = generateSymbol(value, charFormat, blockFormat, index);
     auto it = _symbols.begin();
     it+=index;
@@ -48,7 +51,7 @@ void SharedEditor::localInsert(QChar value, QTextCharFormat charFormat, QTextBlo
     emit localChange(msg);
 }
 
-Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTextBlockFormat blockFormat, int index) {
+Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index) {
     QVector<int> newFractIndex;
     if (index == 0) {
         if (_symbols.empty()) {
@@ -60,7 +63,9 @@ Symbol SharedEditor::generateSymbol(QChar value, QTextCharFormat charFormat, QTe
             for (int i = 0; i < size - 1; ++i) {
                 startFractIndex.push_back(0);
             }
-            Symbol sym1('$', QTextCharFormat(), QTextBlockFormat(), this->_siteId, this->_userEmail, 0, startFractIndex);
+            QTextCharFormat $format;
+            QTextBlockFormat $blockFormat;
+            Symbol sym1('$', $format, $blockFormat, this->_siteId, this->_userEmail, 0, startFractIndex);
             generateIndexBetween(sym1, 0, sym2, 0, newFractIndex);
         }
     } else if (_symbols.size() == index) {
@@ -176,7 +181,9 @@ void SharedEditor::reset() {
 }
 
 void SharedEditor::init() {
-    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, QTextCharFormat(), QTextBlockFormat(), 0);
+    QTextCharFormat fmt;
+    QTextBlockFormat blockFmt;
+    Symbol newSym = generateSymbol(QChar::ParagraphSeparator, fmt, blockFmt, 0);
     auto it = _symbols.begin();
     _symbols.insert(it, newSym);
 }

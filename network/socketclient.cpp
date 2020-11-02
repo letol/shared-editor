@@ -274,12 +274,12 @@ void SocketClient::registrationMessage(User userRegistration){
     qDebug() << "Sent: C_REGISTER";
 }
 
-void SocketClient::loginMessage(User userLogin)
+void SocketClient::loginMessage(User userLogin, QUuid &newSiteId)
 {
     Header haederReg(MessageType::C_LOGIN) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
-    clientStream << haederReg << userLogin;
+    clientStream << haederReg << userLogin << newSiteId;
     qDebug() << "Sent: C_LOGIN";
 }
 

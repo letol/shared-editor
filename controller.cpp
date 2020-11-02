@@ -4,10 +4,9 @@
 Controller::Controller(QWidget *parent) :
     QWidget(parent)
 {
-    siteId = QUuid::createUuid();
     socket.setSocket();
 
-    notepad = new Notepad(siteId);
+    notepad = new Notepad();
     logindialog = new LoginDialog();
     regDialog = new RegistrationDialog();
     openfile = new OpenFileDialog();
@@ -264,7 +263,9 @@ void Controller::imageChanged(const QByteArray &image)
 
 void Controller::loginData(const User &user)
 {
-    socket.loginMessage(user);
+    this->siteId = QUuid::createUuid();
+    notepad->getSharedEditor()->setSiteId(siteId);
+    socket.loginMessage(user, siteId);
 }
 
 void Controller::regData(const User &user)
