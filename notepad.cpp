@@ -669,10 +669,18 @@ void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QText
         c->setPosition(index);
 
         QTextCharFormat fmt = format;
+        QColor ownerColor;
 
-        if (ui->actionHighlight_owners->isChecked()) {
-            QColor remoteUserColor = remoteSites.find(siteId).value().getColor();
-            fmt.setBackground(remoteUserColor.lighter());
+        auto colorsIt = remoteUserColors.find(owner);
+        if (colorsIt == remoteUserColors.end()) {
+            ownerColor = colors.at(remoteUserColors.size()+1 % colors.size());
+            remoteUserColors.insert(owner, ownerColor);
+        } else {
+            ownerColor = colorsIt.value();
+        }
+
+        if (ui->actionHighlight_owners->isChecked() && owner != sharedEditor.getUserEmail()) {
+            fmt.setBackground(ownerColor.lighter());
         }
 
         if (value == QChar::ParagraphSeparator) {
@@ -694,12 +702,12 @@ void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QText
         QTextCharFormat fmt = format;
         QColor ownerColor;
 
-        auto it = remoteUserColors.find(owner);
-        if (it == remoteUserColors.end()) {
+        auto colorsIt = remoteUserColors.find(owner);
+        if (colorsIt == remoteUserColors.end()) {
             ownerColor = colors.at(remoteUserColors.size()+1 % colors.size());
             remoteUserColors.insert(owner, ownerColor);
         } else {
-            ownerColor = it.value();
+            ownerColor = colorsIt.value();
         }
 
         if (ui->actionHighlight_owners->isChecked()) {
@@ -757,7 +765,7 @@ void Notepad::setHighlightOwners(bool highlightOwners)
                     format.setBackground(remoteUserColor.lighter());
                     if (pos+selection < numChars-1) {
                         QString nextOwner = sharedEditor.getSymbolOwner(pos+selection);
-                        while (nextOwner == owner && pos+selection < numChars-1) {
+                        while (nextOwner == owner && pos+selection < numChars-2) {
                             selection++;
                             owner = nextOwner;
                             nextOwner = sharedEditor.getSymbolOwner(pos+selection);
