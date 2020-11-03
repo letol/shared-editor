@@ -16,6 +16,9 @@ public:
     QColor getColor();
     QTextCursor* getCursor();
     void printCursor();
+    void printLabel();
+    void hideCursor();
+    void hideLabel();
     User getUserInfo();
 
 private:
@@ -26,6 +29,7 @@ private:
     QFrame *cursorFrame;
     RemoteUserLabel *label;
     User userInfo;
+    bool printingLabel = false;
 };
 
 #endif // REMOTEUSER_H

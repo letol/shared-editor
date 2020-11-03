@@ -112,8 +112,6 @@ void Controller::moveOnlineUsers(QMap<QUuid, User> onlineUsers)
 void Controller::moveUserDisconnected(QUuid uuid)
 {
     notepad->removeRemoteUser(uuid);
-
-
 }
 
 void Controller::errorConnection()
@@ -327,6 +325,16 @@ void Controller::newDocumentKO()
 
 void Controller::fileClosed()
 {
+    if (editMsgEnabled) {
+        editMsgEnabled = false;
+        disconnect(notepad->getSharedEditor(),&SharedEditor::localChange,&socket,&SocketClient::localEditDocument);
+        disconnect(&socket,&SocketClient::remoteEditDocument,notepad->getSharedEditor(),&SharedEditor::process);
+        disconnect(notepad,&Notepad::newCursorPosition,this,&Controller::sendCursorPosition);
+        disconnect(&socket,&SocketClient::remoteCursorPosition,this,&Controller::receiveCursorPosition);
+        disconnect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
+        disconnect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
+        disconnect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
+    }
     notepad->close();
     updateForm->close();
     confirmpwd->close();
@@ -358,8 +366,8 @@ void Controller::openDocumentOK(const DocumentMessage& docReply)
 {
     currentDocument = std::move(docReply);
     qDebug()<<currentDocument.getOwnerEmail() << " " << currentDocument.getDocumentId()<<" "<< currentDocument.getSymbols().length();
-    enableEditingMessages();
     notepad->openExistingDocument(currentDocument.getSymbols(), currentDocument.getName(),currentDocument.getDocumentId());
+    enableEditingMessages();
 }
 
 void Controller::openDocumentKO()

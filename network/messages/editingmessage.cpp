@@ -4,7 +4,7 @@
 
 #include "editingmessage.h"
 
-QUuid EditingMessage::getSenderSiteId() {
+QUuid EditingMessage::getSenderSiteId() const {
     return senderSiteId;
 }
 

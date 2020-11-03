@@ -26,8 +26,8 @@ public:
     QTextCharFormat getSymbolFormat(int index);
     void localInsert(QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
     void localErase(int index);
-    void remoteInsert(Symbol sym);
-    void remoteDelete(Symbol sym);
+    void remoteInsert(const EditingMessage &m);
+    void remoteDelete(const EditingMessage &m);
     QString to_string();
     int symbolCount();
     void reset();

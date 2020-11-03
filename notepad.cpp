@@ -157,7 +157,7 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->actionItalic, &QAction::triggered, this, &Notepad::setFontItalic);
     connect(ui->actionAbout, &QAction::triggered, this, &Notepad::about);
     connect(ui->actionHighlight_owners, &QAction::triggered, this, &Notepad::setHighlightOwners);
-    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
+    connect(ui->textEdit->document(), &QTextDocument::blockCountChanged, this, &Notepad::numParagraphsChanged);
     connect(&sharedEditor, &SharedEditor::remoteCharInserted, this, &Notepad::remoteCharInsert);
     connect(&sharedEditor, &SharedEditor::remoteCharDeleted, this, &Notepad::remoteCharDelete);
     connect(ui->actionAt_left,&QAction::triggered,this,&Notepad::on_actionAt_left_triggered);
@@ -181,6 +181,7 @@ Notepad::Notepad(QWidget *parent) :
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
     connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
+    connect(textEditorEventFilter, &TextEditorEventFilter::scrolled, this, &Notepad::updateCursors);
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
     connect(ui->textEdit,&QTextEdit::cursorPositionChanged,this,&Notepad::localCursorPositionChanged);
 
@@ -196,6 +197,8 @@ Notepad::Notepad(QWidget *parent) :
     ui->actionPaste->setEnabled(false);
 #endif
 
+    inactivity = new QTimer(this);
+    connect(inactivity, &QTimer::timeout, this, &Notepad::showLabels);
 }
 
 Notepad::~Notepad()
@@ -222,22 +225,30 @@ void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
 
 void Notepad::openExistingDocument(QVector<Symbol>& symbols, QString name, QUuid uri)
 {
-    bool oldState = ui->textEdit->document()->blockSignals(true);
     ui->textEdit->clear();
-    ui->textEdit->document()->blockSignals(oldState);
-
     setWindowTitle(name);
     this->uri=uri;
     sharedEditor.reset();
     foreach(Symbol sym, symbols) {
         qDebug()<<sym.getValue();
-        sharedEditor.remoteInsert(sym);
+        sharedEditor.remoteInsert(EditingMessage(sym, MSG_INSERT, QUuid()));
     }
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
     this->show();
+    inactivity->start(3000);
 }
 
 void Notepad::changeFile()
 {
+    inactivity->stop();
+    remoteSites.clear();
+    remoteUserColors.clear();
+    showingLabels = false;
+    numParagraphs = 1;
+    disconnect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
+    foreach(RemoteUser ru, remoteSites.values()) {
+        ru.hideCursor();
+    }
     emit fileClosed();
 }
 
@@ -591,7 +602,19 @@ void Notepad::textHighlight()
 
 void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 {
-    //qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
+    inactivity->stop();
+    if (showingLabels) {
+        foreach(RemoteUser ru, remoteSites) {
+            ru.hideLabel();
+        }
+    }
+
+    qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
+
+    if (charsRemoved == charsAdded && ui->textEdit->document()->characterAt(position+charsRemoved-1) == QChar::ParagraphSeparator) {
+        qDebug() << "Ignore paragraph initialization";
+        return;
+    }
 
     int symbolsSize = sharedEditor.symbolCount();
     for (int i = position; i < position+charsRemoved && i < symbolsSize; i++) {
@@ -605,12 +628,13 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
         c.setPosition(i);
         c.setPosition(i+1, QTextCursor::KeepAnchor);
         QTextCharFormat fmt = c.charFormat();
+        if (ui->actionHighlight_owners->isChecked()) fmt.clearBackground();
         QTextBlockFormat bfmt = c.blockFormat();
         sharedEditor.localInsert(ch, fmt, bfmt, i);
     }
 
     //TODO: review signal blocking correctness
-    bool oldState = ui->textEdit->document()->blockSignals(true);
+    disconnect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
     if (ui->actionHighlight_owners->isChecked()) {
         QTextCursor c(ui->textEdit->document());
         c.setPosition(position);
@@ -619,17 +643,25 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
         format.clearBackground();
         c.setCharFormat(format);
     }
-    ui->textEdit->document()->blockSignals(oldState);
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
 
    // qDebug() << "sharedEditor:" << sharedEditor.to_string();
     //qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
     //qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
+
+    inactivity->start(3000);
+}
+
+void Notepad::numParagraphsChanged() {
+    int delta = ui->textEdit->document()->blockCount() - numParagraphs;
+    qDebug() << "Delta:" << delta;
+    numParagraphs = ui->textEdit->document()->blockCount();
 }
 
 void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QTextCharFormat &format, QTextBlockFormat &blockFormat, int index)
 {
     //TODO: review signal blocking correctness
-    bool oldState = ui->textEdit->document()->blockSignals(true);
+    disconnect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
     auto it = remoteSites.find(siteId);
     if (it != remoteSites.end()) {
         // Character inserted by online user
@@ -660,10 +692,18 @@ void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QText
         c.setPosition(index);
 
         QTextCharFormat fmt = format;
+        QColor ownerColor;
+
+        auto it = remoteUserColors.find(owner);
+        if (it == remoteUserColors.end()) {
+            ownerColor = colors.at(remoteUserColors.size()+1 % colors.size());
+            remoteUserColors.insert(owner, ownerColor);
+        } else {
+            ownerColor = it.value();
+        }
 
         if (ui->actionHighlight_owners->isChecked()) {
-            QColor remoteUserColor = remoteUserColors.find(owner).value();
-            fmt.setBackground(remoteUserColor.lighter());
+            fmt.setBackground(ownerColor.lighter());
         }
 
         if (value == QChar::ParagraphSeparator) {
@@ -676,7 +716,7 @@ void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QText
             }
         }
     }
-    ui->textEdit->document()->blockSignals(oldState);
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
    // qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
    // qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
@@ -684,7 +724,7 @@ void Notepad::remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QText
 void Notepad::remoteCharDelete(QUuid &siteId, int index)
 {
     //TODO: review signal blocking correctness
-    bool oldState = ui->textEdit->document()->blockSignals(true);
+    disconnect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
     auto it = remoteSites.find(siteId);
     if (it != remoteSites.end()) {
         QTextCursor *c = it.value().getCursor();
@@ -692,7 +732,7 @@ void Notepad::remoteCharDelete(QUuid &siteId, int index)
         it.value().printCursor();
         c->deleteChar();
     }
-    ui->textEdit->document()->blockSignals(oldState);
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
    // qDebug() << "TotChar:" << ui->textEdit->document()->characterCount();
     //qDebug() << "TotBlocks:" << ui->textEdit->document()->blockCount();
 }
@@ -700,26 +740,28 @@ void Notepad::remoteCharDelete(QUuid &siteId, int index)
 void Notepad::setHighlightOwners(bool highlightOwners)
 {
     //TODO: review signal blocking correctness
-    bool oldState = ui->textEdit->document()->blockSignals(true);
+    disconnect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
     QTextCursor c(ui->textEdit->document());
     if (!ui->textEdit->document()->isEmpty()) {
         int pos = 0;
         int numChars = ui->textEdit->document()->characterCount();
         if (highlightOwners) {
-            while (pos < numChars) {
+            while (pos < numChars-1) {
                 c.clearSelection();
                 c.setPosition(pos);
                 QTextCharFormat format;
                 QString owner = sharedEditor.getSymbolOwner(pos);
                 int selection = 1;
                 if (owner != sharedEditor.getUserEmail()) {
-                    QColor remoteUserColor = remoteSites.find(owner).value().getColor();
+                    QColor remoteUserColor = remoteUserColors.find(owner).value();
                     format.setBackground(remoteUserColor.lighter());
-                    QString nextOwner = sharedEditor.getSymbolOwner(pos+selection);
-                    while (nextOwner == owner) {
-                        selection++;
-                        owner = nextOwner;
-                        nextOwner = sharedEditor.getSymbolOwner(pos+selection);
+                    if (pos+selection < numChars-1) {
+                        QString nextOwner = sharedEditor.getSymbolOwner(pos+selection);
+                        while (nextOwner == owner && pos+selection < numChars-1) {
+                            selection++;
+                            owner = nextOwner;
+                            nextOwner = sharedEditor.getSymbolOwner(pos+selection);
+                        }
                     }
                     c.setPosition(pos+selection, QTextCursor::KeepAnchor);
                     c.mergeCharFormat(format);
@@ -737,7 +779,7 @@ void Notepad::setHighlightOwners(bool highlightOwners)
             }
         }
     }
-    ui->textEdit->document()->blockSignals(oldState);
+    connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
 }
 
 
@@ -749,7 +791,7 @@ void Notepad::addRemoteUser(QUuid siteId, User userInfo)
 
         auto userColorTuple = remoteUserColors.find(userInfo.getEmail());
         if (userColorTuple == remoteUserColors.end()) {
-            userColor = colors.at(remoteSites.size()+1 % colors.size());
+            userColor = colors.at(remoteUserColors.size()+1 % colors.size());
             remoteUserColors.insert(userInfo.getEmail(), userColor);
         } else {
             userColor = userColorTuple.value();
@@ -762,7 +804,9 @@ void Notepad::addRemoteUser(QUuid siteId, User userInfo)
 
 void Notepad::removeRemoteUser(QUuid siteId)
 {
-    if (remoteSites.contains(siteId)) {
+    auto it = remoteSites.find(siteId);
+    if (it != remoteSites.end()) {
+        it.value().hideCursor();
         remoteSites.remove(siteId);
     }
 }
@@ -802,7 +846,7 @@ void Notepad::updateCursors()
 
 void Notepad::onlineUsersTriggered(){
 
-  OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(remoteUsers.values(), this);
+  OnlineUsersDialog *onlineUsersDialog = new OnlineUsersDialog(remoteSites.values(), this);
    onlineUsersDialog->show();
    //emit showOnlineUsersForm();
 
@@ -818,4 +862,11 @@ void Notepad::on_actionGet_URI_triggered()
    QString uriMessage = this->uri.toString().remove("{");
    uriMessage.remove("}");
    QMessageBox::information(this,"URI","Copy and share with your collaborators:\nshared-editor://"+uriMessage);
+}
+
+void Notepad::showLabels() {
+    showingLabels = true;
+    foreach(RemoteUser ru, remoteSites) {
+        ru.printLabel();
+    }
 }

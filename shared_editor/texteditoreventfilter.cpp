@@ -3,11 +3,19 @@
 
 bool TextEditorEventFilter::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::Resize) {
-        sizeChanged();
-        return QObject::eventFilter(obj, event);
-    } else {
-        return QObject::eventFilter(obj, event);
+    switch (event->type()) {
+
+    case QEvent::Resize:
+        emit sizeChanged();
+        break;
+
+    case QEvent::Scroll:
+        emit scrolled();
+        break;
+
+    default:
+        break;
     }
 
+    return QObject::eventFilter(obj, event);
 }

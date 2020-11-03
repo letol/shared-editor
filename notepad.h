@@ -100,6 +100,7 @@ private slots:
     void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
+    void numParagraphsChanged();
     void remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
     void remoteCharDelete(QUuid &siteId, int index);
     void addRemoteUser(QUuid siteId, User userInfo);
@@ -129,9 +130,7 @@ private slots:
     void onlineUsersTriggered();
     void pushUpdateButton();
     void on_actionGet_URI_triggered();
-
-public:
-    QMap<QUuid,RemoteUser> remoteUsers;
+    void showLabels();
     
 private:
     Ui::Notepad *ui;
@@ -146,11 +145,14 @@ private:
     QAction *actionHighlight;
     
     SharedEditor sharedEditor;
+    int numParagraphs = 1;
     QVector<QColor> colors;
 
     QMap<QUuid,RemoteUser> remoteSites;
     QMap<QString,QColor> remoteUserColors;
     TextEditorEventFilter *textEditorEventFilter;
+    QTimer *inactivity;
+    bool showingLabels = false;
     QUuid  uri;
 
 };

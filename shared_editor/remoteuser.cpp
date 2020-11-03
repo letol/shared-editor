@@ -61,6 +61,13 @@ void RemoteUser::printCursor()
     cursorFrame->setGeometry(curRect);
     cursorFrame->raise();
 
+    if (printingLabel) printLabel();
+}
+
+void RemoteUser::printLabel()
+{
+    printingLabel = true;
+    QRect curRect = textEditor->cursorRect(cursor);
     QSize labelSize = label->size();
     QPoint labelAnchor = curRect.bottomLeft();
 
@@ -79,6 +86,18 @@ void RemoteUser::printCursor()
         label->show();
         label->raise();
     }
+}
+
+void RemoteUser::hideCursor()
+{
+    label->close();
+    cursorFrame->close();
+}
+
+void RemoteUser::hideLabel()
+{
+    printingLabel = false;
+    label->close();
 }
 
 User RemoteUser::getUserInfo()

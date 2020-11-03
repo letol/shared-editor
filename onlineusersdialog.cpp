@@ -10,7 +10,7 @@
 #include <QListWidget>
 #include <QListWidgetItem>
 
-OnlineUsersDialog::OnlineUsersDialog( QList<RemoteUser> onlineUsers, QWidget *parent):
+OnlineUsersDialog::OnlineUsersDialog(QList<RemoteUser> onlineUsers, QWidget *parent):
     QDialog(parent),
     ui(new Ui::OnlineUsersDialog),
     onlineUsers(onlineUsers)
@@ -24,23 +24,23 @@ OnlineUsersDialog::OnlineUsersDialog( QList<RemoteUser> onlineUsers, QWidget *pa
 
     for (int i=0; i<onlineUsers.count(); i++) {
 
-    QImage image;
+        QImage image;
 
-    image.load(onlineUsers[i].getUserInfo().getImage());
-    QPixmap qImage = QPixmap::fromImage(image);
-    QPixmap pixmap(50,50);
-    pixmap.fill(Qt::transparent);
-    QPainter painter(&pixmap);
-    painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-    QPainterPath path;
-    path.addEllipse(0, 0, 50, 50);
-    painter.setClipPath(path);
-    painter.drawPixmap(0, 0, 50, 50, qImage);
+        image.load(onlineUsers[i].getUserInfo().getImage());
+        QPixmap qImage = QPixmap::fromImage(image);
+        QPixmap pixmap(50,50);
+        pixmap.fill(Qt::transparent);
+        QPainter painter(&pixmap);
+        painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+        QPainterPath path;
+        path.addEllipse(0, 0, 50, 50);
+        painter.setClipPath(path);
+        painter.drawPixmap(0, 0, 50, 50, qImage);
 
-    QString userString = onlineUsers[i].getUserInfo().getName() + " " + onlineUsers[i].getUserInfo().getSurname();
+        QString userString = onlineUsers[i].getUserInfo().getName() + " " + onlineUsers[i].getUserInfo().getSurname();
 
-    listWidget->addItem(new QListWidgetItem(QIcon(pixmap), userString));
-}
+        listWidget->addItem(new QListWidgetItem(QIcon(pixmap), userString));
+    }
 
 /*
 //TO TRY

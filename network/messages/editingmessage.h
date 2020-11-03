@@ -20,7 +20,7 @@ public:
         op(op),
         senderSiteId(senderSiteId) {};
 
-    QUuid getSenderSiteId();
+    QUuid getSenderSiteId() const;
     int getOperation() const;
     Symbol getSymbol() const;
 

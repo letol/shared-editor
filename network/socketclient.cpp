@@ -172,6 +172,7 @@ void SocketClient::readyRead()
             socketStream >> editMsg;
             if (!socketStream.commitTransaction())
                 return;
+            qDebug() << "Received" << editMsg.getOperation() << editMsg.getSymbol().getValue() << "from" << editMsg.getSymbol().getSiteId();
             emit remoteEditDocument(editMsg);
             break;
         }
@@ -353,7 +354,7 @@ void SocketClient::localEditDocument(const EditingMessage& editMsg) {
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << headerReg << editMsg;
     qDebug() << "Sent: B_EDIT";
-    qDebug() << "Sent" << editMsg.getOperation() << editMsg.getSymbol().getValue();
+    qDebug() << "Sent" << editMsg.getOperation() << editMsg.getSymbol().getValue() << "by me (" << editMsg.getSymbol().getSiteId() << ")";
 }
 
 void SocketClient::askForDocumentList(const QString userEmail) {

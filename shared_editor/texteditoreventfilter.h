@@ -13,6 +13,8 @@ public:
 
 signals:
     void sizeChanged();
+    void scrolled();
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 };

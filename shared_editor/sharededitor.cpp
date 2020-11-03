@@ -1,4 +1,5 @@
 #include "sharededitor.h"
+#include <QDebug>
 
 SharedEditor::SharedEditor() {
     this->_userEmail = "_client";
@@ -151,23 +152,27 @@ QString SharedEditor::to_string() {
     return str;
 }
 
-void SharedEditor::remoteInsert(Symbol sym) {
+void SharedEditor::remoteInsert(const EditingMessage &m) {
+    QUuid senderSiteId = m.getSenderSiteId();
+    Symbol sym = m.getSymbol();
     auto index = findInsertIndex(sym);
-    remoteCharInserted(sym.getSiteId(), sym.getOwnerEmail(), sym.getValue(), sym.getCharFormat(), sym.getBlockFormat(), index - _symbols.begin());
+    remoteCharInserted(senderSiteId, sym.getOwnerEmail(), sym.getValue(), sym.getCharFormat(), sym.getBlockFormat(), index - _symbols.begin());
     _symbols.insert(index, sym);
 }
 
-void SharedEditor::remoteDelete(Symbol sym) {
+void SharedEditor::remoteDelete(const EditingMessage &m) {
+    QUuid senderSiteId = m.getSenderSiteId();
+    Symbol sym = m.getSymbol();
     auto index = findIndexByPos(sym);
-    remoteCharDeleted(sym.getSiteId(), index - _symbols.begin());
+    remoteCharDeleted(senderSiteId, index - _symbols.begin());
     _symbols.erase(index);
 }
 
 void SharedEditor::process(const EditingMessage &m) {
     if (m.getOperation() == MSG_INSERT) {
-        remoteInsert(m.getSymbol());
+        remoteInsert(m);
     } else if (m.getOperation() == MSG_ERASE) {
-        remoteDelete(m.getSymbol());
+        remoteDelete(m);
     }
 }
 
