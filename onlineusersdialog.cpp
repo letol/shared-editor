@@ -26,7 +26,7 @@ OnlineUsersDialog::OnlineUsersDialog(QList<RemoteUser> onlineUsers, QWidget *par
 
         QImage image;
 
-        image.load(onlineUsers[i].getUserInfo().getImage());
+        image.loadFromData(onlineUsers[i].getUserInfo().getImage());
         QPixmap qImage = QPixmap::fromImage(image);
         QPixmap pixmap(50,50);
         pixmap.fill(Qt::transparent);

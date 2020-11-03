@@ -3,6 +3,8 @@
 #include <QFileDialog>
 #include <QRegularExpressionValidator>
 #include <QMessageBox>
+#include <QPainter>
+#include <QPainterPath>
 
 UpdateFormDialog::UpdateFormDialog(QWidget *parent) :
     QDialog(parent),
@@ -51,10 +53,16 @@ void UpdateFormDialog::userLogged(const User &userL)
     image.loadFromData(user.getImage());
     image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
     image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
-    ui->image->setPixmap(QPixmap::fromImage(image));
-
-
-
+    QPixmap qImage = QPixmap::fromImage(image);
+    QPixmap pixmap(ui->image->width(), ui->image->height());
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    QPainterPath path;
+    path.addEllipse(0, 0, ui->image->width(), ui->image->height());
+    painter.setClipPath(path);
+    painter.drawPixmap(0, 0, ui->image->width(), ui->image->height(), qImage);
+    ui->image->setPixmap(pixmap);
 
     ui->surmane->setText(user.getSurname());
     ui->name->setText(user.getName());
@@ -76,7 +84,16 @@ void UpdateFormDialog::on_imageChange_clicked()
                if(check){
                    image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
                    image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
-                   ui->image->setPixmap(QPixmap::fromImage(image));
+                   QPixmap qImage = QPixmap::fromImage(image);
+                   QPixmap pixmap(ui->image->width(), ui->image->height());
+                   pixmap.fill(Qt::transparent);
+                   QPainter painter(&pixmap);
+                   painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+                   QPainterPath path;
+                   path.addEllipse(0, 0, ui->image->width(), ui->image->height());
+                   painter.setClipPath(path);
+                   painter.drawPixmap(0, 0, ui->image->width(), ui->image->height(), qImage);
+                   ui->image->setPixmap(pixmap);
                    QByteArray byteArray;
                    QBuffer buffer(&byteArray);
                    image.save(&buffer, typeImage);

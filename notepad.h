@@ -37,6 +37,8 @@
 #include <QMimeData>
 #include <QMimeDatabase>
 #include <QLabel>
+#include <QPainterPath>
+#include <QScrollBar>
 
 #include "sharededitor.h"
 #include "remoteuser.h"
@@ -83,6 +85,7 @@ public slots:
     void remoteCursorPositionChanged(QUuid siteId, int newPos);
     void getOnlineUsers(QMap<QUuid, User> users);
     void removeRemoteUser(QUuid siteId);
+    void updateCursors(int);
 
 private slots:
     void changeFile();
@@ -126,7 +129,6 @@ private slots:
     void textColor();
     void colorChanged(const QColor &c);
     void textHighlight();
-    void updateCursors();
     void onlineUsersTriggered();
     void pushUpdateButton();
     void on_actionGet_URI_triggered();

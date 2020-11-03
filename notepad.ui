@@ -72,6 +72,9 @@
      <addaction name="action36"/>
     </widget>
     <widget class="QMenu" name="menuAlignment">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="title">
       <string>Alignment</string>
      </property>
@@ -386,6 +389,9 @@
    </property>
   </action>
   <action name="actionAt_left_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="notepad.qrc">
      <normaloff>:/images/textleft.png</normaloff>:/images/textleft.png</iconset>
@@ -395,6 +401,9 @@
    </property>
   </action>
   <action name="actionCentered_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset>
      <normalon>:/images/textcenter.png</normalon>
@@ -405,6 +414,9 @@
    </property>
   </action>
   <action name="actionAt_right_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="notepad.qrc">
      <normaloff>:/images/textright.png</normaloff>:/images/textright.png</iconset>

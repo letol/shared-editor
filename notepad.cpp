@@ -87,7 +87,7 @@ Notepad::Notepad(QWidget *parent) :
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
 
-    comboStyle = new QComboBox(tb);
+    /*comboStyle = new QComboBox(tb);
     tb->addWidget(comboStyle);
     comboStyle->addItem("Standard");
     comboStyle->addItem("Bullet List (Disc)");
@@ -103,7 +103,7 @@ Notepad::Notepad(QWidget *parent) :
     comboStyle->addItem("Heading 3");
     comboStyle->addItem("Heading 4");
     comboStyle->addItem("Heading 5");
-    comboStyle->addItem("Heading 6");
+    comboStyle->addItem("Heading 6");*/
 
     comboFont = new QFontComboBox(tb);
     tb->addWidget(comboFont);
@@ -179,9 +179,8 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->action36,&QAction::triggered,this,&Notepad::on_action36_triggered);
     connect(comboSize, SIGNAL(currentTextChanged(QString)), this, SLOT(size(QString)));
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
-    connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
-    connect(textEditorEventFilter, &TextEditorEventFilter::sizeChanged, this, &Notepad::updateCursors);
-    connect(textEditorEventFilter, &TextEditorEventFilter::scrolled, this, &Notepad::updateCursors);
+    //connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
+    connect(ui->textEdit->verticalScrollBar(), &QScrollBar::sliderMoved, this, &Notepad::updateCursors);
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
     connect(ui->textEdit,&QTextEdit::cursorPositionChanged,this,&Notepad::localCursorPositionChanged);
 
@@ -219,8 +218,18 @@ void Notepad::openNewDocument(const QString& name)
 
 void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
 {
+    QPixmap qImage = QPixmap::fromImage(image);
+    QPixmap pixmap(50,50);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+    QPainterPath path;
+    path.addEllipse(0, 0, 50, 50);
+    painter.setClipPath(path);
+    painter.drawPixmap(0, 0, 50, 50, qImage);
+
     updateButton->setText(nameSurname);
-    updateButton->setIcon(QIcon(QPixmap::fromImage(image)));
+    updateButton->setIcon(QIcon(pixmap));
 }
 
 void Notepad::openExistingDocument(QVector<Symbol>& symbols, QString name, QUuid uri)
@@ -845,7 +854,7 @@ void Notepad::getOnlineUsers(QMap<QUuid, User> users)
 
 
 
-void Notepad::updateCursors()
+void Notepad::updateCursors(int)
 {
     for (RemoteUser u : remoteSites) {
         u.printCursor();
