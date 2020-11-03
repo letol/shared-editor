@@ -73,7 +73,7 @@
     </widget>
     <widget class="QMenu" name="menuAlignment">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="title">
       <string>Alignment</string>
@@ -116,7 +116,6 @@
    <addaction name="separator"/>
    <addaction name="actionItalic"/>
    <addaction name="actionBold"/>
-   <addaction name="actionFont"/>
    <addaction name="actionUnderline"/>
    <addaction name="separator"/>
    <addaction name="actionAt_left_2"/>
@@ -138,6 +137,7 @@
    <attribute name="toolBarBreak">
     <bool>true</bool>
    </attribute>
+   <addaction name="actionFont"/>
   </widget>
   <action name="actionOpen">
    <property name="icon">
@@ -390,7 +390,7 @@
   </action>
   <action name="actionAt_left_2">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="notepad.qrc">
@@ -402,7 +402,7 @@
   </action>
   <action name="actionCentered_2">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset>
@@ -415,7 +415,7 @@
   </action>
   <action name="actionAt_right_2">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="notepad.qrc">

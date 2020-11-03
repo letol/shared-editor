@@ -214,6 +214,7 @@ void Notepad::openNewDocument(const QString& name)
 {
     sharedEditor.reset();
     emit newDocument(sharedEditor.getSymbols(), name);
+    //sharedEditor.init();
 }
 
 void Notepad::updateButtonIcon(const QString &nameSurname, const QImage &image)
@@ -250,7 +251,6 @@ void Notepad::openExistingDocument(QVector<Symbol>& symbols, QString name, QUuid
 void Notepad::changeFile()
 {
     inactivity->stop();
-    remoteSites.clear();
     remoteUserColors.clear();
     showingLabels = false;
     numParagraphs = 1;
@@ -258,6 +258,7 @@ void Notepad::changeFile()
     foreach(RemoteUser ru, remoteSites.values()) {
         ru.hideCursor();
     }
+    remoteSites.clear();
     emit fileClosed();
 }
 
@@ -620,9 +621,12 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 
     qDebug() << "pos" << position << "removed" << charsRemoved << "added" << charsAdded;
 
+    QTextCursor c(ui->textEdit->document());
+
     if (charsRemoved == charsAdded && ui->textEdit->document()->characterAt(position+charsRemoved-1) == QChar::ParagraphSeparator) {
-        qDebug() << "Ignore paragraph initialization";
-        return;
+        qDebug() << "Paragraph initialization";
+        charsRemoved--;
+        charsAdded--;
     }
 
     int symbolsSize = sharedEditor.symbolCount();
@@ -630,7 +634,7 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
         sharedEditor.localErase(position);
     }
 
-    QTextCursor c(ui->textEdit->document());
+
     for (int i = position; i < position+charsAdded; i++) {
         QChar ch = ui->textEdit->document()->characterAt(i);
         c.clearSelection();
