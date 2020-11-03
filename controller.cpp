@@ -31,6 +31,8 @@ Controller::Controller(QWidget *parent) :
     connect(&socket,&SocketClient::openDocumentOK,this,&Controller::openDocumentOK);
     connect(&socket,&SocketClient::openDocumentKO,this,&Controller::openDocumentKO);
     connect(&socket,&SocketClient::addOnlineUser,this,&Controller::moveOnlineUsers);
+    connect(&socket,&SocketClient::deleteOK,this,&Controller::deleteOK);
+    connect(&socket,&SocketClient::deleteKO,this,&Controller::deleteKO);
 
     connect(logindialog,SIGNAL(loginData(User)),this,SLOT(loginData(User)));
     connect(this,SIGNAL(errorLogin(QString)),logindialog,SLOT(logKO(QString)));
@@ -86,6 +88,7 @@ void Controller::enableEditingMessages()
         connect(this,&Controller::remoteCursorPositionChanged,notepad,&Notepad::remoteCursorPositionChanged);
         connect(this,&Controller::pushOnlineUsers,notepad,&Notepad::getOnlineUsers);
         connect(&socket,&SocketClient::removeOnlineUser,this,&Controller::moveUserDisconnected);
+
     }
 }
 
