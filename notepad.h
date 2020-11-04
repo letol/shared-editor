@@ -125,7 +125,6 @@ private slots:
     void on_action18_triggered();
     void size(const QString &text);
     void font(const QFont &f);
-    void style(int styleIndex);
     void textColor();
     void colorChanged(const QColor &c);
     void textHighlight();

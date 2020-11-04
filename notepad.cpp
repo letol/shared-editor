@@ -87,24 +87,6 @@ Notepad::Notepad(QWidget *parent) :
     QToolBar *tb = ui->toolBar;
     const QIcon penMarkerIcon = QIcon::fromTheme("Highlight", QIcon(rsrcPath + "/marker.png"));
 
-    /*comboStyle = new QComboBox(tb);
-    tb->addWidget(comboStyle);
-    comboStyle->addItem("Standard");
-    comboStyle->addItem("Bullet List (Disc)");
-    comboStyle->addItem("Bullet List (Circle)");
-    comboStyle->addItem("Bullet List (Square)");
-    comboStyle->addItem("Ordered List (Decimal)");
-    comboStyle->addItem("Ordered List (Alpha lower)");
-    comboStyle->addItem("Ordered List (Alpha upper)");
-    comboStyle->addItem("Ordered List (Roman lower)");
-    comboStyle->addItem("Ordered List (Roman upper)");
-    comboStyle->addItem("Heading 1");
-    comboStyle->addItem("Heading 2");
-    comboStyle->addItem("Heading 3");
-    comboStyle->addItem("Heading 4");
-    comboStyle->addItem("Heading 5");
-    comboStyle->addItem("Heading 6");*/
-
     comboFont = new QFontComboBox(tb);
     tb->addWidget(comboFont);
 
@@ -179,7 +161,6 @@ Notepad::Notepad(QWidget *parent) :
     connect(ui->action36,&QAction::triggered,this,&Notepad::on_action36_triggered);
     connect(comboSize, SIGNAL(currentTextChanged(QString)), this, SLOT(size(QString)));
     connect(comboFont,SIGNAL(currentFontChanged(const QFont)),this,SLOT(font(QFont)));
-    //connect(comboStyle, SIGNAL(activated(int)), this, SLOT(style(int)));
     connect(ui->textEdit->verticalScrollBar(), &QScrollBar::sliderMoved, this, &Notepad::updateCursors);
     connect(ui->actionOnlineUsers,&QAction::triggered,this,&Notepad::onlineUsersTriggered);
     connect(ui->textEdit,&QTextEdit::cursorPositionChanged,this,&Notepad::localCursorPositionChanged);
@@ -504,76 +485,6 @@ void Notepad::font(const QFont &f)
    cursor.mergeCharFormat(fmt);
 
    ui->textEdit->setTextCursor( cursor );
-
-}
-
-void Notepad::style(int styleIndex){
-    QTextCursor cursor = ui->textEdit->textCursor();
-    QTextListFormat::Style style = QTextListFormat::ListStyleUndefined;
-
-
-       switch (styleIndex) {
-       case 1:
-           style = QTextListFormat::ListDisc;
-           break;
-       case 2:
-           style = QTextListFormat::ListCircle;
-           break;
-       case 3:
-           style = QTextListFormat::ListSquare;
-           break;
-       case 4:
-           style = QTextListFormat::ListDecimal;
-           break;
-       case 5:
-           style = QTextListFormat::ListLowerAlpha;
-           break;
-       case 6:
-           style = QTextListFormat::ListUpperAlpha;
-           break;
-       case 7:
-           style = QTextListFormat::ListLowerRoman;
-           break;
-       case 8:
-           style = QTextListFormat::ListUpperRoman;
-           break;
-       default:
-           break;
-       }
-
-       cursor.beginEditBlock();
-
-       QTextBlockFormat blockFmt = cursor.blockFormat();
-
-       if (style == QTextListFormat::ListStyleUndefined) {
-           blockFmt.setObjectIndex(-1);
-           int headingLevel = styleIndex >= 11 ? styleIndex - 11 + 1 : 0; // H1 to H6, or Standard
-           blockFmt.setHeadingLevel(headingLevel);
-           cursor.setBlockFormat(blockFmt);
-
-           int sizeAdjustment = headingLevel ? 4 - headingLevel : 0; // H1 to H6: +3 to -2
-           QTextCharFormat fmt;
-           fmt.setFontWeight(headingLevel ? QFont::Bold : QFont::Normal);
-           fmt.setProperty(QTextFormat::FontSizeAdjustment, sizeAdjustment);
-           cursor.select(QTextCursor::LineUnderCursor);
-           cursor.mergeCharFormat(fmt);
-           ui->textEdit->mergeCurrentCharFormat(fmt);
-       } else {
-
-           cursor.setBlockFormat(blockFmt);
-           QTextListFormat listFmt;
-           if (cursor.currentList()) {
-               listFmt = cursor.currentList()->format();
-           } else {
-               listFmt.setIndent(blockFmt.indent() + 1);
-               blockFmt.setIndent(0);
-               cursor.setBlockFormat(blockFmt);
-           }
-           listFmt.setStyle(style);
-           cursor.createList(listFmt);
-       }
-
-       cursor.endEditBlock();
 
 }
 
