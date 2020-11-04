@@ -4,7 +4,6 @@ DocumentMessage:: DocumentMessage(QString ownerEmail, QString name, QVector<Symb
     this->ownerEmail = ownerEmail;
     this->documentId = QUuid();  //unique incremental id for the document
     this->name = name; //default name
-    //this->connectedUsers = connectedUsers;
     this->symbols = symbols;
 }
 
@@ -12,16 +11,14 @@ DocumentMessage:: DocumentMessage(QString ownerEmail, QString name, QString date
     this->ownerEmail = ownerEmail;
     this->documentId = QUuid();  //unique incremental id for the document
     this->name = name; //default name
-    //this->connectedUsers = connectedUsers;
     this->date = date;
     this->symbols = symbols;
 }
 
 DocumentMessage:: DocumentMessage(QUuid documentId, QString ownerEmail, QString name, QString date, QVector<Symbol> symbols){
     this->ownerEmail = ownerEmail;
-    this->documentId = documentId;  //unique incremental id for the document
-    this->name = name; //default name
-    //this->connectedUsers = connectedUsers;
+    this->documentId = documentId;
+    this->name = name;
     this->date = date;
     this->symbols = symbols;
 }
@@ -41,12 +38,6 @@ QString DocumentMessage::getName(){
 void DocumentMessage::setName(QString newName){
     this->name = newName;
 }
-
-/*
-std::vector<int> DocumentDTO::getConnectedUsers(){
-    return connectedUsers;
-}
-*/
 
 /*Get the document creation date*/
 QString DocumentMessage::getDate(){

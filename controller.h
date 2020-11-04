@@ -7,7 +7,7 @@
 #include "registrationdialog.h"
 #include "openfiledialog.h"
 #include "updateformdialog.h"
-#include "confirmpassword.h"
+#include "confirmpassworddialog.h"
 #include "socketclient.h"
 #include "onlineusersdialog.h"
 
@@ -85,7 +85,7 @@ private:
     RegistrationDialog *regDialog;
     OpenFileDialog *openfile;
     UpdateFormDialog *updateForm;
-    ConfirmPassword* confirmpwd;
+    ConfirmPasswordDialog* confirmpwd;
     User currentUser;
     DocumentMessage currentDocument;
     bool changePwd=false;

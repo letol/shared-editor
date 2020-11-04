@@ -1,20 +1,20 @@
-#ifndef CONFIRMPASSWORD_H
-#define CONFIRMPASSWORD_H
+#ifndef CONFIRMPASSWORDDIALOG_H
+#define CONFIRMPASSWORDDIALOG_H
 
 #include <QDialog>
 #include <QMap>
 
 namespace Ui {
-class ConfirmPassword;
+class ConfirmPasswordDialog;
 }
 
-class ConfirmPassword : public QDialog
+class ConfirmPasswordDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit ConfirmPassword(QWidget *parent = nullptr);
-    ~ConfirmPassword();
+    explicit ConfirmPasswordDialog(QWidget *parent = nullptr);
+    ~ConfirmPasswordDialog();
 signals:
     void passwordData(const QString& pwd,const QString& pwdNew);
 public slots:
@@ -27,10 +27,10 @@ private slots:
     void on_pushButton_ok_clicked();
 
 private:
-    Ui::ConfirmPassword *ui;
+    Ui::ConfirmPasswordDialog *ui;
     QMap<QString, bool> valid={{"pwd",false},
                               {"pwdR",false}};
     void checkValid(QMap<QString,bool> valid);
 };
 
-#endif // CONFIRMPASSWORD_H
+#endif // CONFIRMPASSWORDDIALOG_H

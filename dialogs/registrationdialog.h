@@ -30,17 +30,11 @@ private slots:
     void on_pushButton_image_clicked();
     void on_pushButton_clicked();
     void on_lineEdit_name_textChanged();
-
     void on_lineEdit_surname_textChanged();
-
     void on_lineEdit_nickname_textChanged();
-
     void on_lineEdit_email_textChanged();
-
     void on_lineEdit_password_textChanged(const QString &arg1);
-
     void on_lineEdit_pwdrepeat_textChanged(const QString &arg1);
-
     void on_login_pushButton_clicked();
     void clean();
 

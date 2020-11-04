@@ -26,8 +26,6 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
       SLOT(selectedRow(const QItemSelection &, const QItemSelection &))
      );
 
-
-
     QRegularExpression rxString("^(?!\\s*$).+.",QRegularExpression::CaseInsensitiveOption);
     ui->nameFile->setValidator(new QRegularExpressionValidator(rxString, this));
     ui->uri->setValidator(new QRegularExpressionValidator(rxString, this));
@@ -36,10 +34,6 @@ OpenFileDialog::OpenFileDialog(QWidget *parent) :
     ui->removePushButton->setEnabled(false);
     QApplication::instance()->installEventFilter(this);
     setMouseTracking(true);
-
-
-
-
 }
 
 OpenFileDialog::~OpenFileDialog()
@@ -50,10 +44,9 @@ OpenFileDialog::~OpenFileDialog()
 void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
 {
     files = docList;
-    qDebug() << "File list:";
-    //clear table
-    fileModel->setRowCount(0);
 
+    // Clear table
+    fileModel->setRowCount(0);
 
     for (int row = 0; row < docList.size(); ++row) {
         QStandardItem *nameItem = new QStandardItem(docList[row].getName());
@@ -63,10 +56,6 @@ void OpenFileDialog::setFileList(QVector<DocumentMessage>& docList)
         dateItem->setEditable(false);
         dateItem->setTextAlignment(Qt::AlignCenter);
         fileModel->appendRow({nameItem,dateItem});
-
-
-
-        qDebug() << docList[row].getDocumentId();
     }
 }
 
@@ -74,7 +63,7 @@ void OpenFileDialog::mouseReleaseEvent ( QMouseEvent * event )
 {
     QModelIndex idx = fileModel->index(event->pos().x(),event->pos().y());
     if (!idx.isValid())
-    {   //deselect
+    {   // Deselect
         ui->tableView->selectionModel()->clearSelection();
     }
 
@@ -133,17 +122,14 @@ void OpenFileDialog::on_removePushButton_clicked()
     emit deleteFile(selectedFile);
 }
 
-void OpenFileDialog::selectedRow(const QItemSelection & selected, const QItemSelection & deselected)
+void OpenFileDialog::selectedRow(const QItemSelection& selected, const QItemSelection& deselected)
 {
-    if(selected.isEmpty()){
+    if (selected.isEmpty()) {
         ui->removePushButton->setEnabled(false);
 
-    }else{
+    } else {
         ui->removePushButton->setEnabled(true);
         selectedFile = files[selected.indexes()[0].row()];
-
     }
-
-
 }
 

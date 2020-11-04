@@ -58,8 +58,5 @@ int main(int argc, char *argv[])
     Controller controler;
     controler.open();
 
-
-
-
     return EditorApp.exec();
 }

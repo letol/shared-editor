@@ -77,38 +77,33 @@ void UpdateFormDialog::on_imageChange_clicked()
 {
     QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"",tr("Images (*.png *.jpg *.jpeg)"));
 
-           if(QString::compare(filename,QString())!=0){
-               QImage image;
-               bool check = image.load(filename);
-               const char* typeImage = std::move(filename.split(".")[1].toUpper().toStdString().c_str());
-               if(check){
-                   image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
-                   image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
-                   QPixmap qImage = QPixmap::fromImage(image);
-                   QPixmap pixmap(ui->image->width(), ui->image->height());
-                   pixmap.fill(Qt::transparent);
-                   QPainter painter(&pixmap);
-                   painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
-                   QPainterPath path;
-                   path.addEllipse(0, 0, ui->image->width(), ui->image->height());
-                   painter.setClipPath(path);
-                   painter.drawPixmap(0, 0, ui->image->width(), ui->image->height(), qImage);
-                   ui->image->setPixmap(pixmap);
-                   QByteArray byteArray;
-                   QBuffer buffer(&byteArray);
-                   image.save(&buffer, typeImage);
-                   emit imageChange(byteArray);
-                   ui->error->clear();
+    if(QString::compare(filename,QString())!=0){
+        QImage image;
+        bool check = image.load(filename);
+        const char* typeImage = std::move(filename.split(".")[1].toUpper().toStdString().c_str());
+        if(check){
+           image = image.scaledToWidth(ui->image->width(), Qt::SmoothTransformation);
+           image = image.scaledToHeight(ui->image->height(),Qt::SmoothTransformation);
+           QPixmap qImage = QPixmap::fromImage(image);
+           QPixmap pixmap(ui->image->width(), ui->image->height());
+           pixmap.fill(Qt::transparent);
+           QPainter painter(&pixmap);
+           painter.setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+           QPainterPath path;
+           path.addEllipse(0, 0, ui->image->width(), ui->image->height());
+           painter.setClipPath(path);
+           painter.drawPixmap(0, 0, ui->image->width(), ui->image->height(), qImage);
+           ui->image->setPixmap(pixmap);
+           QByteArray byteArray;
+           QBuffer buffer(&byteArray);
+           image.save(&buffer, typeImage);
+           emit imageChange(byteArray);
+           ui->error->clear();
 
-
-               }
-               else{
-                  ui->error->setText("Choose an other image");
-
-
-
-               }
-           }
+        }else{
+          ui->error->setText("Choose an other image");
+        }
+    }
 }
 
 void UpdateFormDialog::on_passwordChange_clicked()
@@ -142,14 +137,13 @@ void UpdateFormDialog::changeName()
         ui->name->setText(lineName->text());
         lineName->hide();
         ui->name->show();
-       }
+    }
 
 }
 
 void UpdateFormDialog::changeCognome()
 {
     if(lineSurname->hasAcceptableInput()){
-
         emit surnameChange(lineSurname->text());
         ui->surmane->setText(lineSurname->text());
         lineSurname->hide();

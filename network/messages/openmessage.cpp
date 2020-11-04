@@ -2,14 +2,12 @@
 
 OpenMessage::OpenMessage()
 {
-
 }
 
 OpenMessage::OpenMessage(QUuid siteId, QUrl uri) :
     siteId(siteId),
     uri(uri)
 {
-
 }
 
 

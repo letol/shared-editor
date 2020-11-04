@@ -24,8 +24,6 @@ private:
     Ui::OnlineUsersDialog *ui;
     QList<RemoteUser> onlineUsers;
 
-
-
 };
 
 #endif // ONLINEUSERSDIALOG_H

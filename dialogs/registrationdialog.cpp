@@ -54,14 +54,8 @@ void RegistrationDialog::on_pushButton_image_clicked()
             image.save(&buffer, typeImage);
             user.setImage(byteArray);
             ui->lbl_error->clear();
-
-
-        }
-        else{
+        }else{
             ui->lbl_error->setText("Choose an other image");
-
-
-
         }
     }
 }
@@ -76,27 +70,22 @@ void RegistrationDialog::on_pushButton_clicked()
     QString pwd = ui->lineEdit_password->text();
     pwd.replace(" ","");
 
-
-
-
     QString pwdRepeat = ui->lineEdit_password->text();
 
     QByteArray arr = user.getImage();
 
-
     User userMessage(nickname,name,surname,email,pwd,arr);
 
     emit registratationData(userMessage);
-
 }
 
 
 void RegistrationDialog::on_lineEdit_name_textChanged()
-{  if(!ui->lineEdit_name->hasAcceptableInput()){
+{
+    if(!ui->lineEdit_name->hasAcceptableInput()){
         ui->lbl_error->setText("Name must has more than one character");
         valid["name"]=false;
-    }
-    else{
+    }else{
          ui->lbl_error->clear();
         valid["name"]=true;
         checkValid(valid);
@@ -108,8 +97,7 @@ void RegistrationDialog::on_lineEdit_surname_textChanged()
     if(!ui->lineEdit_surname->hasAcceptableInput()){
         ui->lbl_error->setText("Surname must has more than one character");
         valid["surname"]=false;
-    }
-    else{
+    }else{
         ui->lbl_error->clear();
         valid["surname"]=true;
         checkValid(valid);
@@ -121,8 +109,7 @@ void RegistrationDialog::on_lineEdit_nickname_textChanged()
     if(!ui->lineEdit_nickname->hasAcceptableInput()){
          ui->lbl_error->setText("Nickname must has more than one character");
         valid["nickname"]=false;
-    }
-    else{
+    }else{
          ui->lbl_error->clear();
         valid["nickname"]=true;
         checkValid(valid);
@@ -134,13 +121,11 @@ void RegistrationDialog::on_lineEdit_email_textChanged()
     if(!ui->lineEdit_email->hasAcceptableInput()){
         ui->lbl_error->setText("Email is not valid");
         valid["email"]=false;
-        }
-        else{
+    }else{
         ui->lbl_error->clear();
             valid["email"]=true;
             checkValid(valid);
-        }
-
+    }
 }
 
 void RegistrationDialog::on_lineEdit_password_textChanged(const QString &arg1)
@@ -151,8 +136,7 @@ void RegistrationDialog::on_lineEdit_password_textChanged(const QString &arg1)
                                "capital letter and at least one lowercase\n"
                                "and one special character");
         valid["pwd"]=false;
-    }
-    else{
+    } else {
         ui->lbl_error->clear();
         valid["pwd"]=true;
         checkValid(valid);
@@ -161,42 +145,27 @@ void RegistrationDialog::on_lineEdit_password_textChanged(const QString &arg1)
             ui->lbl_error->setText("Passwords must match");
             valid["pwdR"]=false;
 
-        }
-        else{
+        } else {
             ui->lbl_error->clear();
             valid["pwdR"]=true;
             checkValid(valid);
-         }
+        }
     }
-
-
-   /*
-
-    " Password must be:\n" +
-            "     * At least 8 chars\n" +
-            "     * Contains at least one digit\n" +
-            "     * Contains at least one lower alpha char and one upper alpha char\n" +
-            "     * Contains at least one char within a set of special chars (@#%$^ etc.)\n" +
-            "     * Does not contain space, tab, etc.")
-
-*/
 }
 
 void RegistrationDialog::on_lineEdit_pwdrepeat_textChanged(const QString &arg1)
 {
     QString str = arg1.simplified();
 
-
     if(str.compare(ui->lineEdit_password->text())!=0){
         ui->lbl_error->setText("Passwords must match");
         valid["pwdR"]=false;
 
-    }
-    else{
+    }else{
         ui->lbl_error->clear();
         valid["pwdR"]=true;
         checkValid(valid);
-     }
+    }
 }
 
 void RegistrationDialog::errorHeadling(const QString &str)
@@ -218,8 +187,6 @@ void RegistrationDialog::checkValid(QMap<QString,bool> valid){
 
    }else{
        ui->pushButton->setEnabled(false);
-       //qInfo()<<valid["name"]<<valid["surname"]<<valid["nickname"]<<valid["email"]<<valid["pwd"]<<valid["pwdR"];
-
    }
 
 }
@@ -236,16 +203,15 @@ void RegistrationDialog::on_login_pushButton_clicked()
 void RegistrationDialog::clean()
 {
     QImage image;
-       image.load(":/images/profile.png");
-       image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
-       image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
-       ui->lbl_image->setPixmap(QPixmap::fromImage(image));
-       ui->lbl_error->clear();
-       ui->lineEdit_name->clear();
-       ui->lineEdit_surname->clear();
-       ui->lineEdit_email->clear();
-       ui->lineEdit_password->clear();
-       ui->lineEdit_pwdrepeat->clear();
-       ui->lineEdit_nickname->clear();
-
+    image.load(":/images/profile.png");
+    image = image.scaledToWidth(ui->lbl_image->width(), Qt::SmoothTransformation);
+    image = image.scaledToHeight(ui->lbl_image->height(),Qt::SmoothTransformation);
+    ui->lbl_image->setPixmap(QPixmap::fromImage(image));
+    ui->lbl_error->clear();
+    ui->lineEdit_name->clear();
+    ui->lineEdit_surname->clear();
+    ui->lineEdit_email->clear();
+    ui->lineEdit_password->clear();
+    ui->lineEdit_pwdrepeat->clear();
+    ui->lineEdit_nickname->clear();
 }
