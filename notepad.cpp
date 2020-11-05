@@ -319,8 +319,8 @@ void Notepad::setFontBold(bool bold)
 
 void Notepad::about()
 {
-   QMessageBox::about(this, tr("About MDI"),
-                tr("This is a shared <b>Notepad</b> "));
+   QMessageBox::about(this, tr("About"),
+                tr("This is a <b>Shared Editor</b> "));
 
 }
 
@@ -460,28 +460,27 @@ void Notepad::size(const QString &text)
 {
     qreal pointSize = text.toFloat();
     QTextCursor cursor = ui->textEdit->textCursor();
-    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    QTextCharFormat fmt = cursor.charFormat();
+
     fmt.setFontPointSize(pointSize);
-    cursor.mergeCharFormat(fmt);
+    cursor.setCharFormat(fmt);
     ui->textEdit->setTextCursor( cursor );
+    ui->textEdit->setFontPointSize(pointSize);
 }
 
 void Notepad::font(const QFont &f)
 {
 
-   QTextCursor cursor = ui->textEdit->textCursor();
-   QTextCharFormat fmt = ui->textEdit->currentCharFormat();
-   qreal size = fmt.fontPointSize();
-   if(size==0)
-       size=8;
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QTextCharFormat fmt = ui->textEdit->currentCharFormat();
+    qreal size = fmt.fontPointSize();
 
+    fmt.setFont(f);
+    fmt.setFontPointSize(size);
+    cursor.setCharFormat(fmt);
 
-   fmt.setFont(f);
-   fmt.setFontPointSize(size);
-   cursor.mergeCharFormat(fmt);
-
-   ui->textEdit->setTextCursor( cursor );
-
+    ui->textEdit->setTextCursor( cursor );
+    ui->textEdit->setCurrentFont(f);
 }
 
 void Notepad::colorChanged(const QColor &c)

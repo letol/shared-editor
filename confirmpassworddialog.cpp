@@ -3,9 +3,9 @@
 #include "QRegularExpressionValidator"
 #include <QDebug>
 #include <QMessageBox>
-ConfirmPassword::ConfirmPassword(QWidget *parent) :
+ConfirmPasswordDialog::ConfirmPasswordDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::ConfirmPassword)
+    ui(new Ui::ConfirmPasswordDialog)
 {
     ui->setupUi(this);
     ui->pushButton_ok->setEnabled(false);
@@ -15,18 +15,18 @@ ConfirmPassword::ConfirmPassword(QWidget *parent) :
 
 }
 
-ConfirmPassword::~ConfirmPassword()
+ConfirmPasswordDialog::~ConfirmPasswordDialog()
 {
     delete ui;
 }
 
-void ConfirmPassword::errorPwd(const QString& str)
+void ConfirmPasswordDialog::errorPwd(const QString& str)
 {
    QMessageBox::warning(this,"Error password", str);
 
 }
 
-void ConfirmPassword::updOK()
+void ConfirmPasswordDialog::updOK()
 {
     QMessageBox::information(this,"Success","Password updated");
     this->close();
@@ -36,7 +36,7 @@ void ConfirmPassword::updOK()
     ui->error->clear();
 }
 
-void ConfirmPassword::on_new_password_textChanged(const QString &arg1)
+void ConfirmPasswordDialog::on_new_password_textChanged(const QString &arg1)
 {
     QString str = arg1.simplified();
         if(!ui->new_password->hasAcceptableInput()){
@@ -65,7 +65,7 @@ void ConfirmPassword::on_new_password_textChanged(const QString &arg1)
 
 }
 
-void ConfirmPassword::on_new_rpwd_textChanged(const QString &arg1)
+void ConfirmPasswordDialog::on_new_rpwd_textChanged(const QString &arg1)
 {
     QString str = arg1.simplified();
 
@@ -84,7 +84,7 @@ void ConfirmPassword::on_new_rpwd_textChanged(const QString &arg1)
 
 
 
-void ConfirmPassword::checkValid(QMap<QString, bool> valid)
+void ConfirmPasswordDialog::checkValid(QMap<QString, bool> valid)
 {
     if(valid["pwd"]&&valid["pwdR"]){
          ui->pushButton_ok->setEnabled(true);
@@ -97,7 +97,7 @@ void ConfirmPassword::checkValid(QMap<QString, bool> valid)
 }
 
 
-void ConfirmPassword::on_pushButton_cancel_clicked()
+void ConfirmPasswordDialog::on_pushButton_cancel_clicked()
 {
     this->close();
     this->ui->new_password->clear();
@@ -105,7 +105,7 @@ void ConfirmPassword::on_pushButton_cancel_clicked()
     this->ui->new_rpwd->clear();
 }
 
-void ConfirmPassword::on_pushButton_ok_clicked()
+void ConfirmPasswordDialog::on_pushButton_ok_clicked()
 {
 
     const QString pwd = ui->password->text();

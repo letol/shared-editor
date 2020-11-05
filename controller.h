@@ -85,7 +85,7 @@ private:
     RegistrationDialog *regDialog;
     OpenFileDialog *openfile;
     UpdateFormDialog *updateForm;
-    ConfirmPasswordDialog* confirmpwd;
+    ConfirmPassword* confirmpwd;
     User currentUser;
     DocumentMessage currentDocument;
     bool changePwd=false;

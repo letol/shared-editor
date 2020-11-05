@@ -12,7 +12,7 @@ Controller::Controller(QWidget *parent) :
     openfile = new OpenFileDialog();
     updateForm = new UpdateFormDialog();
 
-    confirmpwd = new ConfirmPasswordDialog();
+    confirmpwd = new ConfirmPassword();
 
     //socket connection
     connect(&socket,SIGNAL(errorServer()),this,SLOT(errorConnection()));
@@ -63,7 +63,7 @@ Controller::Controller(QWidget *parent) :
     connect(updateForm,&UpdateFormDialog::logout,this,&Controller::logout);
 
     connect(confirmpwd,SIGNAL(passwordData(QString,QString)),this,SLOT(pwdChanged(QString,QString)));
-    connect(this,&Controller::pwdKO,confirmpwd,&ConfirmPasswordDialog::errorPwd);
+    connect(this,&Controller::pwdKO,confirmpwd,&ConfirmPassword::errorPwd);
     connect(this,SIGNAL(pwdOK()),confirmpwd,SLOT(updOK()));
 
 }
@@ -396,7 +396,7 @@ void Controller::deleteFile(const DocumentMessage& docMesssage)
 
 void Controller::deleteOK()
 {
-    QMessageBox::information(this,"Successful","File removed correct");
+    QMessageBox::information(this,"Successful","File removed correctly");
     socket.askForDocumentList(currentUser.getEmail());
 }
 
