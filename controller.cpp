@@ -13,6 +13,7 @@ Controller::Controller(QWidget *parent) :
     updateForm = new UpdateFormDialog();
 
     confirmpwd = new ConfirmPassword();
+
     //socket connection
     connect(&socket,SIGNAL(errorServer()),this,SLOT(errorConnection()));
     connect(&socket,&SocketClient::registrationOK,this,&Controller::regOK);
@@ -108,7 +109,6 @@ void Controller::open()
 
 void Controller::moveOnlineUsers(QMap<QUuid, User> onlineUsers)
 {
-   //onlineUsers.remove(siteId);
    notepad->getOnlineUsers(onlineUsers);
 }
 
@@ -360,7 +360,6 @@ void Controller::documentListKO()
 
 void Controller::openDocument(const QUrl uri)
 {
-    qDebug() << "Opening document" << uri.toString();
     OpenMessage openMsg(siteId, uri);
     socket.openDocument(openMsg);
 }
@@ -368,7 +367,6 @@ void Controller::openDocument(const QUrl uri)
 void Controller::openDocumentOK(const DocumentMessage& docReply)
 {
     currentDocument = std::move(docReply);
-    qDebug()<<currentDocument.getOwnerEmail() << " " << currentDocument.getDocumentId()<<" "<< currentDocument.getSymbols().length();
     notepad->openExistingDocument(currentDocument.getSymbols(), currentDocument.getName(),currentDocument.getDocumentId());
     enableEditingMessages();
 }
@@ -398,7 +396,7 @@ void Controller::deleteFile(const DocumentMessage& docMesssage)
 
 void Controller::deleteOK()
 {
-    QMessageBox::information(this,"Successful","File removed correct");
+    QMessageBox::information(this,"Successful","File removed correctly");
     socket.askForDocumentList(currentUser.getEmail());
 }
 

@@ -1,4 +1,4 @@
-#include "confirmpassword.h"
+#include "confirmpassworddialog.h"
 #include "ui_confirmpassword.h"
 #include "QRegularExpressionValidator"
 #include <QDebug>

@@ -1,5 +1,5 @@
-#ifndef CONFIRMPASSWORD_H
-#define CONFIRMPASSWORD_H
+#ifndef CONFIRMPASSWORDDIALOG_H
+#define CONFIRMPASSWORDDIALOG_H
 
 #include <QDialog>
 #include <QMap>
@@ -33,4 +33,4 @@ private:
     void checkValid(QMap<QString,bool> valid);
 };
 
-#endif // CONFIRMPASSWORD_H
+#endif // CONFIRMPASSWORDDIALOG_H

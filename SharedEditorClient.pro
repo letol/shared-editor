@@ -6,44 +6,26 @@ TEMPLATE        = app
 TARGET          = SharedEditorClient
 
 HEADERS         = \
-    confirmpassword.h \
     controller.h \
     notepad.h \
-    logindialog.h \
-    onlineusersdialog.h \
-    openfiledialog.h \
-    registrationdialog.h \
-    updateformdialog.h \
     user.h
 
 SOURCES         = \
-    confirmpassword.cpp \
     controller.cpp \
-    logindialog.cpp \
     main.cpp \
     notepad.cpp \
-    onlineusersdialog.cpp \
-    openfiledialog.cpp \
-    registrationdialog.cpp \
-    updateformdialog.cpp \
     user.cpp
 
 RESOURCES += \
     notepad.qrc
 
 FORMS += \
-    confirmpassword.ui \
-    logindialog.ui \
-    notepad.ui \
-    onlineusersdialog.ui \
-    openfiledialog.ui \
-    registrationdialog.ui \
-    updateformdialog.ui
+    notepad.ui
 
 include(shared_editor/shared_editor.pri)
-
 include(network/network.pri)
 include(network/messages/messages.pri)
+include(dialogs/dialogs.pri)
 
 # install
 target.path = /home/leonardo/Polito/2018-2019/Programmazione di Sistema/Malnati/

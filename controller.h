@@ -7,7 +7,7 @@
 #include "registrationdialog.h"
 #include "openfiledialog.h"
 #include "updateformdialog.h"
-#include "confirmpassword.h"
+#include "confirmpassworddialog.h"
 #include "socketclient.h"
 #include "onlineusersdialog.h"
 

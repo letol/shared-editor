@@ -20,7 +20,7 @@ void SocketClient::setSocket()
     qDebug() << "Connecting...";
 
     // Server IP -> We will insert it in command line before launch the program
-    socket->connectToHost("127.0.0.1",1800);
+    socket->connectToHost("127.0.0.1", 1800);
 
 }
 
@@ -81,6 +81,7 @@ void SocketClient::readyRead()
 
         case MessageType::S_REGISTER_OK:{
             qDebug() << "Received: S_REGISTER_OK";
+            socketStream >> userData;
             if (!socketStream.commitTransaction())
                 return;
 
@@ -104,6 +105,7 @@ void SocketClient::readyRead()
         case MessageType::S_LOGIN_OK:{
             qDebug() << "Received: S_LOGIN_OK";
             socketStream>>userMessage;
+            userData = userMessage;
             if (!socketStream.commitTransaction())
                 return;
             emit loginOK(userMessage);
@@ -172,7 +174,6 @@ void SocketClient::readyRead()
             socketStream >> editMsg;
             if (!socketStream.commitTransaction())
                 return;
-            qDebug() << "Received" << editMsg.getOperation() << editMsg.getSymbol().getValue() << "from" << editMsg.getSymbol().getSiteId();
             emit remoteEditDocument(editMsg);
             break;
         }
@@ -189,14 +190,12 @@ void SocketClient::readyRead()
             qDebug() << "Received: S_DOCLS_OK";
             int size;
             socketStream >> size;
-            qDebug() << "List size:" << size;
 
             QVector<DocumentMessage> docList;
             for (int i=0; i<size; i++) {
                 DocumentMessage d;
                 socketStream >> d;
                 docList.append(d);
-                qDebug() << "Received document:" << d.getDocumentId();
             }
 
             if (!socketStream.commitTransaction())
@@ -235,19 +234,17 @@ void SocketClient::readyRead()
         }
 
         case MessageType::S_ONL_USRS: {
+            qDebug() << "Received: S_ONL_USRS";
             QMap<QUuid, User> onlineUsers;
             socketStream >> onlineUsers;
             if (!socketStream.commitTransaction())
                 return;
-            qDebug() << "Received: list of online users"<<onlineUsers.values().length();
-
-            //qDebug() << "Received: list of online users"<<onlineUsers.values();
             emit addOnlineUser(onlineUsers);
             break;
         }
 
         case MessageType::S_RMV_USR: {
-            qDebug() << "Received: list of online users";
+            qDebug() << "Received: S_RMV_USR";
             QUuid uuid;
             socketStream >> uuid;
             if (!socketStream.commitTransaction())
@@ -256,12 +253,14 @@ void SocketClient::readyRead()
             break;
         }
         case MessageType::S_DOC_DLT_OK:{
+            qDebug() << "Received: S_DOC_DLT_OK";
             if (!socketStream.commitTransaction())
                 return;
             emit deleteOK();
             break;
         }
         case MessageType::S_DOC_DLT_KO:{
+            qDebug() << "Received: S_DOC_DLT_KO";
             if (!socketStream.commitTransaction())
                 return;
             emit deleteKO();
@@ -269,9 +268,8 @@ void SocketClient::readyRead()
         }
       
         default:{
-            qDebug() << "Unknown MessageType: wait for more data";
             if (!socketStream.commitTransaction())
-                return;     // wait for more data
+                return;
         }
     }
 
@@ -310,6 +308,7 @@ void SocketClient::updateImage(User user)
 
 void SocketClient::updateName(User user)
 {   
+    userData = user;
     Header haederReg(MessageType::C_UPD_NAME) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
@@ -319,6 +318,7 @@ void SocketClient::updateName(User user)
 
 void SocketClient::updateSurname(User user)
 {
+    userData = user;
     Header haederReg(MessageType::C_UPD_SURN) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
@@ -345,7 +345,7 @@ void SocketClient::newDocument(const DocumentMessage& newDocMsg) {
 
 void SocketClient::error()
 {
-       emit errorServer();
+    emit errorServer();
 }
 
 void SocketClient::localEditDocument(const EditingMessage& editMsg) {
@@ -354,7 +354,6 @@ void SocketClient::localEditDocument(const EditingMessage& editMsg) {
     clientStream.setVersion(QDataStream::Qt_5_12);
     clientStream << headerReg << editMsg;
     qDebug() << "Sent: B_EDIT";
-    qDebug() << "Sent" << editMsg.getOperation() << editMsg.getSymbol().getValue() << "by me (" << editMsg.getSymbol().getSiteId() << ")";
 }
 
 void SocketClient::askForDocumentList(const QString userEmail) {

@@ -72,7 +72,6 @@ public:
 
 signals:
     void showUpdateForm();
-    //void showOnlineUsersForm();
     void newDocument(const QVector<Symbol>& symbols, const QString& name);
     void fileClosed();
     void newCursorPosition(int pos);
@@ -103,7 +102,6 @@ private slots:
     void setHighlightOwners(bool highlightOwners);
     void about();
     void localChange(int position, int charsRemoved, int charsAdded);
-    void numParagraphsChanged();
     void remoteCharInsert(QUuid &siteId, QString &owner, QChar value, QTextCharFormat &charFormat, QTextBlockFormat &blockFormat, int index);
     void remoteCharDelete(QUuid &siteId, int index);
     void addRemoteUser(QUuid siteId, User userInfo);
@@ -146,7 +144,6 @@ private:
     QAction *actionHighlight;
     
     SharedEditor sharedEditor;
-    int numParagraphs = 1;
     QVector<QColor> colors;
 
     QMap<QUuid,RemoteUser> remoteSites;
