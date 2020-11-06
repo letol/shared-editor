@@ -221,7 +221,7 @@ void Notepad::openExistingDocument(QVector<Symbol>& symbols, QString name, QUuid
     this->uri=uri;
     sharedEditor.reset();
     foreach(Symbol sym, symbols) {
-        qDebug()<<sym.getValue();
+        //qDebug()<<sym.getValue();
         sharedEditor.remoteInsert(EditingMessage(sym, MSG_INSERT, QUuid()));
     }
     connect(ui->textEdit->document(), &QTextDocument::contentsChange, this, &Notepad::localChange);
@@ -578,7 +578,7 @@ void Notepad::localChange(int position, int charsRemoved, int charsAdded)
 
 void Notepad::numParagraphsChanged() {
     int delta = ui->textEdit->document()->blockCount() - numParagraphs;
-    qDebug() << "Delta:" << delta;
+    //qDebug() << "Delta:" << delta;
     numParagraphs = ui->textEdit->document()->blockCount();
 }
 
