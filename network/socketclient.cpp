@@ -81,6 +81,7 @@ void SocketClient::readyRead()
 
         case MessageType::S_REGISTER_OK:{
             qDebug() << "Received: S_REGISTER_OK";
+            socketStream >> userData;
             if (!socketStream.commitTransaction())
                 return;
 
@@ -104,6 +105,7 @@ void SocketClient::readyRead()
         case MessageType::S_LOGIN_OK:{
             qDebug() << "Received: S_LOGIN_OK";
             socketStream>>userMessage;
+            userData = userMessage;
             if (!socketStream.commitTransaction())
                 return;
             emit loginOK(userMessage);
@@ -306,6 +308,7 @@ void SocketClient::updateImage(User user)
 
 void SocketClient::updateName(User user)
 {   
+    userData = user;
     Header haederReg(MessageType::C_UPD_NAME) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
@@ -315,6 +318,7 @@ void SocketClient::updateName(User user)
 
 void SocketClient::updateSurname(User user)
 {
+    userData = user;
     Header haederReg(MessageType::C_UPD_SURN) ;
     QDataStream clientStream(socket);
     clientStream.setVersion(QDataStream::Qt_5_12);
